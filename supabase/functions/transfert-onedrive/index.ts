@@ -30,7 +30,7 @@ async function jeton(): Promise<string> {
 function nomClient(s: string): string {
   return s
     .replace(/^(mme et m\.?|mr et mme|m\. et mme|madame|monsieur|mme|mlle|mr|m\.)\s+/i, '')
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '')
     .toUpperCase() || 'CHANTIER'
 }
@@ -73,8 +73,23 @@ async function dossierPhotos(t: string, c: Ch): Promise<string> {
   return cible!.id
 }
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
   if (!TENANT || !CLIENT || !SECRET) return Response.json({ etat: 'non configuré' })
+
+  // Test de connexion : { "test": "<chantier_id>" } -> vérifie l'accès au dossier photos, sans rien écrire.
+  const corps = await req.json().catch(() => ({}))
+  if (corps?.test) {
+    try {
+      const t = await jeton()
+      const { data: c } = await sb.from('chantiers').select('id, client_nom, onedrive_dossier, onedrive_item_id').eq('id', corps.test).single()
+      const h = { Authorization: `Bearer ${t}` }
+      const r = await fetch(`${GRAPH}/drives/${DRIVE}/items/${c!.onedrive_item_id}/children?$select=name,folder&$top=50`, { headers: h })
+      const j = await r.json()
+      return Response.json({ test: r.ok ? 'ok' : 'echec', statut: r.status, dossiers: (j.value ?? []).filter((e: { folder?: unknown }) => e.folder).map((e: { name: string }) => e.name), erreur: j.error?.message })
+    } catch (e) {
+      return Response.json({ test: 'echec', erreur: String((e as Error).message) })
+    }
+  }
 
   const { data: photos, error } = await sb
     .from('photos')
