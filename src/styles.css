@@ -68,11 +68,8 @@ a { color: var(--accent-ink); }
 .bandeau.info { background: var(--accent-soft); color: var(--accent-ink); }
 
 /* Logo */
-.logo { display: inline-flex; align-items: center; gap: 10px; color: #fff; }
-.logo svg { width: 44px; height: 28px; }
-.logo-txt { font-weight: 900; letter-spacing: 0.08em; font-size: 18px; }
-.logo.petit svg { width: 34px; height: 22px; }
-.logo.petit .logo-txt { font-size: 15px; }
+.logo { display: block; width: 200px; height: auto; }
+.logo.petit { width: auto; height: 34px; }
 
 /* Cartes */
 .carte {
