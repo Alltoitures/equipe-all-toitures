@@ -63,18 +63,10 @@ export default function Connexion() {
     setOccupe(true)
     try {
       const t = normaliserTel(tel)
-      const suffixe = crypto.randomUUID().slice(0, 8)
-      const email = `t${t}-${suffixe}@equipe.alltoitures.com`
-      const r = await supabase.auth.signUp({
-        email,
-        password: pin1,
-        options: { data: { telephone: t, invitation: invitation.trim() } }
-      })
-      if (r.error) throw r.error
-      if (!r.data.session) {
-        const s = await supabase.auth.signInWithPassword({ email, password: pin1 })
-        if (s.error) throw s.error
-      }
+      const { data: email, error } = await supabase.rpc('activer_compte', { tel: t, code: invitation.trim(), pin: pin1 })
+      if (error) throw error
+      const s = await supabase.auth.signInWithPassword({ email: email as string, password: pin1 })
+      if (s.error) throw s.error
       history.replaceState(null, '', '/')
     } catch (e) {
       setErreur(erreurLisible(e))
