@@ -3,8 +3,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const DRIVE = Deno.env.get('ONEDRIVE_DRIVE_ID') ?? 'b!4efKqbnV-EKC_9Z0oks90n3mvlMiPLJFjdsjFcMnwiyAgT6m5zLnSriFuukUJq2m'
-const TENANT = Deno.env.get('MS_TENANT_ID')
-const CLIENT = Deno.env.get('MS_CLIENT_ID')
+const TENANT = Deno.env.get('MS_TENANT_ID') ?? 'f7c2d61b-b7b9-4c0c-ac90-3ed776b9b9de'
+const CLIENT = Deno.env.get('MS_CLIENT_ID') ?? 'a43c4593-1b29-4ec5-a006-444054222d62'
 const SECRET = Deno.env.get('MS_CLIENT_SECRET')
 const GRAPH = 'https://graph.microsoft.com/v1.0'
 const LOT = 15
