@@ -209,11 +209,89 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .case { flex-direction: row; align-items: center; gap: 10px; font-weight: 400; color: var(--ink); padding: 6px 0; }
 .case input { width: 22px; height: 22px; min-height: 0; flex: none; }
 .case small { color: var(--muted); }
-.ligne-tache { display: grid; grid-template-columns: 1fr 64px 72px 40px; gap: 6px; }
+.ligne-tache { display: flex; gap: 6px; align-items: center; }
+.ligne-tache input { flex: 1; min-width: 0; }
+.ligne-tache input.court { flex: 0 0 56px; }
+.ligne-tache .btn { flex: 0 0 36px; padding: 0; }
 .ligne-tache input { min-height: 42px; padding: 8px; }
 
 @media (max-width: 380px) {
   .deux { grid-template-columns: 1fr; }
   .tuiles { grid-template-columns: 1fr; }
-  .ligne-tache { grid-template-columns: 1fr 52px 60px 36px; }
+  .ligne-tache input.court { flex-basis: 48px; }
 }
+
+/* ---------- Fiche chantier (modèle bon d'intervention) ---------- */
+.fiche { padding-bottom: 96px; }
+.fiche-tete { background: var(--top); color: #fff; border-radius: var(--rayon); padding: 14px 16px; }
+.fiche-tete h1 { color: #fff; margin: 4px 0 2px; font-size: 22px; }
+.fiche-tete p { margin: 0; color: #9fb3c2; font-size: 14px; }
+.fiche-ref { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; }
+.bandeau-fiche { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bandeau-fiche > div { border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; min-width: 0; }
+.bandeau-fiche small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; }
+.bandeau-fiche strong { font-size: 15px; line-height: 1.2; }
+.bandeau-fiche em { font-size: 11px; font-style: normal; opacity: 0.85; }
+.b-orange { background: #fdf1dc; color: #7e5308; border: 1px solid #ef9f27; }
+.b-bleu { background: var(--accent-soft); color: #00506c; border: 1px solid #9fdcf2; }
+.onglets-fiche { position: sticky; top: 0; z-index: 5; display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 10px; }
+.onglets-fiche button { flex: 1; border: 0; background: transparent; padding: 9px 2px; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+.onglets-fiche button[aria-selected='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.puces { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.etapes { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
+.etapes li.fait { color: var(--muted); text-decoration: line-through; }
+.avancement { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.barre-av { flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.barre-av i { display: block; height: 100%; background: var(--ok); }
+.bordereau { list-style: none; margin: 0; padding: 0; }
+.bordereau li { border-top: 1px solid var(--line); }
+.bordereau li:first-child { border-top: 0; }
+.bordereau .groupe-ligne { background: var(--surface-2); font-weight: 700; font-size: 13px; padding: 6px 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+.bordereau label { display: grid; grid-template-columns: 24px 34px 1fr auto; gap: 8px; align-items: start; padding: 9px 0; font-weight: 400; font-size: 14px; color: var(--ink); }
+.bordereau input { width: 22px; height: 22px; min-height: 0; margin: 0; accent-color: var(--ok); }
+.bordereau .n { color: var(--muted); font-size: 12px; padding-top: 2px; }
+.bordereau .q { font-weight: 700; white-space: nowrap; font-size: 13px; }
+.bordereau label.fait .d { text-decoration: line-through; color: var(--muted); }
+.materiau { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+.materiau:first-of-type { border-top: 0; }
+.materiau div { display: flex; flex-direction: column; min-width: 0; }
+.materiau small { color: var(--muted); }
+.etat { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; color: #fff; white-space: nowrap; background: var(--muted); }
+.etat-prendre { background: #0b1921; }
+.etat-place { background: #00a9e0; }
+.etat-livre { background: #2e9e5b; }
+.etat-depot { background: #6b7c88; }
+.note { font-style: italic; color: var(--ink-2); font-size: 14px; margin: 8px 0 0; }
+.barre-actions {
+  position: fixed; left: 0; right: 0; bottom: calc(var(--nav) + env(safe-area-inset-bottom)); z-index: 9;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 10px;
+  background: var(--top); border-top: 1px solid #1d3341;
+}
+.barre-actions > * { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #fff; font: inherit; font-size: 12px; font-weight: 700; background: #16303e; border: 0; border-radius: 8px; padding: 6px 2px; cursor: pointer; }
+.barre-actions svg { width: 22px; height: 22px; stroke: var(--accent); }
+.barre-actions .act-imprevu { background: #4a3410; }
+.barre-actions .act-imprevu svg { stroke: #ef9f27; }
+
+/* ---------- Documents OneDrive ---------- */
+.docs { display: flex; flex-direction: column; gap: 10px; }
+.fil { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+.fil .lien { padding: 0; font-size: 13px; }
+.tuiles-docs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.liste-docs { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--rayon); overflow: hidden; }
+.doc-dossier, .doc-fichier { display: flex; align-items: center; gap: 10px; text-align: left; font: inherit; color: var(--ink); text-decoration: none; background: var(--surface); border: 0; padding: 12px; cursor: pointer; }
+.tuiles-docs .doc-dossier { border: 1px solid var(--line); border-radius: var(--rayon); }
+.liste-docs > * + * { border-top: 1px solid var(--line); }
+.doc-dossier > span:last-child, .doc-fichier > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.doc-dossier strong, .doc-fichier strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.doc-dossier small, .doc-fichier small { color: var(--muted); font-size: 12px; }
+.ico-dossier { flex: none; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--top); color: var(--accent); font-weight: 900; }
+.ext { flex: none; width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); font-size: 11px; font-weight: 900; }
+.galerie { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.vignette { aspect-ratio: 1; border: 0; padding: 0; background: var(--surface-2); border-radius: 6px; overflow: hidden; font-size: 10px; }
+.vignette img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vide { text-align: center; color: var(--muted); padding: 24px; }
+.visionneuse { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; flex-direction: column; }
+.visionneuse img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+.visionneuse-bas { background: var(--top); color: #fff; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.ligne-tache input.groupe { font-weight: 700; text-transform: uppercase; background: var(--surface-2); }
+.tuiles-docs .doc-dossier { min-width: 0; padding: 10px; }

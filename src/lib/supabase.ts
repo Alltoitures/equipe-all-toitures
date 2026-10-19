@@ -41,7 +41,30 @@ export interface Chantier {
   materiaux: string | null
   materiel: string | null
   onedrive_dossier: string | null
+  onedrive_item_id?: string | null
   termine_le: string | null
+  bon?: Bon | null
+}
+
+export type EtatMateriau = 'À prendre' | 'Sur place' | 'Livré' | 'Dépôt'
+
+/** Contenu du bon d'intervention (même structure que le PDF), jamais de prix. */
+export interface Bon {
+  devis?: string
+  emise_le?: string
+  sur_place?: string
+  sur_place_note?: string
+  duree?: string
+  duree_note?: string
+  intervenants?: string
+  intervenants_note?: string
+  client_nom?: string
+  acces?: string
+  objet?: string
+  materiaux?: { nom: string; qte?: string; source?: string; etat?: EtatMateriau | string }[]
+  materiaux_note?: string
+  materiel?: string[]
+  vigilance?: string[]
 }
 
 export interface Tache {
@@ -54,6 +77,9 @@ export interface Tache {
   fait: boolean
   fait_par: string | null
   fait_le: string | null
+  categorie: 'travaux' | 'bordereau'
+  numero: string | null
+  est_groupe: boolean
 }
 
 export type Phase = 'avant' | 'pendant' | 'apres' | 'imprevu'

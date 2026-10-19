@@ -5,7 +5,35 @@ import { normaliserTel } from '../../lib/format'
 import { IcoRetour } from '../../components/Icones'
 
 type Form = Omit<Chantier, 'id' | 'termine_le'>
-type LigneTache = { id?: string; libelle: string; quantite: string; unite: string }
+type Cat = 'travaux' | 'bordereau'
+type LigneTache = { id?: string; categorie: Cat; numero: string; est_groupe: boolean; libelle: string; quantite: string; unite: string }
+type Bon = NonNullable<Chantier['bon']>
+const CHAMPS_BON = ['devis', 'objet', 'client_nom', 'sur_place', 'sur_place_note', 'duree', 'duree_note', 'intervenants', 'intervenants_note', 'acces', 'materiaux_note'] as const
+type BonTxt = Record<(typeof CHAMPS_BON)[number] | 'materiaux' | 'materiel' | 'vigilance', string>
+
+function bonVersTexte(b: Bon | null | undefined): BonTxt {
+  const t = Object.fromEntries(CHAMPS_BON.map((k) => [k, (b?.[k] as string | undefined) ?? ''])) as BonTxt
+  t.materiaux = (b?.materiaux ?? []).map((m) => [m.nom, m.qte ?? '', m.source ?? '', m.etat ?? ''].join(' | ')).join('\n')
+  t.materiel = (b?.materiel ?? []).join('\n')
+  t.vigilance = (b?.vigilance ?? []).join('\n')
+  return t
+}
+
+function texteVersBon(t: BonTxt, avant: Bon | null | undefined): Bon {
+  const l = (s: string) => s.split('\n').map((x) => x.trim()).filter(Boolean)
+  const b: Record<string, unknown> = { ...(avant ?? {}) }
+  for (const k of CHAMPS_BON) {
+    if (t[k].trim()) b[k] = t[k].trim()
+    else delete b[k]
+  }
+  b.materiaux = l(t.materiaux).map((x) => {
+    const [nom, qte, source, etat] = x.split('|').map((y) => y.trim())
+    return { nom, qte: qte || undefined, source: source || undefined, etat: etat || undefined }
+  })
+  b.materiel = l(t.materiel)
+  b.vigilance = l(t.vigilance)
+  return b as Bon
+}
 
 const VIDE: Form = {
   reference: '', client_nom: '', adresse: '', code_postal: '', ville: '',
@@ -23,6 +51,8 @@ export default function ChantierEdition() {
   const [affectes, setAffectes] = useState<Set<string>>(new Set())
   const [taches, setTaches] = useState<LigneTache[]>([])
   const [tachesInit, setTachesInit] = useState<Tache[]>([])
+  const [bonInit, setBonInit] = useState<Bon | null>(null)
+  const [bon, setBon] = useState<BonTxt>(bonVersTexte(null))
   const [erreur, setErreur] = useState('')
   const [occupe, setOccupe] = useState(false)
 
@@ -38,12 +68,14 @@ export default function ChantierEdition() {
     ]).then(([c, co, af, ta]) => {
       if (c.data) {
         const { id: _i, termine_le: _t, ...reste } = c.data as Chantier & Record<string, unknown>
+        setBonInit((c.data as Chantier).bon ?? null)
+        setBon(bonVersTexte((c.data as Chantier).bon))
         setF({ ...VIDE, ...Object.fromEntries(Object.entries(reste).filter(([k]) => k in VIDE).map(([k, v]) => [k, v ?? ''])) } as Form)
       }
       setTel(co.data?.client_telephone ?? '')
       setAffectes(new Set((af.data ?? []).map((a) => a.membre_id)))
       setTachesInit((ta.data ?? []) as Tache[])
-      setTaches(((ta.data ?? []) as Tache[]).map((t) => ({ id: t.id, libelle: t.libelle, quantite: t.quantite?.toString() ?? '', unite: t.unite ?? '' })))
+      setTaches(((ta.data ?? []) as Tache[]).map((t) => ({ id: t.id, categorie: (t.categorie ?? 'bordereau') as Cat, numero: t.numero ?? '', est_groupe: !!t.est_groupe, libelle: t.libelle, quantite: t.quantite?.toString() ?? '', unite: t.unite ?? '' })))
     })
   }, [id])
 
@@ -61,6 +93,7 @@ export default function ChantierEdition() {
       const donnees = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, vide(v)]))
       donnees.duree_jours = f.duree_jours ? Number(String(f.duree_jours).replace(',', '.')) : null
       donnees.nb_intervenants = f.nb_intervenants ? Number(f.nb_intervenants) : null
+      donnees.bon = texteVersBon(bon, bonInit)
       let cid = id as string
       if (nouveau) {
         const r = await supabase.from('chantiers').insert(donnees).select('id').single()
@@ -83,9 +116,15 @@ export default function ChantierEdition() {
       const gardes = new Set(taches.filter((t) => t.id).map((t) => t.id))
       const supprimees = tachesInit.filter((t) => !gardes.has(t.id)).map((t) => t.id)
       if (supprimees.length) await supabase.from('taches').delete().in('id', supprimees)
-      for (const [i, t] of taches.entries()) {
+      const rang: Record<Cat, number> = { travaux: 0, bordereau: 0 }
+      for (const t of taches) {
         if (!t.libelle.trim()) continue
-        const ligne = { chantier_id: cid, ordre: i, libelle: t.libelle.trim(), quantite: t.quantite ? Number(t.quantite.replace(',', '.')) : null, unite: t.unite || null }
+        const ligne = {
+          chantier_id: cid, categorie: t.categorie, ordre: rang[t.categorie]++, libelle: t.libelle.trim(),
+          numero: t.est_groupe ? null : t.numero.trim() || null, est_groupe: t.est_groupe,
+          quantite: !t.est_groupe && t.quantite ? Number(t.quantite.replace(',', '.')) : null,
+          unite: t.est_groupe ? null : t.unite || null
+        }
         const r = t.id ? await supabase.from('taches').update(ligne).eq('id', t.id) : await supabase.from('taches').insert(ligne)
         if (r.error) throw r.error
       }
@@ -104,11 +143,14 @@ export default function ChantierEdition() {
     nav('/gestion/chantiers', { replace: true })
   }
 
-  function collerTaches() {
-    const t = prompt('Collez la liste des travaux (une ligne par poste) :')
+  const nouvelle = (categorie: Cat, libelle = '', est_groupe = false): LigneTache => ({ categorie, numero: '', est_groupe, libelle, quantite: '', unite: '' })
+  const maj = (i: number, v: Partial<LigneTache>) => setTaches(taches.map((x, k) => (k === i ? { ...x, ...v } : x)))
+  const champBon = (k: keyof BonTxt) => ({ value: bon[k], onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setBon({ ...bon, [k]: e.target.value }) })
+
+  function collerTaches(categorie: Cat) {
+    const t = prompt(categorie === 'travaux' ? 'Collez les travaux à réaliser (une ligne par étape) :' : 'Collez le bordereau (une ligne par poste) :')
     if (!t) return
-    const lignes = t.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => ({ libelle: l, quantite: '', unite: '' }))
-    setTaches([...taches, ...lignes])
+    setTaches([...taches, ...t.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => nouvelle(categorie, l))])
   }
 
   return (
@@ -173,29 +215,68 @@ export default function ChantierEdition() {
         </section>
 
         <section className="carte">
-          <h2>Dossier d'intervention</h2>
-          <label>Accès<textarea rows={2} {...champ('acces')} placeholder="Portail, stationnement, clés…" /></label>
-          <label>Consignes<textarea rows={3} {...champ('consignes')} /></label>
-          <label>Points de vigilance<textarea rows={3} {...champ('vigilance')} /></label>
-          <label>Matériaux<textarea rows={3} {...champ('materiaux')} placeholder="Livrés sur chantier le… / à prendre au dépôt" /></label>
-          <label>Matériel à charger<textarea rows={3} {...champ('materiel')} /></label>
-          <label>Dossier OneDrive des photos<input {...champ('onedrive_dossier')} placeholder="ALL TOITURES - 04 - CHANTIERS/2026/…" /></label>
-          <p className="aide">Chemin du dossier du chantier. Les photos iront dans son sous-dossier « C - Photos (avant pendant après) ».</p>
+          <h2>Bon d'intervention</h2>
+          <div className="deux">
+            <label>N° de devis<input {...champBon('devis')} /></label>
+            <label>Objet<input {...champBon('objet')} placeholder="Remplacement du faîtage" /></label>
+          </div>
+          <label>Client (tel qu'affiché)<input {...champBon('client_nom')} placeholder="Mr & Mme …" /></label>
+          <div className="deux">
+            <label>Sur place<input {...champBon('sur_place')} placeholder="Lun. 12/10 · 7h20" /></label>
+            <label>Précision<input {...champBon('sur_place_note')} placeholder="PILE, à confirmer…" /></label>
+          </div>
+          <div className="deux">
+            <label>Durée<input {...champBon('duree')} placeholder="2 jours" /></label>
+            <label>Précision<input {...champBon('duree_note')} /></label>
+          </div>
+          <div className="deux">
+            <label>Intervenants<input {...champBon('intervenants')} /></label>
+            <label>Précision<input {...champBon('intervenants_note')} /></label>
+          </div>
+          <label>Accès et consignes client<textarea rows={3} {...champBon('acces')} /></label>
+          <label>Points de vigilance <small>(une ligne par point, « Titre : texte »)</small><textarea rows={4} {...champBon('vigilance')} /></label>
+          <label>Matériaux <small>(une ligne : Nom | qté | provenance | état)</small><textarea rows={4} {...champBon('materiaux')} placeholder="Closoir ventilé rouge | 28 ml | Négoce | À prendre" /></label>
+          <p className="aide">États possibles : À prendre, Sur place, Livré, Dépôt.</p>
+          <label>Note matériaux<textarea rows={2} {...champBon('materiaux_note')} /></label>
+          <label>Matériel à charger <small>(une ligne par élément)</small><textarea rows={5} {...champBon('materiel')} /></label>
+          <label>Dossier OneDrive<input {...champ('onedrive_dossier')} placeholder="ALL TOITURES - 04 - CHANTIERS/2026/…" /></label>
         </section>
 
         <section className="carte">
-          <h2>Travaux à réaliser (sans prix)</h2>
-          {taches.map((t, i) => (
+          <h2>Travaux à réaliser</h2>
+          <p className="aide">Les étapes, dans l'ordre, telles qu'expliquées à l'équipe.</p>
+          {taches.map((t, i) => t.categorie !== 'travaux' ? null : (
             <div key={i} className="ligne-tache">
-              <input placeholder="Désignation" value={t.libelle} onChange={(e) => setTaches(taches.map((x, k) => (k === i ? { ...x, libelle: e.target.value } : x)))} />
-              <input className="court" placeholder="Qté" inputMode="decimal" value={t.quantite} onChange={(e) => setTaches(taches.map((x, k) => (k === i ? { ...x, quantite: e.target.value } : x)))} />
-              <input className="court" placeholder="Unité" value={t.unite} onChange={(e) => setTaches(taches.map((x, k) => (k === i ? { ...x, unite: e.target.value } : x)))} />
+              <input placeholder="Étape" value={t.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} />
               <button type="button" className="btn ghost" onClick={() => setTaches(taches.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
             </div>
           ))}
           <div className="boutons">
-            <button type="button" className="btn" onClick={() => setTaches([...taches, { libelle: '', quantite: '', unite: '' }])}>+ Ligne</button>
-            <button type="button" className="btn" onClick={collerTaches}>Coller une liste</button>
+            <button type="button" className="btn" onClick={() => setTaches([...taches, nouvelle('travaux')])}>+ Étape</button>
+            <button type="button" className="btn" onClick={() => collerTaches('travaux')}>Coller une liste</button>
+          </div>
+        </section>
+
+        <section className="carte">
+          <h2>Bordereau (sans prix)</h2>
+          {taches.map((t, i) => t.categorie !== 'bordereau' ? null : t.est_groupe ? (
+            <div key={i} className="ligne-tache">
+              <input className="groupe" placeholder="Titre de groupe" value={t.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} />
+              <button type="button" className="btn ghost" onClick={() => setTaches(taches.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
+            </div>
+          ) : (
+            <div key={i} className="ligne-tache">
+              <input className="court" placeholder="N°" value={t.numero} onChange={(e) => maj(i, { numero: e.target.value })} />
+              <input placeholder="Désignation" value={t.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} />
+              <input className="court" placeholder="Qté" inputMode="decimal" value={t.quantite} onChange={(e) => maj(i, { quantite: e.target.value })} />
+              <input className="court" placeholder="Unité" value={t.unite} onChange={(e) => maj(i, { unite: e.target.value })} />
+              <button type="button" className="btn ghost" onClick={() => setTaches(taches.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
+            </div>
+          ))}
+          <div className="boutons">
+            <button type="button" className="btn" onClick={() => setTaches([...taches, nouvelle('bordereau')])}>+ Ligne</button>
+            <button type="button" className="btn" onClick={() => setTaches([...taches, nouvelle('bordereau', '', true)])}>+ Groupe</button>
+            <button type="button" className="btn" onClick={() => collerTaches('bordereau')}>Coller</button>
           </div>
         </section>
 
