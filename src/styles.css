@@ -295,3 +295,8 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .visionneuse-bas { background: var(--top); color: #fff; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
 .ligne-tache input.groupe { font-weight: 700; text-transform: uppercase; background: var(--surface-2); }
 .tuiles-docs .doc-dossier { min-width: 0; padding: 10px; }
+.nav-jour h2 { text-transform: none; margin: 0; font-size: 16px; text-align: center; }
+.chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.chiffres div { background: var(--surface-2); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+.chiffres strong { font-size: 20px; }
+.chiffres small { color: var(--muted); font-size: 12px; }
