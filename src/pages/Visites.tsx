@@ -41,7 +41,7 @@ export default function Visites() {
               <strong>{v.client_nom}</strong>
               <span className="sous">{[v.ville, v.type_travaux].filter(Boolean).join(' · ') || '—'}</span>
               {v.statut === 'terminee' && (
-                <span className="sous">{v.traitee_le ? 'Fiche de visite prête' : 'Fiche de visite en préparation…'}</span>
+                <span className="sous">{v.traitee_note === 'Historique Pilotage' ? 'Reprise du Pilotage' : v.traitee_le ? 'Fiche de visite prête' : 'Fiche de visite en préparation…'}</span>
               )}
             </div>
             <div className="droite">
