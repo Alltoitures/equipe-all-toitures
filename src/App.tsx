@@ -13,6 +13,9 @@ import ChantierEdition from './pages/gestion/ChantierEdition'
 import ValidationHeures from './pages/gestion/ValidationHeures'
 import Export from './pages/gestion/Export'
 import { Logo } from './components/Logo'
+import Accueil from './pages/Accueil'
+import Visites from './pages/Visites'
+import Visite from './pages/Visite'
 
 function Routeur() {
   const { session, membre, chargement, desactive, deconnexion } = useAuth()
@@ -33,7 +36,14 @@ function Routeur() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<MesChantiers />} />
+        <Route index element={staff ? <Accueil /> : <MesChantiers />} />
+        <Route path="chantiers" element={<MesChantiers />} />
+        {estGerant(membre) && (
+          <>
+            <Route path="visites" element={<Visites />} />
+            <Route path="visites/:id" element={<Visite />} />
+          </>
+        )}
         <Route path="chantier/:id" element={<Chantier />} />
         <Route path="heures" element={<Heures />} />
         <Route path="compte" element={<Compte />} />

@@ -19,6 +19,16 @@ export interface PhotoEnAttente {
   imprevu_texte?: string
 }
 
+/** Photo de visite (gérant) : rangée dans « Visite - AO / AAAA / MM_NOM / Photos visite ». */
+export interface PhotoVisiteEnAttente {
+  type: 'visite'
+  id: string
+  visite_id: string
+  legende?: string
+  prise_le: string
+  blob: Blob
+}
+
 type Ecouteur = (n: number) => void
 const ecouteurs = new Set<Ecouteur>()
 
@@ -61,6 +71,30 @@ export async function compresser(fichier: File): Promise<Blob> {
   }
 }
 
+export async function ajouterPhotoVisite(p: { visite_id: string; legende?: string; blob: Blob }): Promise<string> {
+  const id = crypto.randomUUID()
+  await set(id, { ...p, type: 'visite', id, prise_le: new Date().toISOString() }, store)
+  await notifier()
+  envoyerAttente()
+  return id
+}
+
+async function envoyerVisite(p: PhotoVisiteEnAttente) {
+  const chemin = `visites/${p.visite_id}/${p.id}.jpg`
+  const up = await supabase.storage.from('photos').upload(chemin, p.blob, { contentType: p.blob.type || 'image/jpeg', upsert: false })
+  if (up.error && !/exists|Duplicate/i.test(up.error.message)) throw up.error
+  const ins = await supabase.from('photos_visite').insert({
+    id: p.id,
+    visite_id: p.visite_id,
+    legende: p.legende || null,
+    storage_path: chemin,
+    nom_fichier: `${p.prise_le.slice(0, 10)}_visite`,
+    taille: p.blob.size,
+    prise_le: p.prise_le
+  })
+  if (ins.error && ins.error.code !== '23505') throw ins.error
+}
+
 export async function ajouterPhoto(p: Omit<PhotoEnAttente, 'id' | 'prise_le'>): Promise<string> {
   const id = crypto.randomUUID()
   await set(id, { ...p, id, prise_le: new Date().toISOString() }, store)
@@ -76,8 +110,15 @@ export async function envoyerAttente(): Promise<void> {
   if (enCours || !navigator.onLine) return
   enCours = true
   try {
-    const liste = (await entries(store)) as [string, PhotoEnAttente][]
-    for (const [cle, p] of liste) {
+    const liste = (await entries(store)) as [string, PhotoEnAttente | PhotoVisiteEnAttente][]
+    for (const [cle, el] of liste) {
+      if ('type' in el && el.type === 'visite') {
+        await envoyerVisite(el)
+        await del(cle, store)
+        await notifier()
+        continue
+      }
+      const p = el as PhotoEnAttente
       const chemin = `${p.chantier_id}/${p.id}.jpg`
       const up = await supabase.storage.from('photos').upload(chemin, p.blob, {
         contentType: p.blob.type || 'image/jpeg',

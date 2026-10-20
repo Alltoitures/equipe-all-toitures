@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
-import { estStaff, useAuth } from '../lib/auth'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+import { estGerant, estStaff, useAuth } from '../lib/auth'
 import { surAttente } from '../lib/photos'
 import { Logo } from './Logo'
-import { IcoChantier, IcoCompte, IcoGestion, IcoHeures } from './Icones'
+import { IcoAccueil, IcoChantier, IcoCompte, IcoGestion, IcoHeures, IcoVisite } from './Icones'
 
 export default function Layout() {
   const { membre } = useAuth()
@@ -26,7 +26,7 @@ export default function Layout() {
     <div className="app">
       <header className="barre">
         <Logo petit />
-        <span className="qui">{membre?.prenom}</span>
+        <Link to="/compte" className="qui">{membre?.prenom}</Link>
       </header>
       {(!enLigne || attente > 0) && (
         <div className={enLigne ? 'bandeau info' : 'bandeau hors'}>
@@ -39,10 +39,21 @@ export default function Layout() {
         <Outlet />
       </main>
       <nav className="onglets">
-        <NavLink to="/" end><IcoChantier /><span>Chantiers</span></NavLink>
-        <NavLink to="/heures"><IcoHeures /><span>Heures</span></NavLink>
-        {estStaff(membre) && <NavLink to="/gestion"><IcoGestion /><span>Gestion</span></NavLink>}
-        <NavLink to="/compte"><IcoCompte /><span>Compte</span></NavLink>
+        {estStaff(membre) ? (
+          <>
+            <NavLink to="/" end><IcoAccueil /><span>Accueil</span></NavLink>
+            {estGerant(membre) && <NavLink to="/visites"><IcoVisite /><span>Visites</span></NavLink>}
+            <NavLink to="/chantiers"><IcoChantier /><span>Chantiers</span></NavLink>
+            <NavLink to="/heures"><IcoHeures /><span>Heures</span></NavLink>
+            <NavLink to="/gestion"><IcoGestion /><span>Gestion</span></NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink to="/" end><IcoChantier /><span>Chantiers</span></NavLink>
+            <NavLink to="/heures"><IcoHeures /><span>Heures</span></NavLink>
+            <NavLink to="/compte"><IcoCompte /><span>Compte</span></NavLink>
+          </>
+        )}
       </nav>
     </div>
   )

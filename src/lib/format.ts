@@ -89,7 +89,7 @@ export function normaliserTel(t: string): string {
 }
 
 export function telAffiche(t: string): string {
-  return t.replace(/(\d{2})(?=\d)/g, '$1 ')
+  return normaliserTel(t).replace(/(\d{2})(?=\d)/g, '$1 ')
 }
 
 export function slugNom(s: string): string {
