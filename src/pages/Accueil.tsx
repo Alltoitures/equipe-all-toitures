@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase, ROLES, STATUTS, type Role, type Statut } from '../lib/supabase'
 import { dateCourte, hFormat, isoJour, moisAnnee } from '../lib/format'
 import { estGerant, useAuth } from '../lib/auth'
+import { RappelNotifications } from '../components/Notifications'
 
 interface TB {
   mois: string
@@ -24,6 +25,15 @@ interface TB {
   photos_mois: number
   photos_en_erreur: number
   fins_a_facturer: { client: string; le: string; note: string | null }[]
+  demandes_ouvertes: number
+  demandes_urgentes: number
+  conges_a_valider: number
+  absents_aujourdhui: string[]
+  anomalies_vehicules: number
+  vehicules_alertes: { nom: string; motif: string }[]
+  controles_vehicules_semaine: number
+  vehicules_actifs: number
+  securite_manquante: string[]
 }
 
 function moisDecale(iso: string, n: number) {
@@ -51,6 +61,13 @@ export default function Accueil() {
   if (!tb) return <div className="page"><h1>Bonjour {membre?.prenom}</h1><p className="sous">{erreur || 'Chargement…'}</p></div>
 
   const alertes: { texte: string; lien: string; niveau: 'rouge' | 'orange' | 'bleu' }[] = []
+  if (tb.demandes_ouvertes) alertes.push({ texte: `${tb.demandes_ouvertes} demande${tb.demandes_ouvertes > 1 ? 's' : ''} de matériel${tb.demandes_urgentes ? ` dont ${tb.demandes_urgentes} urgente${tb.demandes_urgentes > 1 ? 's' : ''}` : ''}`, lien: '/gestion/demandes', niveau: tb.demandes_urgentes ? 'rouge' : 'orange' })
+  if (tb.conges_a_valider) alertes.push({ texte: `${tb.conges_a_valider} demande${tb.conges_a_valider > 1 ? 's' : ''} de congé à valider`, lien: '/gestion/conges', niveau: 'orange' })
+  if (tb.anomalies_vehicules) alertes.push({ texte: `${tb.anomalies_vehicules} anomalie${tb.anomalies_vehicules > 1 ? 's' : ''} véhicule signalée${tb.anomalies_vehicules > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'rouge' })
+  for (const v of tb.vehicules_alertes ?? []) alertes.push({ texte: `${v.nom} : ${v.motif}`, lien: '/gestion/vehicules', niveau: 'orange' })
+  if (new Date().getDay() === 5 && tb.vehicules_actifs > tb.controles_vehicules_semaine) alertes.push({ texte: `Contrôle du vendredi : ${tb.vehicules_actifs - tb.controles_vehicules_semaine} véhicule${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''} pas encore contrôlé${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'bleu' })
+  if (new Date().getHours() >= 10 && tb.securite_manquante?.length) alertes.push({ texte: `Point sécurité non fait : ${tb.securite_manquante.join(', ')}`, lien: '/gestion/planning', niveau: 'orange' })
+  if (tb.absents_aujourdhui?.length) alertes.push({ texte: `Absent${tb.absents_aujourdhui.length > 1 ? 's' : ''} aujourd'hui : ${tb.absents_aujourdhui.join(', ')}`, lien: '/gestion/conges', niveau: 'bleu' })
   if (tb.imprevus_ouverts) alertes.push({ texte: `${tb.imprevus_ouverts} imprévu${tb.imprevus_ouverts > 1 ? 's' : ''} à traiter`, lien: '/gestion', niveau: 'rouge' })
   if (tb.jours_a_valider) alertes.push({ texte: `${tb.jours_a_valider} journée${tb.jours_a_valider > 1 ? 's' : ''} d'heures à valider`, lien: '/gestion/heures', niveau: 'orange' })
   if (tb.fins_a_facturer.length) alertes.push({ texte: `${tb.fins_a_facturer.length} fin${tb.fins_a_facturer.length > 1 ? 's' : ''} de chantier prête${tb.fins_a_facturer.length > 1 ? 's' : ''} : brouillon de mail + facture à envoyer (${tb.fins_a_facturer.map((f) => f.client).join(', ')})`, lien: '/chantiers', niveau: 'orange' })
@@ -64,6 +81,7 @@ export default function Accueil() {
         <h1>Bonjour {membre?.prenom}</h1>
       </div>
 
+      <RappelNotifications />
       <div className="nav-jour">
         <button className="btn" onClick={() => setJour(moisDecale(jour, -1))} aria-label="Mois précédent">‹</button>
         <h2>{moisAnnee(tb.mois)}</h2>

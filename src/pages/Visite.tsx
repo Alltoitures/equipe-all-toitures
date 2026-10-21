@@ -5,6 +5,7 @@ import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, nbReponses, type Fiche, typ
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
+import Meteo from '../components/Meteo'
 
 type Infos = Pick<TVisite, 'client_nom' | 'telephone' | 'email' | 'adresse' | 'code_postal' | 'ville' | 'type_travaux'>
 
@@ -202,6 +203,8 @@ export default function Visite() {
             ))}
           </div>
         </section>
+
+        {!termine && <Meteo ville={infos.ville} cp={infos.code_postal} />}
 
         {SECTIONS.map((s) => (
           <section className="carte" key={s.titre}>

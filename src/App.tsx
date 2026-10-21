@@ -16,6 +16,13 @@ import { Logo } from './components/Logo'
 import Accueil from './pages/Accueil'
 import Visites from './pages/Visites'
 import Visite from './pages/Visite'
+import Planning from './pages/gestion/Planning'
+import Demandes from './pages/gestion/Demandes'
+import Conges from './pages/gestion/Conges'
+import VehiculesGestion from './pages/gestion/Vehicules'
+import Rentabilite from './pages/gestion/Rentabilite'
+import ControleVehicule from './pages/ControleVehicule'
+import Aide from './pages/Aide'
 
 function Routeur() {
   const { session, membre, chargement, desactive, deconnexion } = useAuth()
@@ -47,6 +54,8 @@ function Routeur() {
         <Route path="chantier/:id" element={<Chantier />} />
         <Route path="heures" element={<Heures />} />
         <Route path="compte" element={<Compte />} />
+        <Route path="vehicules" element={<ControleVehicule />} />
+        <Route path="aide" element={<Aide />} />
         {staff && (
           <>
             <Route path="gestion" element={<Gestion />} />
@@ -54,6 +63,11 @@ function Routeur() {
             <Route path="gestion/chantiers/:id" element={<ChantierEdition />} />
             <Route path="gestion/heures" element={<ValidationHeures />} />
             <Route path="gestion/export" element={<Export />} />
+            <Route path="gestion/planning" element={<Planning />} />
+            <Route path="gestion/demandes" element={<Demandes />} />
+            <Route path="gestion/conges" element={<Conges />} />
+            <Route path="gestion/vehicules" element={<VehiculesGestion />} />
+            {estGerant(membre) && <Route path="gestion/rentabilite" element={<Rentabilite />} />}
             {estGerant(membre) && <Route path="gestion/equipe" element={<Equipe />} />}
           </>
         )}

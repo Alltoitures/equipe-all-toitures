@@ -23,10 +23,10 @@ export default function Connexion() {
     setOccupe(true)
     try {
       const t = normaliserTel(tel)
-      const { data: email, error } = await supabase.rpc('email_connexion', { tel: t })
+      const { data, error } = await supabase.rpc('connexion', { tel: t, pin: code })
       if (error) throw error
-      if (!email) throw new Error('Numéro inconnu ou accès désactivé. Contactez le gérant.')
-      const r = await supabase.auth.signInWithPassword({ email, password: code })
+      if (data?.erreur) throw new Error(data.erreur)
+      const r = await supabase.auth.signInWithPassword({ email: data.email, password: data.mdp })
       if (r.error) throw r.error
     } catch (e) {
       setErreur(erreurLisible(e))
@@ -40,13 +40,13 @@ export default function Connexion() {
     setErreur('')
     setOccupe(true)
     try {
-      const { data, error } = await supabase.rpc('verifier_invitation', {
+      const { data, error } = await supabase.rpc('controler_invitation', {
         tel: normaliserTel(tel),
         code: invitation.trim()
       })
       if (error) throw error
-      if (!data) throw new Error('Invitation invalide ou expirée. Demandez un nouveau code au gérant.')
-      setPrenom(data)
+      if (data?.erreur) throw new Error(`${data.erreur} Demandez un nouveau code au gérant si besoin.`)
+      setPrenom(data.prenom)
       setMode('code')
     } catch (e) {
       setErreur(erreurLisible(e))
@@ -63,9 +63,10 @@ export default function Connexion() {
     setOccupe(true)
     try {
       const t = normaliserTel(tel)
-      const { data: email, error } = await supabase.rpc('activer_compte', { tel: t, code: invitation.trim(), pin: pin1 })
+      const { data, error } = await supabase.rpc('activer_acces', { tel: t, code: invitation.trim(), pin: pin1 })
       if (error) throw error
-      const s = await supabase.auth.signInWithPassword({ email: email as string, password: pin1 })
+      if (data?.erreur) throw new Error(data.erreur)
+      const s = await supabase.auth.signInWithPassword({ email: data.email, password: data.mdp })
       if (s.error) throw s.error
       history.replaceState(null, '', '/')
     } catch (e) {

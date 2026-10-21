@@ -6,6 +6,8 @@ import { dateCourte, isoJour, telAffiche } from '../lib/format'
 import { estStaff, useAuth } from '../lib/auth'
 import { IcoAlerte, IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Documents from '../components/Documents'
+import Meteo from '../components/Meteo'
+import { DemandesMateriel, Reception, SecuriteJour } from '../components/ChantierPlus'
 
 type Onglet = 'fiche' | 'travaux' | 'materiel' | 'documents'
 
@@ -189,6 +191,8 @@ export default function Chantier() {
 
       {onglet === 'fiche' && (
         <>
+          {c.statut !== 'termine' && <SecuriteJour chantierId={c.id} />}
+          {c.statut !== 'termine' && <Meteo ville={c.ville} cp={c.code_postal} />}
           <section className="carte">
             <h2>Adresse</h2>
             <p className="gros">{adresse || '—'}</p>
@@ -280,6 +284,7 @@ export default function Chantier() {
             )}
           </section>
 
+          <Reception chantier={c} />
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
         </>
       )}
@@ -317,6 +322,7 @@ export default function Chantier() {
             </ul>
             <p className="aide">Liste estimative : il appartient à l'équipe de contrôler ses besoins avant le départ du dépôt. Les cases servent au chargement du jour sur ce téléphone.</p>
           </section>
+          <DemandesMateriel chantierId={c.id} />
         </>
       )}
 

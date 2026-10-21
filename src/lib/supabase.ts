@@ -34,6 +34,7 @@ export interface Chantier {
   date_fin: string | null
   duree_jours: number | null
   nb_intervenants: number | null
+  heures_prevues?: number | null
   statut: Statut
   acces: string | null
   consignes: string | null
@@ -82,7 +83,7 @@ export interface Tache {
   est_groupe: boolean
 }
 
-export type Phase = 'avant' | 'pendant' | 'apres' | 'imprevu'
+export type Phase = 'avant' | 'pendant' | 'apres' | 'imprevu' | 'livraison'
 
 export interface Photo {
   id: string

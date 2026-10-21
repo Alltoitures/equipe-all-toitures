@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase, erreurLisible, MOTIFS, MOTIF_PAYE, type Chantier, type Journee, type Motif } from '../lib/supabase'
 import { ajouterJours, dateLongue, heureMaintenant, heuresJournee, hFormat, hhmm, isoJour, jourCourt, lundi, moisAnnee } from '../lib/format'
 import { useAuth } from '../lib/auth'
+import MesConges from '../components/MesConges'
 
 interface Repartition { chantier_id: string; heures: string }
 type ChPointage = Pick<Chantier, 'id' | 'client_nom' | 'ville' | 'statut' | 'date_debut' | 'date_fin'> & { affecte: boolean }
@@ -270,6 +271,8 @@ export default function Heures() {
       {vue === 'mois' && <VueMois mois={mois} journees={duMois} nomChantier={nomChantier}
         changerMois={(n) => setMois(moisSuivant(mois, n))}
         ouvrirSemaine={(l) => { setJour(l < mois ? mois : l); setVue('semaine') }} />}
+
+      <MesConges />
     </div>
   )
 }

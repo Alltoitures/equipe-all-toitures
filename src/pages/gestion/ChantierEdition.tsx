@@ -37,7 +37,7 @@ function texteVersBon(t: BonTxt, avant: Bon | null | undefined): Bon {
 
 const VIDE: Form = {
   reference: '', client_nom: '', adresse: '', code_postal: '', ville: '',
-  date_debut: '', date_fin: '', duree_jours: null, nb_intervenants: null, statut: 'a_venir',
+  date_debut: '', date_fin: '', duree_jours: null, nb_intervenants: null, heures_prevues: null, statut: 'a_venir',
   acces: '', consignes: '', vigilance: '', materiaux: '', materiel: '', onedrive_dossier: ''
 }
 
@@ -91,6 +91,7 @@ export default function ChantierEdition() {
     try {
       const vide = (v: unknown) => (v === '' ? null : v)
       const donnees = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, vide(v)]))
+      donnees.heures_prevues = f.heures_prevues ? Number(String(f.heures_prevues).replace(',', '.')) : null
       donnees.duree_jours = f.duree_jours ? Number(String(f.duree_jours).replace(',', '.')) : null
       donnees.nb_intervenants = f.nb_intervenants ? Number(f.nb_intervenants) : null
       donnees.bon = texteVersBon(bon, bonInit)
@@ -184,6 +185,7 @@ export default function ChantierEdition() {
             <label>Durée prévue (jours)<input inputMode="decimal" value={f.duree_jours ?? ''} onChange={(e) => setF({ ...f, duree_jours: e.target.value as never })} /></label>
             <label>Intervenants<input inputMode="numeric" value={f.nb_intervenants ?? ''} onChange={(e) => setF({ ...f, nb_intervenants: e.target.value as never })} /></label>
           </div>
+          <label>Heures prévues au devis (main d'œuvre)<input inputMode="decimal" value={f.heures_prevues ?? ''} onChange={(e) => setF({ ...f, heures_prevues: e.target.value as never })} placeholder="Sinon : durée × intervenants × 8 h" /></label>
           <label>
             Statut
             <select {...champ('statut')}>

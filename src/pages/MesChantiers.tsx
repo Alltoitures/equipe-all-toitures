@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase, STATUTS, type Chantier } from '../lib/supabase'
 import { ajouterJours, dateCourte, isoJour } from '../lib/format'
 import { estStaff, useAuth } from '../lib/auth'
+import { RappelNotifications } from '../components/Notifications'
 
 export default function MesChantiers() {
   const { membre } = useAuth()
@@ -46,6 +47,11 @@ export default function MesChantiers() {
         <h1>Mes chantiers</h1>
         {estStaff(membre) && <Link className="btn pri" to="/gestion/chantiers/nouveau">+ Chantier</Link>}
       </div>
+
+      <RappelNotifications />
+      {new Date().getDay() === 5 && !estStaff(membre) && (
+        <Link to="/vehicules" className="rappel-notif">🚚 C'est vendredi : pensez au contrôle de votre camion avant de rentrer.</Link>
+      )}
 
       {charge && liste.length === 0 && (
         <div className="vide">Aucun chantier ne vous est affecté pour le moment.</div>

@@ -44,8 +44,15 @@ type Ch = { id: string; client_nom: string; onedrive_dossier: string | null; one
 
 const cacheDossiers = new Map<string, string>()
 
-async function dossierPhotos(t: string, c: Ch): Promise<string> {
-  if (cacheDossiers.has(c.id)) return cacheDossiers.get(c.id)!
+const CIBLES: Record<string, [RegExp, string]> = {
+  photos: [/^C\s*-\s*Photos/i, 'C - Photos (avant pendant après)'],
+  fournisseurs: [/^D\s*-/i, 'D - Fournisseurs (devis et BL)'],
+  suivi: [/^F\s*-/i, 'F - Suivi chantier (planning , CR)']
+}
+
+async function dossierPhotos(t: string, c: Ch, quoi: keyof typeof CIBLES = 'photos'): Promise<string> {
+  const cleCache = `${c.id}:${quoi}`
+  if (cacheDossiers.has(cleCache)) return cacheDossiers.get(cleCache)!
   const h = { Authorization: `Bearer ${t}` }
   let parent = c.onedrive_item_id
   if (!parent) {
@@ -60,17 +67,18 @@ async function dossierPhotos(t: string, c: Ch): Promise<string> {
   const r = await fetch(`${GRAPH}/drives/${DRIVE}/items/${parent}/children?$select=id,name,folder&$top=200`, { headers: h })
   if (!r.ok) throw new Error(`Dossier OneDrive inaccessible (${r.status})`)
   const enfants = (await r.json()).value as { id: string; name: string; folder?: unknown }[]
-  let cible = enfants.find((e) => e.folder && /^C\s*-\s*Photos/i.test(e.name))
+  const [motif, nomDefaut] = CIBLES[quoi]
+  let cible = enfants.find((e) => e.folder && motif.test(e.name))
   if (!cible) {
     const cr = await fetch(`${GRAPH}/drives/${DRIVE}/items/${parent}/children`, {
       method: 'POST',
       headers: { ...h, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'C - Photos (avant pendant après)', folder: {}, '@microsoft.graph.conflictBehavior': 'fail' })
+      body: JSON.stringify({ name: nomDefaut, folder: {}, '@microsoft.graph.conflictBehavior': 'fail' })
     })
     if (!cr.ok) throw new Error(`Création du dossier photos impossible (${cr.status})`)
     cible = await cr.json()
   }
-  cacheDossiers.set(c.id, cible!.id)
+  cacheDossiers.set(cleCache, cible!.id)
   return cible!.id
 }
 
@@ -166,6 +174,29 @@ async function transfererVisites(t: string): Promise<number> {
   return ok
 }
 
+async function transfererReceptions(t: string): Promise<number> {
+  const { data } = await sb.from('receptions').select('id, signataire, sans_reserve, signature_path, signe_le, chantiers(id, client_nom, onedrive_dossier, onedrive_item_id)').eq('onedrive_statut', 'en_attente').limit(5)
+  let ok = 0
+  for (const r of (data ?? []) as unknown as { id: string; signataire: string; sans_reserve: boolean; signature_path: string; signe_le: string; chantiers: Ch }[]) {
+    try {
+      const dossier = await dossierPhotos(t, r.chantiers, 'suivi')
+      const f = await sb.storage.from('photos').download(r.signature_path)
+      if (f.error) throw new Error(f.error.message)
+      const nom = `${jourParis(r.signe_le)}_${nomClient(r.chantiers.client_nom)}_PV_reception_${r.sans_reserve ? 'sans_reserve' : 'avec_reserves'}.png`
+      const up = await fetch(`${GRAPH}/drives/${DRIVE}/items/${dossier}:/${encodeURIComponent(nom)}:/content?@microsoft.graph.conflictBehavior=rename`, {
+        method: 'PUT', headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'image/png' }, body: await f.data.arrayBuffer()
+      })
+      const res = await up.json()
+      if (!up.ok) throw new Error(`Envoi OneDrive refusé : ${res.error?.message ?? up.status}`)
+      await sb.from('receptions').update({ onedrive_statut: 'envoye', onedrive_id: res.id, erreur: null }).eq('id', r.id)
+      ok++
+    } catch (e) {
+      await sb.from('receptions').update({ erreur: String((e as Error).message).slice(0, 300) }).eq('id', r.id)
+    }
+  }
+  return ok
+}
+
 Deno.serve(async (req) => {
   if (!TENANT || !CLIENT || !SECRET) return Response.json({ etat: 'non configuré' })
 
@@ -192,15 +223,17 @@ Deno.serve(async (req) => {
     .limit(LOT)
   if (error) return Response.json({ erreur: error.message }, { status: 500 })
   const { count: nbVisites } = await sb.from('photos_visite').select('id', { count: 'exact', head: true }).eq('onedrive_statut', 'en_attente')
-  if (!photos?.length && !nbVisites) return Response.json({ etat: 'rien à envoyer' })
+  const { count: nbRec } = await sb.from('receptions').select('id', { count: 'exact', head: true }).eq('onedrive_statut', 'en_attente')
+  if (!photos?.length && !nbVisites && !nbRec) return Response.json({ etat: 'rien à envoyer' })
 
   const t = await jeton()
   const visites = nbVisites ? await transfererVisites(t) : 0
+  const receptions = nbRec ? await transfererReceptions(t) : 0
   let ok = 0
   for (const p of (photos ?? []) as unknown as (NonNullable<typeof photos>[number] & { chantiers: Ch })[]) {
     try {
       const c = p.chantiers
-      const dossier = await dossierPhotos(t, c)
+      const dossier = await dossierPhotos(t, c, p.phase === 'livraison' ? 'fournisseurs' : 'photos')
       const fichier = await sb.storage.from('photos').download(p.storage_path!)
       if (fichier.error) throw new Error(`Photo introuvable dans le stockage : ${fichier.error.message}`)
 
@@ -212,7 +245,7 @@ Deno.serve(async (req) => {
         .eq('phase', p.phase)
         .eq('onedrive_statut', 'envoye')
         .gte('prise_le', `${jour}T00:00:00+02:00`)
-      const nom = `${jour}_${nomClient(c.client_nom)}_${p.phase}_${(count ?? 0) + 1}.jpg`
+      const nom = `${jour}_${nomClient(c.client_nom)}_${p.phase === 'livraison' ? 'BL' : p.phase}_${(count ?? 0) + 1}.jpg`
 
       const up = await fetch(
         `${GRAPH}/drives/${DRIVE}/items/${dossier}:/${encodeURIComponent(nom)}:/content?@microsoft.graph.conflictBehavior=rename`,
@@ -228,5 +261,5 @@ Deno.serve(async (req) => {
       await sb.from('photos').update({ erreur: String((e as Error).message).slice(0, 300) }).eq('id', p.id)
     }
   }
-  return Response.json({ envoyees: ok, lot: photos?.length ?? 0, visites })
+  return Response.json({ envoyees: ok, lot: photos?.length ?? 0, visites, receptions })
 })

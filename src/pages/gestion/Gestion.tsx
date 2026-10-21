@@ -63,6 +63,28 @@ export default function Gestion() {
           <span className="lb">Paie</span>
           <strong>Export mensuel</strong>
         </Link>
+        <Link to="/gestion/planning" className="tuile">
+          <span className="lb">Planning</span>
+          <strong>Qui est où cette semaine</strong>
+        </Link>
+        <Link to="/gestion/demandes" className="tuile">
+          <span className="lb">Matériel</span>
+          <strong>Demandes des équipes</strong>
+        </Link>
+        <Link to="/gestion/conges" className="tuile">
+          <span className="lb">Congés</span>
+          <strong>Demandes et absences</strong>
+        </Link>
+        <Link to="/gestion/vehicules" className="tuile">
+          <span className="lb">Véhicules</span>
+          <strong>Contrôles et entretiens</strong>
+        </Link>
+        {estGerant(membre) && (
+          <Link to="/gestion/rentabilite" className="tuile">
+            <span className="lb">Rentabilité</span>
+            <strong>Heures par chantier</strong>
+          </Link>
+        )}
       </div>
 
       <section className="carte">
