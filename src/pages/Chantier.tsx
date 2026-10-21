@@ -287,7 +287,7 @@ export default function Chantier() {
           </section>
 
           <Reception chantier={c} />
-          <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />
+          {estGerant(membre) && <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />}
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
           {c.statut === 'termine' && estGerant(membre) && <RealisationCarte chantierId={c.id} />}
         </>
