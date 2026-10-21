@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible, STATUTS, type Chantier as TChantier, type Phase, type Tache } from '../lib/supabase'
 import { ajouterPhoto, compresser } from '../lib/photos'
 import { dateCourte, isoJour, telAffiche } from '../lib/format'
-import { estStaff, useAuth } from '../lib/auth'
+import { estGerant, estStaff, useAuth } from '../lib/auth'
 import { IcoAlerte, IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Documents from '../components/Documents'
 import Meteo from '../components/Meteo'
 import { DemandesMateriel, Reception, SecuriteJour } from '../components/ChantierPlus'
+import RealisationCarte from '../components/RealisationCarte'
 
 type Onglet = 'fiche' | 'travaux' | 'materiel' | 'documents'
 
@@ -286,6 +287,7 @@ export default function Chantier() {
 
           <Reception chantier={c} />
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
+          {c.statut === 'termine' && estGerant(membre) && <RealisationCarte chantierId={c.id} />}
         </>
       )}
 

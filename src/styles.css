@@ -444,3 +444,20 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .pastille-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--rdv); flex: none; }
 .kpi.chiffre-cle strong { color: var(--ok); }
 .deux-graph { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+/* ---------- Réalisation site web ---------- */
+.realisation { padding-bottom: 96px; }
+.etat-real { align-self: flex-start; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: var(--surface-2); color: var(--ink-2); margin: 0; }
+.etat-real.brouillon { background: var(--warn-bg); color: var(--warn); }
+.etat-real.publiee { background: #e3f4ea; color: #1d6b3d; }
+.etat-real.erreur { background: #fde8e8; color: #a32020; }
+.groupe-inter { display: flex; flex-direction: column; gap: 6px; padding: 6px 0; }
+.galerie-real { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.vignette-real { position: relative; }
+.vignette-real .vignette { width: 100%; opacity: 0.45; outline: 3px solid transparent; outline-offset: -3px; cursor: pointer; }
+.vignette-real.retenue .vignette { opacity: 1; outline-color: var(--accent); }
+.etoile { position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(5, 13, 18, 0.55); color: #fff; font-size: 16px; cursor: pointer; }
+.etoile.on { background: #f5b301; color: #222; }
+.barre-real { position: sticky; bottom: 76px; background: var(--bg, #fff); padding: 8px 0; }
+.barre-real .btn { flex: 1; }
+.groupe-titre { display: flex; gap: 6px; } .groupe-titre input { flex: 1; min-width: 0; font-weight: 700; } .groupe-titre .btn { flex: 0 0 42px; padding: 0; }

@@ -67,6 +67,11 @@ export default function Accueil() {
   const [tb, setTb] = useState<TB | null>(null)
   const [erreur, setErreur] = useState('')
   const [st, setSt] = useState<Stats | null>(null)
+  const [reals, setReals] = useState<{ id: string; statut: string; chantiers: { client_nom: string } | null }[]>([])
+  useEffect(() => {
+    if (!estGerant(membre)) return
+    supabase.from('realisations').select('id, statut, chantiers(client_nom)').in('statut', ['brouillon', 'erreur']).then(({ data }) => setReals((data ?? []) as any))
+  }, [membre])
   useEffect(() => {
     supabase.rpc('stats_dashboard', { d: isoJour() }).then(({ data }) => setSt(data as Stats))
   }, [])
@@ -96,6 +101,7 @@ export default function Accueil() {
   if (tb.fins_a_facturer.length) alertes.push({ texte: `${tb.fins_a_facturer.length} fin${tb.fins_a_facturer.length > 1 ? 's' : ''} de chantier prête${tb.fins_a_facturer.length > 1 ? 's' : ''} : brouillon de mail + facture à envoyer (${tb.fins_a_facturer.map((f) => f.client).join(', ')})`, lien: '/chantiers', niveau: 'orange' })
   if (tb.sans_bon) alertes.push({ texte: `${tb.sans_bon} chantier${tb.sans_bon > 1 ? 's' : ''} sans bon d'intervention`, lien: '/gestion/chantiers', niveau: 'bleu' })
   if (tb.photos_en_erreur) alertes.push({ texte: `${tb.photos_en_erreur} photo${tb.photos_en_erreur > 1 ? 's' : ''} bloquée${tb.photos_en_erreur > 1 ? 's' : ''} avant OneDrive`, lien: '/gestion', niveau: 'rouge' })
+  for (const x of reals) alertes.push({ texte: x.statut === 'erreur' ? `Réalisation site web à republier (${x.chantiers?.client_nom ?? ''})` : `Réalisation site web à valider (${x.chantiers?.client_nom ?? ''})`, lien: `/gestion/realisations/${x.id}`, niveau: x.statut === 'erreur' ? 'rouge' : 'orange' })
   if (tb.visites_fiche_en_cours) alertes.push({ texte: `${tb.visites_fiche_en_cours} fiche${tb.visites_fiche_en_cours > 1 ? 's' : ''} de visite en préparation`, lien: '/visites', niveau: 'bleu' })
 
   const stat = (n: string) => st?.statuts?.[n] ?? 0

@@ -23,6 +23,7 @@ import VehiculesGestion from './pages/gestion/Vehicules'
 import Rentabilite from './pages/gestion/Rentabilite'
 import ControleVehicule from './pages/ControleVehicule'
 import Aide from './pages/Aide'
+import RealisationPage from './pages/gestion/Realisation'
 
 function Routeur() {
   const { session, membre, chargement, desactive, deconnexion } = useAuth()
@@ -69,6 +70,7 @@ function Routeur() {
             <Route path="gestion/vehicules" element={<VehiculesGestion />} />
             {estGerant(membre) && <Route path="gestion/rentabilite" element={<Rentabilite />} />}
             {estGerant(membre) && <Route path="gestion/equipe" element={<Equipe />} />}
+            {estGerant(membre) && <Route path="gestion/realisations/:id" element={<RealisationPage />} />}
           </>
         )}
         <Route path="*" element={<Navigate to="/" replace />} />
