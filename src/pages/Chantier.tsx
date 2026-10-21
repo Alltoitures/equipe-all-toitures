@@ -9,6 +9,7 @@ import Documents from '../components/Documents'
 import Meteo from '../components/Meteo'
 import { DemandesMateriel, Reception, SecuriteJour } from '../components/ChantierPlus'
 import RealisationCarte from '../components/RealisationCarte'
+import AvisGoogle from '../components/AvisGoogle'
 
 type Onglet = 'fiche' | 'travaux' | 'materiel' | 'documents'
 
@@ -44,7 +45,7 @@ export default function Chantier() {
   const [taches, setTaches] = useState<Tache[]>([])
   const [contact, setContact] = useState<{ client_telephone: string | null } | null>(null)
   const [compte, setCompte] = useState<Record<string, number>>({})
-  const [onglet, setOnglet] = useState<Onglet>(() => (sessionStorage.getItem(`at-onglet-${id}`) as Onglet) || 'fiche')
+  const [onglet, setOnglet] = useState<Onglet>(() => (new URLSearchParams(location.search).get('onglet') as Onglet) || (sessionStorage.getItem(`at-onglet-${id}`) as Onglet) || 'fiche')
   const [imprevu, setImprevu] = useState(false)
   const [message, setMessage] = useState('')
   const [erreur, setErreur] = useState('')
@@ -286,6 +287,7 @@ export default function Chantier() {
           </section>
 
           <Reception chantier={c} />
+          <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
           {c.statut === 'termine' && estGerant(membre) && <RealisationCarte chantierId={c.id} />}
         </>

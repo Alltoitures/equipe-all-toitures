@@ -461,3 +461,7 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .barre-real { position: sticky; bottom: 76px; background: var(--bg, #fff); padding: 8px 0; }
 .barre-real .btn { flex: 1; }
 .groupe-titre { display: flex; gap: 6px; } .groupe-titre input { flex: 1; min-width: 0; font-weight: 700; } .groupe-titre .btn { flex: 0 0 42px; padding: 0; }
+
+/* ---------- Avis Google ---------- */
+.avis-modal .modal { align-items: center; text-align: center; }
+.qr-avis { width: min(78vw, 300px); height: auto; image-rendering: pixelated; margin: 8px auto; display: block; }

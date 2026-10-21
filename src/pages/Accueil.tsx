@@ -67,10 +67,12 @@ export default function Accueil() {
   const [tb, setTb] = useState<TB | null>(null)
   const [erreur, setErreur] = useState('')
   const [st, setSt] = useState<Stats | null>(null)
+  const [relances, setRelances] = useState<{ chantier_id: string; chantiers: { client_nom: string } | null }[]>([])
   const [reals, setReals] = useState<{ id: string; statut: string; chantiers: { client_nom: string } | null }[]>([])
   useEffect(() => {
     if (!estGerant(membre)) return
     supabase.from('realisations').select('id, statut, chantiers(client_nom)').in('statut', ['brouillon', 'erreur']).then(({ data }) => setReals((data ?? []) as any))
+    supabase.from('avis_demandes').select('chantier_id, chantiers(client_nom)').eq('recu', false).is('relance_le', null).lt('demande_le', new Date(Date.now() - 7 * 864e5).toISOString()).then(({ data }) => setRelances((data ?? []) as any))
   }, [membre])
   useEffect(() => {
     supabase.rpc('stats_dashboard', { d: isoJour() }).then(({ data }) => setSt(data as Stats))
@@ -102,6 +104,7 @@ export default function Accueil() {
   if (tb.sans_bon) alertes.push({ texte: `${tb.sans_bon} chantier${tb.sans_bon > 1 ? 's' : ''} sans bon d'intervention`, lien: '/gestion/chantiers', niveau: 'bleu' })
   if (tb.photos_en_erreur) alertes.push({ texte: `${tb.photos_en_erreur} photo${tb.photos_en_erreur > 1 ? 's' : ''} bloquée${tb.photos_en_erreur > 1 ? 's' : ''} avant OneDrive`, lien: '/gestion', niveau: 'rouge' })
   for (const x of reals) alertes.push({ texte: x.statut === 'erreur' ? `Réalisation site web à republier (${x.chantiers?.client_nom ?? ''})` : `Réalisation site web à valider (${x.chantiers?.client_nom ?? ''})`, lien: `/gestion/realisations/${x.id}`, niveau: x.statut === 'erreur' ? 'rouge' : 'orange' })
+  for (const x of relances) alertes.push({ texte: `Avis Google à relancer : ${x.chantiers?.client_nom ?? ''} (demandé il y a plus de 7 jours)`, lien: `/chantier/${x.chantier_id}?onglet=travaux`, niveau: 'bleu' })
   if (tb.visites_fiche_en_cours) alertes.push({ texte: `${tb.visites_fiche_en_cours} fiche${tb.visites_fiche_en_cours > 1 ? 's' : ''} de visite en préparation`, lien: '/visites', niveau: 'bleu' })
 
   const stat = (n: string) => st?.statuts?.[n] ?? 0
