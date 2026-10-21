@@ -4,6 +4,7 @@ import { supabase, ROLES, STATUTS, type Role, type Statut } from '../lib/supabas
 import { dateCourte, hFormat, isoJour, moisAnnee } from '../lib/format'
 import { estGerant, useAuth } from '../lib/auth'
 import { RappelNotifications } from '../components/Notifications'
+import { heureAffichee, minutesHeure } from './Visites'
 
 interface TB {
   mois: string
@@ -136,10 +137,10 @@ export default function Accueil() {
         <section className="carte">
           <div className="titre-ligne"><h2>Prochaines visites</h2><Link className="lien" to="/visites">Tout voir</Link></div>
           {tb.prochaines_visites.length === 0 && <p className="sous">Aucune visite dans les 7 prochains jours.</p>}
-          {tb.prochaines_visites.map((v) => (
+          {[...tb.prochaines_visites].sort((a, b) => a.date.localeCompare(b.date) || (minutesHeure(a.heure) ?? 9999) - (minutesHeure(b.heure) ?? 9999)).map((v) => (
             <Link key={v.id} to={`/visites/${v.id}`} className="ligne-simple">
               <span><strong>{v.client}</strong><small>{[v.ville, v.type].filter(Boolean).join(' · ')}</small></span>
-              <span className="d">{v.date === isoJour() ? "Aujourd'hui" : dateCourte(v.date)}{v.heure ? ` · ${v.heure}` : ''}</span>
+              <span className="d">{v.date === isoJour() ? "Aujourd'hui" : dateCourte(v.date)} · <strong>{heureAffichee(v.heure)}</strong></span>
             </Link>
           ))}
         </section>

@@ -403,3 +403,19 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .jauge i.vert { background: var(--ok); }
 .jauge i.orange { background: #ef9f27; }
 .jauge i.rouge { background: var(--danger); }
+
+/* ---------- Agenda des visites ---------- */
+.jour-agenda { background: var(--surface); border: 1px solid var(--line); border-radius: var(--rayon); overflow: hidden; margin-bottom: 10px; }
+.jour-tete { display: flex; justify-content: space-between; align-items: baseline; background: var(--top); color: #fff; padding: 9px 14px; }
+.jour-tete span { font-weight: 900; font-size: 15px; }
+.jour-tete span::first-letter { text-transform: uppercase; }
+.jour-tete small { color: #9fb3c2; font-size: 12px; }
+.jour-agenda.aujourdhui .jour-tete { background: var(--accent); color: #04202c; }
+.jour-agenda.aujourdhui .jour-tete small { color: #04384a; }
+.rdv-ligne { display: flex; align-items: center; gap: 12px; padding: 12px 14px; text-decoration: none; color: var(--ink); border-left: 5px solid var(--rdv); }
+.rdv-ligne + .rdv-ligne { border-top: 1px solid var(--line); }
+.rdv-heure { flex: none; min-width: 74px; font-size: 20px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rdv-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.rdv-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rdv-info small { color: var(--muted); font-size: 13px; }
+.rdv-ligne .pastille-rdv { flex: none; }

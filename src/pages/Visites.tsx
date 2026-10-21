@@ -2,9 +2,20 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
 import { STATUTS_RDV, TYPES_TRAVAUX, nbReponses, statutRdv, type Visite } from '../lib/visite'
-import { dateCourte, isoJour, normaliserTel } from '../lib/format'
+import { ajouterJours, dateCourte, dateLongue, isoJour, normaliserTel } from '../lib/format'
 import { useAuth } from '../lib/auth'
 
+/** « 9h30 », « 14H00 », « 16:30 » -> minutes depuis minuit (null si inconnue). */
+export function minutesHeure(h: string | null | undefined): number | null {
+  const m = h?.match(/(\d{1,2})\s*[hH:]\s*(\d{2})?/)
+  return m ? Number(m[1]) * 60 + Number(m[2] ?? 0) : null
+}
+export function heureAffichee(h: string | null | undefined): string {
+  const n = minutesHeure(h)
+  return n == null ? '—' : `${Math.floor(n / 60)}h${String(n % 60).padStart(2, '0')}`
+}
+const ordreRdv = (a: Visite, b: Visite) =>
+  (a.date_rdv ?? '9999').localeCompare(b.date_rdv ?? '9999') || (minutesHeure(a.heure) ?? 9999) - (minutesHeure(b.heure) ?? 9999)
 
 export default function Visites() {
   const [liste, setListe] = useState<Visite[]>([])
@@ -27,11 +38,11 @@ export default function Visites() {
   const auj = isoJour()
   const comptes = STATUTS_RDV.map((s) => ({ ...s, n: liste.filter((v) => statutRdv(v).nom === s.nom).length })).filter((s) => s.n > 0)
   const visibles = filtre ? liste.filter((v) => statutRdv(v).nom === filtre) : liste
-  const aFaire = visibles.filter((v) => v.statut !== 'terminee')
+  const aFaire = visibles.filter((v) => v.statut !== 'terminee').sort(ordreRdv)
   const duJour = aFaire.filter((v) => v.date_rdv === auj)
   const aVenir = aFaire.filter((v) => !v.date_rdv || v.date_rdv > auj)
   const enRetard = aFaire.filter((v) => v.date_rdv && v.date_rdv < auj)
-  const faites = visibles.filter((v) => v.statut === 'terminee').reverse()
+  const faites = visibles.filter((v) => v.statut === 'terminee').sort(ordreRdv).reverse()
 
   const bloc = (titre: string, l: Visite[], accent?: boolean) =>
     l.length > 0 && (
@@ -56,6 +67,44 @@ export default function Visites() {
       </section>
     )
 
+  const libelleJour = (d: string | null) => {
+    if (!d) return 'Sans date'
+    const base = dateLongue(d)
+    if (d === auj) return `Aujourd'hui · ${base}`
+    if (d === ajouterJours(auj, 1)) return `Demain · ${base}`
+    return base
+  }
+
+  const agenda = (titre: string, l: Visite[]) => {
+    if (!l.length) return null
+    const jours: [string | null, Visite[]][] = []
+    for (const v of l) {
+      const der = jours[jours.length - 1]
+      if (der && der[0] === v.date_rdv) der[1].push(v)
+      else jours.push([v.date_rdv, [v]])
+    }
+    return (
+      <section className="groupe">
+        <h2>{titre}</h2>
+        {jours.map(([d, vs]) => (
+          <div key={d ?? 'sans'} className={`jour-agenda${d === auj ? ' aujourdhui' : ''}`}>
+            <div className="jour-tete"><span>{libelleJour(d)}</span><small>{vs.length} visite{vs.length > 1 ? 's' : ''}</small></div>
+            {vs.map((v) => (
+              <Link key={v.id} to={`/visites/${v.id}`} className={`rdv-ligne ${statutRdv(v).classe}`}>
+                <span className="rdv-heure">{heureAffichee(v.heure)}</span>
+                <span className="rdv-info">
+                  <strong>{v.client_nom}</strong>
+                  <small>{[v.ville, v.type_travaux].filter(Boolean).join(' · ') || '—'}{v.statut === 'en_cours' ? ` · ${nbReponses(v.fiche ?? {})} réponses` : ''}</small>
+                </span>
+                <span className={`pastille-rdv ${statutRdv(v).classe}`}>{statutRdv(v).nom}</span>
+              </Link>
+            ))}
+          </div>
+        ))}
+      </section>
+    )
+  }
+
   return (
     <div className="page">
       <div className="titre-ligne">
@@ -75,9 +124,8 @@ export default function Visites() {
       {charge && liste.length === 0 && (
         <div className="vide">Aucune visite. Les rendez-vous de votre agenda arrivent ici automatiquement depuis le Pilotage, ou créez-en une avec « + Visite ».</div>
       )}
-      {bloc("Aujourd'hui", duJour, true)}
-      {bloc('À compléter', enRetard)}
-      {bloc('À venir', aVenir)}
+      {agenda('À venir', [...duJour, ...aVenir])}
+      {agenda('À compléter (date passée)', enRetard)}
       {bloc('Terminées (45 derniers jours)', faites)}
       {nouvelle && <NouvelleVisite fermer={() => setNouvelle(false)} />}
     </div>
