@@ -179,7 +179,7 @@ export default function Visite() {
               <p className="gros">{adresse || 'Adresse à compléter'}</p>
               <div className="boutons">
                 {infos.telephone && <a className="btn" href={`tel:${infos.telephone}`}><IcoTel /> {telAffiche(infos.telephone)}</a>}
-                {adresse && <a className="btn" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(adresse)}`} target="_blank" rel="noreferrer"><IcoRoute /> Itinéraire</a>}
+                {adresse && <a className="btn" href={`https://waze.com/ul?q=${encodeURIComponent(adresse)}&navigate=yes`} target="_blank" rel="noreferrer"><IcoRoute /> Waze</a>}
               </div>
             </>
           ) : (
