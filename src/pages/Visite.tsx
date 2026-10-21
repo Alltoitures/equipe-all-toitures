@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { SECTIONS, TYPES_TRAVAUX, UNITES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
+import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
@@ -146,7 +146,7 @@ export default function Visite() {
       <header className="fiche-tete">
         <div className="fiche-ref">
           {v.date_rdv ? dateLongue(v.date_rdv) : 'Sans date'}{v.heure ? ` · ${v.heure}` : ''}
-          <span className={`pastille ${termine ? 'termine' : 'en_cours'}`}>{termine ? 'Terminée' : v.statut === 'en_cours' ? 'En cours' : 'À faire'}</span>
+          <span className={`pastille-rdv ${statutRdv(v).classe}`}>{statutRdv(v).nom}</span>
         </div>
         <h1>{infos.client_nom}</h1>
         <p>{[infos.type_travaux, infos.ville].filter(Boolean).join(' · ') || 'Fiche de visite'}</p>

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { TYPES_TRAVAUX, nbReponses, type Visite } from '../lib/visite'
+import { STATUTS_RDV, TYPES_TRAVAUX, nbReponses, statutRdv, type Visite } from '../lib/visite'
 import { dateCourte, isoJour, normaliserTel } from '../lib/format'
 import { useAuth } from '../lib/auth'
 
-const STATUT_VISITE = { a_faire: 'À faire', en_cours: 'En cours', terminee: 'Terminée' }
 
 export default function Visites() {
   const [liste, setListe] = useState<Visite[]>([])
   const [charge, setCharge] = useState(false)
   const [nouvelle, setNouvelle] = useState(false)
+  const [filtre, setFiltre] = useState<string | null>(null)
 
   useEffect(() => {
     supabase
@@ -25,18 +25,20 @@ export default function Visites() {
   }, [])
 
   const auj = isoJour()
-  const aFaire = liste.filter((v) => v.statut !== 'terminee')
+  const comptes = STATUTS_RDV.map((s) => ({ ...s, n: liste.filter((v) => statutRdv(v).nom === s.nom).length })).filter((s) => s.n > 0)
+  const visibles = filtre ? liste.filter((v) => statutRdv(v).nom === filtre) : liste
+  const aFaire = visibles.filter((v) => v.statut !== 'terminee')
   const duJour = aFaire.filter((v) => v.date_rdv === auj)
   const aVenir = aFaire.filter((v) => !v.date_rdv || v.date_rdv > auj)
   const enRetard = aFaire.filter((v) => v.date_rdv && v.date_rdv < auj)
-  const faites = liste.filter((v) => v.statut === 'terminee').reverse()
+  const faites = visibles.filter((v) => v.statut === 'terminee').reverse()
 
   const bloc = (titre: string, l: Visite[], accent?: boolean) =>
     l.length > 0 && (
       <section className="groupe">
         <h2>{titre}</h2>
         {l.map((v) => (
-          <Link key={v.id} to={`/visites/${v.id}`} className={accent ? 'ligne-chantier accent' : 'ligne-chantier'}>
+          <Link key={v.id} to={`/visites/${v.id}`} className={`ligne-chantier rdv ${statutRdv(v).classe}${accent ? ' accent' : ''}`}>
             <div>
               <strong>{v.client_nom}</strong>
               <span className="sous">{[v.ville, v.type_travaux].filter(Boolean).join(' · ') || '—'}</span>
@@ -45,7 +47,7 @@ export default function Visites() {
               )}
             </div>
             <div className="droite">
-              <span className={`pastille ${v.statut === 'terminee' ? 'termine' : v.statut === 'en_cours' ? 'en_cours' : 'a_venir'}`}>{STATUT_VISITE[v.statut]}</span>
+              <span className={`pastille-rdv ${statutRdv(v).classe}`}>{statutRdv(v).nom}</span>
               <span className="sous">{v.date_rdv ? dateCourte(v.date_rdv) : 'Sans date'}{v.heure ? ` · ${v.heure}` : ''}</span>
               {v.statut === 'en_cours' && <span className="sous">{nbReponses(v.fiche ?? {})} réponses</span>}
             </div>
@@ -60,6 +62,15 @@ export default function Visites() {
         <h1>Visites</h1>
         <button className="btn pri" onClick={() => setNouvelle(true)}>+ Visite</button>
       </div>
+      {comptes.length > 1 && (
+        <div className="filtres-rdv">
+          {comptes.map((c) => (
+            <button key={c.nom} className={`pastille-rdv ${c.classe}`} aria-pressed={filtre === c.nom} onClick={() => setFiltre(filtre === c.nom ? null : c.nom)}>
+              {c.nom} · {c.n}
+            </button>
+          ))}
+        </div>
+      )}
       {!charge && <p className="sous">Chargement…</p>}
       {charge && liste.length === 0 && (
         <div className="vide">Aucune visite. Les rendez-vous de votre agenda arrivent ici automatiquement depuis le Pilotage, ou créez-en une avec « + Visite ».</div>

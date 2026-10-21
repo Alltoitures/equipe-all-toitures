@@ -17,6 +17,7 @@ export interface Visite {
   date_rdv: string | null
   heure: string | null
   statut: 'a_faire' | 'en_cours' | 'terminee'
+  rdv_statut: string | null
   fiche: Fiche
   onedrive_item_id: string | null
   terminee_le: string | null
@@ -97,4 +98,21 @@ export function nbReponses(f: Fiche): number {
     const v = f[q.id]
     return Array.isArray(v) ? v.length > 0 : !!v
   }).length
+}
+
+/** Statut du rendez-vous (repris du Pilotage) et sa couleur. */
+export const STATUTS_RDV: { nom: string; classe: string }[] = [
+  { nom: 'À venir', classe: 'rdv-avenir' },
+  { nom: 'Visite en cours', classe: 'rdv-encours' },
+  { nom: 'Devis à faire', classe: 'rdv-devis' },
+  { nom: 'Devis envoyé', classe: 'rdv-envoye' },
+  { nom: 'Accepté', classe: 'rdv-accepte' },
+  { nom: 'Refusé', classe: 'rdv-refuse' },
+  { nom: 'Sans suite', classe: 'rdv-sanssuite' }
+]
+
+export function statutRdv(v: Pick<Visite, 'statut' | 'rdv_statut'>): { nom: string; classe: string } {
+  if (v.statut === 'en_cours') return STATUTS_RDV[1]
+  const nom = v.rdv_statut ?? (v.statut === 'terminee' ? 'Devis à faire' : 'À venir')
+  return STATUTS_RDV.find((s) => s.nom === nom) ?? { nom, classe: 'rdv-sanssuite' }
 }

@@ -351,3 +351,18 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .ligne-simple .d { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13px; white-space: nowrap; }
 .barre-av.mini { height: 5px; width: 140px; display: block; margin-top: 2px; }
 .ligne-simple .barre-av.mini { flex: none; }
+
+/* ---------- Couleurs des statuts de rendez-vous ---------- */
+.rdv-avenir { --rdv: #01a9e1; --rdv-fond: #e0f4fb; --rdv-txt: #00658a; }
+.rdv-encours { --rdv: #f2b300; --rdv-fond: #fff6d6; --rdv-txt: #7a5a00; }
+.rdv-devis { --rdv: #e8742a; --rdv-fond: #fdebdf; --rdv-txt: #9a4512; }
+.rdv-envoye { --rdv: #7a5af8; --rdv-fond: #efebff; --rdv-txt: #4b31b8; }
+.rdv-accepte { --rdv: #2e9e5b; --rdv-fond: #e3f4ea; --rdv-txt: #1d6b3c; }
+.rdv-refuse { --rdv: #c93636; --rdv-fond: #fcebeb; --rdv-txt: #9b2424; }
+.rdv-sanssuite { --rdv: #6b7c88; --rdv-fond: #eef1f3; --rdv-txt: #4a5863; }
+.ligne-chantier.rdv { border-left: 5px solid var(--rdv); }
+.pastille-rdv { font: inherit; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; white-space: nowrap; background: var(--rdv-fond); color: var(--rdv-txt); border: 1px solid transparent; }
+.fiche-tete .pastille-rdv { background: var(--rdv); color: #fff; }
+.filtres-rdv { display: flex; flex-wrap: wrap; gap: 6px; }
+.filtres-rdv button { cursor: pointer; min-height: 32px; }
+.filtres-rdv button[aria-pressed='true'] { background: var(--rdv); color: #fff; }
