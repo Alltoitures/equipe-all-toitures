@@ -13,6 +13,12 @@ export default function RealisationCarte({ chantierId }: { chantierId: string })
   const [temoignage, setTemoignage] = useState('')
   const [temoin, setTemoin] = useState('')
   const [erreur, setErreur] = useState('')
+  const [test, setTest] = useState('')
+  async function tester() {
+    setTest('Test en cours…')
+    const { data } = await supabase.functions.invoke('realisation', { body: { action: 'diagnostic' } })
+    setTest(data?.identifiants?.startsWith?.('ok') ? `Accès au site OK ${data.identifiants.slice(2)}` : data?.identifiants === 'absents' ? 'Identifiants du site pas encore enregistrés dans Supabase.' : `Accès refusé : ${data?.identifiants ?? data?.erreur ?? 'erreur'}`)
+  }
 
   useEffect(() => {
     supabase.from('realisations').select('id, statut, url').eq('chantier_id', chantierId).maybeSingle().then(({ data }) => setR(data as any))
@@ -39,6 +45,8 @@ export default function RealisationCarte({ chantierId }: { chantierId: string })
         <>
           <p className="sous">Je prépare la fiche « Réalisations » d'alltoitures.com (texte + photos du dossier OneDrive). Vous la relisez ici avant toute publication.</p>
           <button className="btn pri large" onClick={() => setOuvert(true)}>Publier en réalisation</button>
+          <button type="button" className="lien" onClick={tester}>Tester l'accès au site</button>
+          {test && <p className="sous">{test}</p>}
         </>
       )}
       {r && (
