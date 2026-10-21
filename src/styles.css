@@ -419,3 +419,28 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .rdv-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rdv-info small { color: var(--muted); font-size: 13px; }
 .rdv-ligne .pastille-rdv { flex: none; }
+
+/* ---------- Graphiques ---------- */
+.barres { display: flex; gap: 6px; align-items: flex-end; }
+.barre-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; color: var(--ink); }
+.barre-val { font-size: 12px; font-weight: 700; min-height: 15px; font-variant-numeric: tabular-nums; }
+.barre-zone { width: 100%; height: var(--h); display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid var(--line); }
+.barre-zone i { display: block; width: 70%; max-width: 34px; min-height: 2px; background: #9fdcf2; border-radius: 4px 4px 0 0; transition: background 0.15s; }
+.barre-col.courant .barre-zone i, .barre-col.actif .barre-zone i { background: var(--accent); }
+.barre-lab { font-size: 11px; color: var(--muted); text-transform: capitalize; white-space: nowrap; }
+.barre-sous { font-size: 11px; color: var(--ok); font-weight: 700; }
+.classement { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.classement li { display: grid; grid-template-columns: minmax(0, 9em) 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
+.cl-nom { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.cl-barre { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.cl-barre i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+.cl-val { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cl-val small { color: var(--muted); font-weight: 400; }
+.empile { display: flex; height: 16px; border-radius: 8px; overflow: hidden; gap: 2px; background: var(--surface); }
+.empile i { display: block; background: var(--rdv); }
+.legende { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 13px; }
+.legende li { display: flex; align-items: center; gap: 6px; }
+.legende small { color: var(--muted); }
+.pastille-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--rdv); flex: none; }
+.kpi.chiffre-cle strong { color: var(--ok); }
+.deux-graph { display: grid; grid-template-columns: 1fr; gap: 12px; }

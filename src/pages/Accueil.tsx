@@ -4,6 +4,8 @@ import { supabase, ROLES, STATUTS, type Role, type Statut } from '../lib/supabas
 import { dateCourte, hFormat, isoJour, moisAnnee } from '../lib/format'
 import { estGerant, useAuth } from '../lib/auth'
 import { RappelNotifications } from '../components/Notifications'
+import { Barres, Classement, Repartition } from '../components/Graphiques'
+import { STATUTS_RDV } from '../lib/visite'
 import { heureAffichee, minutesHeure } from './Visites'
 
 interface TB {
@@ -37,6 +39,22 @@ interface TB {
   securite_manquante: string[]
 }
 
+interface Stats {
+  visites_par_mois: { mois: string; visites: number; acceptes: number }[]
+  chantiers_par_mois: { mois: string; termines: number }[]
+  statuts: Record<string, number>
+  provenances: { nom: string; n: number }[]
+  types: { nom: string; n: number }[]
+  heures_par_semaine: { semaine: string; heures: number }[]
+}
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+const moisCourt = (m: string) => MOIS_COURTS[Number(m.slice(5, 7)) - 1]
+/** Retire les mois vides du début (avant l'historique disponible). */
+function depuisPremier<T>(l: T[], v: (x: T) => number): T[] {
+  const i = l.findIndex((x) => v(x) > 0)
+  return i < 0 ? l.slice(-3) : l.slice(Math.min(i, Math.max(0, l.length - 3)))
+}
+
 function moisDecale(iso: string, n: number) {
   const [y, m] = iso.split('-').map(Number)
   const d = new Date(y, m - 1 + n, 1)
@@ -48,6 +66,10 @@ export default function Accueil() {
   const [jour, setJour] = useState(isoJour())
   const [tb, setTb] = useState<TB | null>(null)
   const [erreur, setErreur] = useState('')
+  const [st, setSt] = useState<Stats | null>(null)
+  useEffect(() => {
+    supabase.rpc('stats_dashboard', { d: isoJour() }).then(({ data }) => setSt(data as Stats))
+  }, [])
 
   useEffect(() => {
     supabase.rpc('tableau_bord', { d: jour }).then(({ data, error }) => {
@@ -76,6 +98,11 @@ export default function Accueil() {
   if (tb.photos_en_erreur) alertes.push({ texte: `${tb.photos_en_erreur} photo${tb.photos_en_erreur > 1 ? 's' : ''} bloquée${tb.photos_en_erreur > 1 ? 's' : ''} avant OneDrive`, lien: '/gestion', niveau: 'rouge' })
   if (tb.visites_fiche_en_cours) alertes.push({ texte: `${tb.visites_fiche_en_cours} fiche${tb.visites_fiche_en_cours > 1 ? 's' : ''} de visite en préparation`, lien: '/visites', niveau: 'bleu' })
 
+  const stat = (n: string) => st?.statuts?.[n] ?? 0
+  const signes = stat('Accepté')
+  const perdus = stat('Refusé') + stat('Sans suite')
+  const enAttente = stat('Devis envoyé')
+
   return (
     <div className="page accueil">
       <div className="titre-ligne">
@@ -97,11 +124,13 @@ export default function Accueil() {
             <span>{tb.visites_faites} faite{tb.visites_faites > 1 ? 's' : ''}{courant ? ` · ${tb.visites_a_venir} à venir` : ''}</span>
           </Link>
         )}
-        <Link to="/chantiers" className="kpi accent">
-          <small>Chantiers en cours</small>
-          <strong>{tb.chantiers_en_cours}</strong>
-          <span>{tb.chantiers_a_venir} à venir</span>
-        </Link>
+        {gerant && (
+          <div className="kpi accent">
+            <small>Taux de signature</small>
+            <strong>{signes + perdus ? `${Math.round((signes / (signes + perdus)) * 100)} %` : '—'}</strong>
+            <span>{signes} signé{signes > 1 ? 's' : ''} · {enAttente} devis en attente</span>
+          </div>
+        )}
         <Link to="/chantiers" className="kpi">
           <small>Terminés ce mois</small>
           <strong>{tb.chantiers_termines_mois}</strong>
@@ -146,21 +175,44 @@ export default function Accueil() {
         </section>
       )}
 
-      {courant && (
-        <section className="carte">
-          <div className="titre-ligne"><h2>Chantiers cette semaine</h2><Link className="lien" to="/chantiers">Tout voir</Link></div>
-          {tb.semaine.length === 0 && <p className="sous">Aucun chantier en cours cette semaine.</p>}
-          {tb.semaine.map((c) => (
-            <Link key={c.id} to={`/chantier/${c.id}`} className="ligne-simple">
-              <span>
-                <strong>{c.client}</strong>
-                <small>{[c.ville, c.equipe ?? 'Équipe non affectée'].filter(Boolean).join(' · ')}</small>
-                {c.avancement != null && <span className="barre-av mini"><i style={{ width: `${c.avancement}%` }} /></span>}
-              </span>
-              <span className="d"><span className={`pastille ${c.statut}`}>{STATUTS[c.statut]}</span>{c.avancement != null && <small>{c.avancement} %</small>}</span>
-            </Link>
-          ))}
-        </section>
+      {st && gerant && (
+        <>
+          <section className="carte">
+            <h2>Visites par mois</h2>
+            <Barres donnees={depuisPremier(st.visites_par_mois, (x) => x.visites).map((x) => ({ label: moisCourt(x.mois), valeur: x.visites, sous: x.acceptes ? `✓ ${x.acceptes}` : undefined, courant: x.mois === isoJour().slice(0, 7) }))} />
+            <p className="aide">✓ = devis signés parmi les visites du mois.</p>
+          </section>
+
+          <section className="carte">
+            <h2>Devis après visite <span className="sous">6 derniers mois</span></h2>
+            <Repartition parts={['Accepté', 'Devis envoyé', 'Devis à faire', 'Refusé', 'Sans suite'].map((n) => ({ nom: n, n: stat(n), classe: STATUTS_RDV.find((x) => x.nom === n)?.classe ?? 'rdv-sanssuite' }))} />
+          </section>
+
+          <section className="carte">
+            <h2>D'où viennent les clients <span className="sous">12 mois</span></h2>
+            <Classement donnees={st.provenances} />
+          </section>
+
+          <section className="carte">
+            <h2>Types de travaux demandés <span className="sous">12 mois</span></h2>
+            <Classement donnees={st.types} />
+          </section>
+        </>
+      )}
+
+      {st && (
+        <>
+          <section className="carte">
+            <h2>Chantiers terminés par mois</h2>
+            <Barres donnees={depuisPremier(st.chantiers_par_mois, (x) => x.termines).map((x) => ({ label: moisCourt(x.mois), valeur: x.termines, courant: x.mois === isoJour().slice(0, 7) }))} />
+          </section>
+
+          <section className="carte">
+            <h2>Heures équipe par semaine</h2>
+            <Barres donnees={st.heures_par_semaine.map((x, i) => ({ label: `${Number(x.semaine.slice(8, 10))}/${Number(x.semaine.slice(5, 7))}`, valeur: x.heures, courant: i === st.heures_par_semaine.length - 1 }))} format={(n) => `${Math.round(n)}`} unite=" h" />
+            <p className="aide">Semaine commençant le lundi indiqué. Se remplira dès que l'équipe saisit ses heures.</p>
+          </section>
+        </>
       )}
 
       <section className="carte">
