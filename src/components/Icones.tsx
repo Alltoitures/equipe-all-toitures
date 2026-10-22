@@ -10,4 +10,5 @@ export const IcoTel = () => <svg {...p}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 
 export const IcoRetour = () => <svg {...p}><path d="M15 18 9 12l6-6" /></svg>
 export const IcoCheck = () => <svg {...p}><path d="m5 12 5 5 9-10" /></svg>
 export const IcoAccueil = () => <svg {...p}><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></svg>
+export const IcoDevis = () => <svg {...p}><path d="M6 3h9l4 4v14H6z" /><path d="M15 3v4h4" /><path d="M14.5 11.5a3 3 0 1 0 0 4M9.5 13h4M9.5 14.6h4" /></svg>
 export const IcoVisite = () => <svg {...p}><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3" /></svg>

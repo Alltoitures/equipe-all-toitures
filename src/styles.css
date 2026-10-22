@@ -470,3 +470,36 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 /* ---------- Avis Google ---------- */
 .avis-modal .modal { align-items: center; text-align: center; }
 .qr-avis { width: min(78vw, 300px); height: auto; image-rendering: pixelated; margin: 8px auto; display: block; }
+
+/* ---------- Fiche client compacte ---------- */
+.client-compact { gap: 8px; }
+.client-ligne { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.client-adresse { font-size: 14px; color: var(--ink-2); }
+.client-ligne .lien { flex: none; }
+.client-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn.petit { min-height: 34px; padding: 4px 10px; font-size: 13px; gap: 4px; }
+.btn.petit svg { width: 16px; height: 16px; }
+.choix.petits button { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.civ-nom { display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
+
+/* ---------- Devis (colonnes) ---------- */
+.devis-page { max-width: 1280px; }
+.devis-resume { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--ink-2); }
+.devis-resume strong { color: var(--ink); font-size: 15px; }
+.devis-sauts { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.devis-sauts button { cursor: pointer; flex: none; }
+.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; align-items: start; }
+@media (max-width: 760px) { .kanban { grid-auto-columns: 84%; margin: 0 -16px; padding: 0 16px 6px; scroll-padding: 0 16px; } }
+.kanban-col { scroll-snap-align: start; background: var(--surface-2); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 6px; border-top: 4px solid var(--rdv); min-height: 120px; }
+.kanban-col header { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 4px 4px; }
+.kanban-col h2 { margin: 0; font-size: 15px; color: var(--rdv-txt); }
+.kanban-col h2 span { font-size: 12px; background: var(--rdv-fond); border-radius: 10px; padding: 1px 7px; margin-left: 4px; }
+.kanban-col header small { color: var(--muted); font-size: 12px; font-weight: 700; }
+.kanban-vide { padding: 8px 4px; margin: 0; font-size: 13px; }
+.kanban-carte { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--rdv); border-radius: 10px; padding: 8px 10px; }
+.kanban-carte:hover, .kanban-carte:focus-visible { border-color: var(--rdv); }
+.kanban-carte strong { font-size: 14px; }
+.kanban-carte small { font-size: 12px; color: var(--muted); }
+.kanban-carte .montant { color: var(--ink); font-weight: 700; }
+.kanban-carte .tard { color: var(--danger); font-weight: 700; }
+.boutons.colonne { flex-direction: column; align-items: stretch; }

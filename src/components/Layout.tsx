@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 import { estGerant, estStaff, useAuth } from '../lib/auth'
 import { surAttente } from '../lib/photos'
 import { Logo } from './Logo'
-import { IcoAccueil, IcoChantier, IcoCompte, IcoGestion, IcoHeures, IcoVisite } from './Icones'
+import { IcoAccueil, IcoChantier, IcoCompte, IcoGestion, IcoDevis, IcoHeures, IcoVisite } from './Icones'
 
 export default function Layout() {
   const { membre } = useAuth()
@@ -43,6 +43,7 @@ export default function Layout() {
           <>
             <NavLink to="/" end><IcoAccueil /><span>Accueil</span></NavLink>
             {estGerant(membre) && <NavLink to="/visites"><IcoVisite /><span>Visites</span></NavLink>}
+            {estGerant(membre) && <NavLink to="/devis"><IcoDevis /><span>Devis</span></NavLink>}
             <NavLink to="/chantiers"><IcoChantier /><span>Chantiers</span></NavLink>
             <NavLink to="/heures"><IcoHeures /><span>Heures</span></NavLink>
             <NavLink to="/gestion"><IcoGestion /><span>Gestion</span></NavLink>

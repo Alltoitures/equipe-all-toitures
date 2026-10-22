@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { STATUTS_RDV, TYPES_TRAVAUX, nbReponses, statutRdv, type Visite } from '../lib/visite'
+import { CIVILITES, STATUTS_RDV, TYPES_TRAVAUX, estPro, nbReponses, nomClient, statutRdv, type Visite } from '../lib/visite'
 import { ajouterJours, dateCourte, dateLongue, isoJour, normaliserTel } from '../lib/format'
 import { useAuth } from '../lib/auth'
 
@@ -51,7 +51,7 @@ export default function Visites() {
         {l.map((v) => (
           <Link key={v.id} to={`/visites/${v.id}`} className={`ligne-chantier rdv ${statutRdv(v).classe}${accent ? ' accent' : ''}`}>
             <div>
-              <strong>{v.client_nom}</strong>
+              <strong>{nomClient(v)}</strong>
               <span className="sous">{[v.ville, v.type_travaux].filter(Boolean).join(' · ') || '—'}</span>
               {v.statut === 'terminee' && (
                 <span className="sous">{v.traitee_note === 'Historique Pilotage' ? 'Reprise du Pilotage' : v.traitee_le ? 'Fiche de visite prête' : 'Fiche de visite en préparation…'}</span>
@@ -93,7 +93,7 @@ export default function Visites() {
               <Link key={v.id} to={`/visites/${v.id}`} className={`rdv-ligne ${statutRdv(v).classe}`}>
                 <span className="rdv-heure">{heureAffichee(v.heure)}</span>
                 <span className="rdv-info">
-                  <strong>{v.client_nom}</strong>
+                  <strong>{nomClient(v)}</strong>
                   <small>{[v.ville, v.type_travaux].filter(Boolean).join(' · ') || '—'}{v.statut === 'en_cours' ? ` · ${nbReponses(v.fiche ?? {})} réponses` : ''}</small>
                 </span>
                 <span className={`pastille-rdv ${statutRdv(v).classe}`}>{statutRdv(v).nom}</span>
@@ -135,7 +135,7 @@ export default function Visites() {
 function NouvelleVisite({ fermer }: { fermer: () => void }) {
   const nav = useNavigate()
   const { membre } = useAuth()
-  const [f, setF] = useState({ client_nom: '', telephone: '', adresse: '', code_postal: '', ville: '', type_travaux: '', date_rdv: isoJour(), heure: '' })
+  const [f, setF] = useState({ civilite: '', contact: '', email: '', client_nom: '', telephone: '', adresse: '', code_postal: '', ville: '', type_travaux: '', date_rdv: isoJour(), heure: '' })
   const [erreur, setErreur] = useState('')
   const champ = (k: keyof typeof f) => ({ value: f[k], onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value }) })
 
@@ -145,7 +145,10 @@ function NouvelleVisite({ fermer }: { fermer: () => void }) {
     const { data, error } = await supabase
       .from('visites')
       .insert({
+        civilite: f.civilite || null,
         client_nom: f.client_nom.trim(),
+        contact: estPro(f.civilite) ? vide(f.contact) : null,
+        email: vide(f.email),
         telephone: f.telephone ? normaliserTel(f.telephone) : null,
         adresse: vide(f.adresse), code_postal: vide(f.code_postal), ville: vide(f.ville),
         type_travaux: vide(f.type_travaux), date_rdv: f.date_rdv || null, heure: vide(f.heure),
@@ -161,8 +164,20 @@ function NouvelleVisite({ fermer }: { fermer: () => void }) {
     <div className="fond-modal" onClick={fermer}>
       <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={creer}>
         <h2>Nouvelle visite</h2>
-        <label>Client<input {...champ('client_nom')} required placeholder="Mr DUPONT" /></label>
-        <label>Téléphone<input type="tel" {...champ('telephone')} /></label>
+        <div className="civ-nom">
+          <label>Civilité
+            <select {...champ('civilite')}>
+              <option value="">—</option>
+              {CIVILITES.map((c) => <option key={c}>{c}</option>)}
+            </select>
+          </label>
+          <label>{estPro(f.civilite) ? 'Raison sociale' : 'Nom'}<input {...champ('client_nom')} required placeholder={estPro(f.civilite) ? 'FONCIA' : 'DUPONT'} /></label>
+        </div>
+        {estPro(f.civilite) && <label>Interlocuteur<input {...champ('contact')} placeholder="M. Durand, gestionnaire" /></label>}
+        <div className="deux">
+          <label>Téléphone<input type="tel" {...champ('telephone')} /></label>
+          <label>Mail<input type="email" {...champ('email')} /></label>
+        </div>
         <label>Adresse<input {...champ('adresse')} /></label>
         <div className="deux">
           <label>Code postal<input inputMode="numeric" {...champ('code_postal')} /></label>
