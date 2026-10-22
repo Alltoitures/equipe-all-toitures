@@ -27,7 +27,8 @@ interface TB {
   imprevus_ouverts: number
   photos_mois: number
   photos_en_erreur: number
-  fins_a_facturer: { client: string; le: string; note: string | null }[]
+  fins_a_facturer: { id: string; client: string; le: string; note: string | null }[]
+  devis_a_envoyer?: { id: string; client: string; ville: string | null; type: string | null; visite: string | null }[]
   demandes_ouvertes: number
   demandes_urgentes: number
   conges_a_valider: number
@@ -78,12 +79,24 @@ export default function Accueil() {
     supabase.rpc('stats_dashboard', { d: isoJour() }).then(({ data }) => setSt(data as Stats))
   }, [])
 
+  const [recharge, setRecharge] = useState(0)
   useEffect(() => {
     supabase.rpc('tableau_bord', { d: jour }).then(({ data, error }) => {
       if (error) setErreur('Tableau de bord indisponible pour le moment.')
       else setTb(data as TB)
     })
-  }, [jour])
+  }, [jour, recharge])
+
+  async function marquerEnvoye(genre: 'devis' | 'facture', id: string, client: string) {
+    const quoi = genre === 'devis' ? 'le devis' : 'la facture et le rapport'
+    if (!confirm(`Confirmer : ${quoi} de ${client} ${genre === 'devis' ? 'a été envoyé' : 'ont été envoyés'} par mail ?`)) return
+    const maintenant = new Date().toISOString()
+    const { error } = genre === 'devis'
+      ? await supabase.from('visites').update({ devis_envoye_le: maintenant, rdv_statut: 'Devis envoyé' }).eq('id', id)
+      : await supabase.from('chantiers').update({ facture_envoyee_le: maintenant }).eq('id', id)
+    if (error) alert("Impossible d'enregistrer pour le moment. Réessayez.")
+    else setRecharge((n) => n + 1)
+  }
 
   const courant = jour.slice(0, 7) === isoJour().slice(0, 7)
   const gerant = estGerant(membre)
@@ -100,12 +113,16 @@ export default function Accueil() {
   if (tb.absents_aujourdhui?.length) alertes.push({ texte: `Absent${tb.absents_aujourdhui.length > 1 ? 's' : ''} aujourd'hui : ${tb.absents_aujourdhui.join(', ')}`, lien: '/gestion/conges', niveau: 'bleu' })
   if (tb.imprevus_ouverts) alertes.push({ texte: `${tb.imprevus_ouverts} imprévu${tb.imprevus_ouverts > 1 ? 's' : ''} à traiter`, lien: '/gestion', niveau: 'rouge' })
   if (tb.jours_a_valider) alertes.push({ texte: `${tb.jours_a_valider} journée${tb.jours_a_valider > 1 ? 's' : ''} d'heures à valider`, lien: '/gestion/heures', niveau: 'orange' })
-  if (tb.fins_a_facturer.length) alertes.push({ texte: `${tb.fins_a_facturer.length} fin${tb.fins_a_facturer.length > 1 ? 's' : ''} de chantier prête${tb.fins_a_facturer.length > 1 ? 's' : ''} : brouillon de mail + facture à envoyer (${tb.fins_a_facturer.map((f) => f.client).join(', ')})`, lien: '/chantiers', niveau: 'orange' })
   if (tb.sans_bon) alertes.push({ texte: `${tb.sans_bon} chantier${tb.sans_bon > 1 ? 's' : ''} sans bon d'intervention`, lien: '/gestion/chantiers', niveau: 'bleu' })
   if (tb.photos_en_erreur) alertes.push({ texte: `${tb.photos_en_erreur} photo${tb.photos_en_erreur > 1 ? 's' : ''} bloquée${tb.photos_en_erreur > 1 ? 's' : ''} avant OneDrive`, lien: '/gestion', niveau: 'rouge' })
   for (const x of reals) alertes.push({ texte: x.statut === 'erreur' ? `Réalisation site web à republier (${x.chantiers?.client_nom ?? ''})` : `Réalisation site web à valider (${x.chantiers?.client_nom ?? ''})`, lien: `/gestion/realisations/${x.id}`, niveau: x.statut === 'erreur' ? 'rouge' : 'orange' })
   for (const x of relances) alertes.push({ texte: `Avis Google à relancer : ${x.chantiers?.client_nom ?? ''} (demandé il y a plus de 7 jours)`, lien: `/chantier/${x.chantier_id}?onglet=travaux`, niveau: 'bleu' })
   if (tb.visites_fiche_en_cours) alertes.push({ texte: `${tb.visites_fiche_en_cours} fiche${tb.visites_fiche_en_cours > 1 ? 's' : ''} de visite en préparation`, lien: '/visites', niveau: 'bleu' })
+
+  const envois: { genre: 'devis' | 'facture'; id: string; client: string; detail: string; lien: string }[] = [
+    ...(tb.devis_a_envoyer ?? []).map((v) => ({ genre: 'devis' as const, id: v.id, client: v.client, detail: ['Devis', v.type, v.ville, v.visite ? `visite du ${dateCourte(v.visite)}` : null].filter(Boolean).join(' · '), lien: `/visites/${v.id}` })),
+    ...tb.fins_a_facturer.map((f) => ({ genre: 'facture' as const, id: f.id, client: f.client, detail: `Facture + rapport · brouillon du mail prêt dans Outlook${f.le ? ` depuis le ${dateCourte(f.le.slice(0, 10))}` : ''}`, lien: `/chantier/${f.id}` }))
+  ]
 
   const stat = (n: string) => st?.statuts?.[n] ?? 0
   const signes = stat('Accepté')
@@ -158,6 +175,21 @@ export default function Accueil() {
           </div>
         )}
       </div>
+
+      {courant && envois.length > 0 && (
+        <section className="carte">
+          <h2>À envoyer <span className="sous">{envois.length}</span></h2>
+          <ul className="envois">
+            {envois.map((e) => (
+              <li key={e.genre + e.id}>
+                <Link to={e.lien}><strong>{e.client}</strong><small>{e.detail}</small></Link>
+                <button className="btn" onClick={() => marquerEnvoye(e.genre, e.id, e.client)}>Envoyé ✓</button>
+              </li>
+            ))}
+          </ul>
+          <p className="aide">Une ligne disparaît quand vous touchez « Envoyé », ou d'elle-même dans l'heure quand le mail part de votre Outlook.</p>
+        </section>
+      )}
 
       {courant && (
         <section className="carte">

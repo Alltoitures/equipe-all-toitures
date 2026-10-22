@@ -341,6 +341,11 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .alertes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .alerte { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 700; border-left: 4px solid; }
 .alerte span { font-size: 18px; }
+.envois { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.envois li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--warn-bg); border-left: 4px solid #ef9f27; }
+.envois a { flex: 1; min-width: 0; display: flex; flex-direction: column; text-decoration: none; color: var(--warn); }
+.envois a small { font-weight: 400; opacity: .85; }
+.envois .btn { flex: none; }
 .alerte.rouge { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
 .alerte.orange { background: var(--warn-bg); color: var(--warn); border-color: #ef9f27; }
 .alerte.bleu { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent); }
