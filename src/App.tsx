@@ -15,7 +15,6 @@ import Export from './pages/gestion/Export'
 import { Logo } from './components/Logo'
 import Accueil from './pages/Accueil'
 import Visites from './pages/Visites'
-import Devis from './pages/Devis'
 import Visite from './pages/Visite'
 import Planning from './pages/gestion/Planning'
 import Demandes from './pages/gestion/Demandes'
@@ -51,7 +50,6 @@ function Routeur() {
           <>
             <Route path="visites" element={<Visites />} />
             <Route path="visites/:id" element={<Visite />} />
-            <Route path="devis" element={<Devis />} />
           </>
         )}
         <Route path="chantier/:id" element={<Chantier />} />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase, ROLES, STATUTS, type Role, type Statut } from '../lib/supabase'
-import { ajouterJours, dateCourte, hFormat, isoJour, moisAnnee } from '../lib/format'
+import { dateCourte, hFormat, isoJour, moisAnnee } from '../lib/format'
 import { estGerant, useAuth } from '../lib/auth'
 import { RappelNotifications } from '../components/Notifications'
 import { Barres, Classement, Repartition } from '../components/Graphiques'
@@ -92,7 +92,7 @@ export default function Accueil() {
     if (!confirm(`Confirmer : ${quoi} de ${client} ${genre === 'devis' ? 'a été envoyé' : 'ont été envoyés'} par mail ?`)) return
     const maintenant = new Date().toISOString()
     const { error } = genre === 'devis'
-      ? await supabase.from('visites').update({ devis_envoye_le: maintenant, rdv_statut: 'Devis envoyé', relance_prevue: ajouterJours(isoJour(), 10), devis_maj_le: maintenant }).eq('id', id)
+      ? await supabase.from('visites').update({ devis_envoye_le: maintenant, rdv_statut: 'Devis envoyé' }).eq('id', id)
       : await supabase.from('chantiers').update({ facture_envoyee_le: maintenant }).eq('id', id)
     if (error) alert("Impossible d'enregistrer pour le moment. Réessayez.")
     else setRecharge((n) => n + 1)
@@ -187,7 +187,7 @@ export default function Accueil() {
               </li>
             ))}
           </ul>
-          <p className="aide"><Link to="/devis">Suivi complet des devis ›</Link> Une ligne disparaît quand vous touchez « Envoyé », ou d'elle-même dans l'heure quand le mail part de votre Outlook.</p>
+          <p className="aide">Une ligne disparaît quand vous touchez « Envoyé », ou d'elle-même dans l'heure quand le mail part de votre Outlook.</p>
         </section>
       )}
 

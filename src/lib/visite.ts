@@ -6,10 +6,7 @@
 export interface Visite {
   id: string
   pilotage_id: string | null
-  civilite: string | null
   client_nom: string
-  contact: string | null
-  nom_affiche: string | null
   telephone: string | null
   email: string | null
   adresse: string | null
@@ -27,23 +24,6 @@ export interface Visite {
   traitee_le: string | null
   traitee_note: string | null
   updated_at: string
-  devis_ref: string | null
-  devis_montant: number | null
-  devis_envoye_le: string | null
-  relance_prevue: string | null
-  accepte_le: string | null
-  motif_perte: string | null
-  devis_maj_le: string | null
-}
-
-/** Civilité : les trois premières sont des particuliers, les autres des professionnels (raison sociale + interlocuteur). */
-export const CIVILITES = ['M.', 'Mme', 'M. et Mme', 'Entreprise', 'Syndic / Copro', 'Collectivité'] as const
-export const estPro = (c: string | null | undefined) => !!c && !['M.', 'Mme', 'M. et Mme'].includes(c)
-
-/** Nom tel qu'on l'affiche : « Mme COMTE », « FONCIA (M. Durand) ». */
-export function nomClient(v: Pick<Visite, 'civilite' | 'client_nom' | 'contact'>): string {
-  if (v.civilite && !estPro(v.civilite)) return `${v.civilite} ${v.client_nom}`
-  return v.contact ? `${v.client_nom} (${v.contact})` : v.client_nom
 }
 
 export interface Mesure { ouvrage: string; qte: string; unite: string; remarque: string }

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { CIVILITES, SECTIONS, TYPES_TRAVAUX, estPro, nomClient, statutRdv, UNITES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
+import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Meteo from '../components/Meteo'
 
-type Infos = Pick<TVisite, 'civilite' | 'client_nom' | 'contact' | 'telephone' | 'email' | 'adresse' | 'code_postal' | 'ville' | 'type_travaux'>
+type Infos = Pick<TVisite, 'client_nom' | 'telephone' | 'email' | 'adresse' | 'code_postal' | 'ville' | 'type_travaux'>
 
 export default function Visite() {
   const { id } = useParams()
@@ -38,7 +38,7 @@ export default function Visite() {
       } catch { /* rien */ }
       setV(d)
       setFiche(local?.fiche ?? d.fiche ?? {})
-      setInfos(local?.infos ?? { civilite: d.civilite, client_nom: d.client_nom, contact: d.contact, telephone: d.telephone, email: d.email, adresse: d.adresse, code_postal: d.code_postal, ville: d.ville, type_travaux: d.type_travaux })
+      setInfos(local?.infos ?? { client_nom: d.client_nom, telephone: d.telephone, email: d.email, adresse: d.adresse, code_postal: d.code_postal, ville: d.ville, type_travaux: d.type_travaux })
       setNbPhotos(p.count ?? 0)
       if (local) planifier(local.fiche, local.infos)
     })
@@ -99,7 +99,7 @@ export default function Visite() {
   }
 
   function majInfos(k: keyof Infos, val: string) {
-    const i = { ...infos!, [k]: k === 'civilite' || k === 'contact' ? val || null : val }
+    const i = { ...infos!, [k]: val }
     setInfos(i)
     planifier(fiche, i)
   }
@@ -149,7 +149,7 @@ export default function Visite() {
           {v.date_rdv ? dateLongue(v.date_rdv) : 'Sans date'}{v.heure ? ` · ${v.heure}` : ''}
           <span className={`pastille-rdv ${statutRdv(v).classe}`}>{statutRdv(v).nom}</span>
         </div>
-        <h1>{nomClient(infos)}</h1>
+        <h1>{infos.client_nom}</h1>
         <p>{[infos.type_travaux, infos.ville].filter(Boolean).join(' · ') || 'Fiche de visite'}</p>
       </header>
 
@@ -170,44 +170,22 @@ export default function Visite() {
       )}
 
       <fieldset disabled={termine} className="champs">
-        <section className="carte client-compact">
+        <section className="carte">
+          <div className="titre-ligne">
+            <h2>Client</h2>
+            <button type="button" className="lien" onClick={() => setEditInfos(!editInfos)}>{editInfos ? 'Fermer' : 'Modifier'}</button>
+          </div>
           {!editInfos ? (
             <>
-              <div className="client-ligne">
-                <span className="client-adresse">{adresse || 'Adresse à compléter'}</span>
-                <button type="button" className="lien" onClick={() => setEditInfos(true)}>Modifier</button>
+              <p className="gros">{adresse || 'Adresse à compléter'}</p>
+              <div className="boutons">
+                {infos.telephone && <a className="btn" href={`tel:${infos.telephone}`}><IcoTel /> {telAffiche(infos.telephone)}</a>}
+                {adresse && <a className="btn" href={`https://waze.com/ul?q=${encodeURIComponent(adresse)}&navigate=yes`} target="_blank" rel="noreferrer"><IcoRoute /> Waze</a>}
               </div>
-              {(infos.telephone || infos.email || adresse) && (
-                <div className="client-actions">
-                  {infos.telephone && <a className="btn petit" href={`tel:${infos.telephone}`}><IcoTel /> {telAffiche(infos.telephone)}</a>}
-                  {infos.email && <a className="btn petit" href={`mailto:${infos.email}`}>Mail</a>}
-                  {adresse && <a className="btn petit" href={`https://waze.com/ul?q=${encodeURIComponent(adresse)}&navigate=yes`} target="_blank" rel="noreferrer"><IcoRoute /> Waze</a>}
-                </div>
-              )}
-              {!infos.type_travaux && (
-                <div className="choix petits">
-                  {TYPES_TRAVAUX.map((t) => (
-                    <button type="button" key={t} aria-pressed={false} onClick={() => majInfos('type_travaux', t)}>{t}</button>
-                  ))}
-                </div>
-              )}
             </>
           ) : (
             <>
-              <div className="titre-ligne">
-                <h2>Client</h2>
-                <button type="button" className="lien" onClick={() => setEditInfos(false)}>Fermer</button>
-              </div>
-              <div className="civ-nom">
-                <label>Civilité
-                  <select value={infos.civilite ?? ''} onChange={(e) => majInfos('civilite', e.target.value)}>
-                    <option value="">—</option>
-                    {CIVILITES.map((c) => <option key={c}>{c}</option>)}
-                  </select>
-                </label>
-                <label>{estPro(infos.civilite) ? 'Raison sociale' : 'Nom'}<input value={infos.client_nom} onChange={(e) => majInfos('client_nom', e.target.value)} /></label>
-              </div>
-              {estPro(infos.civilite) && <label>Interlocuteur<input value={infos.contact ?? ''} placeholder="M. Durand, gestionnaire" onChange={(e) => majInfos('contact', e.target.value)} /></label>}
+              <label>Client<input value={infos.client_nom} onChange={(e) => majInfos('client_nom', e.target.value)} /></label>
               <div className="deux">
                 <label>Téléphone<input type="tel" value={infos.telephone ?? ''} onChange={(e) => majInfos('telephone', e.target.value)} /></label>
                 <label>Mail<input type="email" value={infos.email ?? ''} onChange={(e) => majInfos('email', e.target.value)} /></label>
@@ -217,14 +195,13 @@ export default function Visite() {
                 <label>Code postal<input inputMode="numeric" value={infos.code_postal ?? ''} onChange={(e) => majInfos('code_postal', e.target.value)} /></label>
                 <label>Ville<input value={infos.ville ?? ''} onChange={(e) => majInfos('ville', e.target.value)} /></label>
               </div>
-              <label>Type de travaux
-                <select value={infos.type_travaux ?? ''} onChange={(e) => majInfos('type_travaux', e.target.value)}>
-                  <option value="">—</option>
-                  {TYPES_TRAVAUX.map((t) => <option key={t}>{t}</option>)}
-                </select>
-              </label>
             </>
           )}
+          <div className="choix">
+            {TYPES_TRAVAUX.map((t) => (
+              <button type="button" key={t} aria-pressed={infos.type_travaux === t} onClick={() => majInfos('type_travaux', infos.type_travaux === t ? '' : t)}>{t}</button>
+            ))}
+          </div>
         </section>
 
         {!termine && <Meteo ville={infos.ville} cp={infos.code_postal} />}
