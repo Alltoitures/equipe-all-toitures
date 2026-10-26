@@ -7,6 +7,7 @@ import { RappelNotifications } from '../components/Notifications'
 import { Barres, Classement, Repartition } from '../components/Graphiques'
 import { STATUTS_RDV } from '../lib/visite'
 import { heureAffichee, minutesHeure } from './Visites'
+import { moisLabel, premierVendredi } from '../lib/vehicules'
 
 interface TB {
   mois: string
@@ -36,6 +37,7 @@ interface TB {
   anomalies_vehicules: number
   vehicules_alertes: { nom: string; motif: string }[]
   controles_vehicules_semaine: number
+  niveaux_vehicules_mois: number
   vehicules_actifs: number
   securite_manquante: string[]
 }
@@ -109,6 +111,7 @@ export default function Accueil() {
   if (tb.anomalies_vehicules) alertes.push({ texte: `${tb.anomalies_vehicules} anomalie${tb.anomalies_vehicules > 1 ? 's' : ''} véhicule signalée${tb.anomalies_vehicules > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'rouge' })
   for (const v of tb.vehicules_alertes ?? []) alertes.push({ texte: `${v.nom} : ${v.motif}`, lien: '/gestion/vehicules', niveau: 'orange' })
   if (new Date().getDay() === 5 && tb.vehicules_actifs > tb.controles_vehicules_semaine) alertes.push({ texte: `Contrôle du vendredi : ${tb.vehicules_actifs - tb.controles_vehicules_semaine} véhicule${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''} pas encore contrôlé${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'bleu' })
+  if (isoJour() >= premierVendredi() && tb.niveaux_vehicules_mois != null && tb.vehicules_actifs > tb.niveaux_vehicules_mois) { const n = tb.vehicules_actifs - tb.niveaux_vehicules_mois; alertes.push({ texte: `Niveaux de ${moisLabel()} : ${n} camion${n > 1 ? 's' : ''} pas encore contrôlé${n > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'orange' }) }
   if (new Date().getHours() >= 10 && tb.securite_manquante?.length) alertes.push({ texte: `Point sécurité non fait : ${tb.securite_manquante.join(', ')}`, lien: '/gestion/planning', niveau: 'orange' })
   if (tb.absents_aujourdhui?.length) alertes.push({ texte: `Absent${tb.absents_aujourdhui.length > 1 ? 's' : ''} aujourd'hui : ${tb.absents_aujourdhui.join(', ')}`, lien: '/gestion/conges', niveau: 'bleu' })
   if (tb.imprevus_ouverts) alertes.push({ texte: `${tb.imprevus_ouverts} imprévu${tb.imprevus_ouverts > 1 ? 's' : ''} à traiter`, lien: '/gestion', niveau: 'rouge' })

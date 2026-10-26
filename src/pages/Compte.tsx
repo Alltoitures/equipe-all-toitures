@@ -27,7 +27,7 @@ export default function Compte() {
       <section className="carte">
         <h2>Raccourcis</h2>
         <div className="boutons">
-          <Link className="btn" to="/vehicules">Contrôle véhicule</Link>
+          <Link className="btn" to="/vehicules">Camions : contrôles</Link>
           <Link className="btn" to="/aide">Mode d'emploi</Link>
         </div>
       </section>

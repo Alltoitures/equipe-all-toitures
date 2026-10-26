@@ -7,7 +7,8 @@ const SECTIONS: [string, string[]][] = [
   ['Pendant le chantier', ['Cochez les travaux au fur et à mesure (onglet Travaux).', 'Photos « Pendant » des étapes importantes (support, écran, zinguerie…).', 'Un problème, une surprise, des travaux en plus ? Bouton « Imprévu » : Aurélien est prévenu. Rien de supplémentaire sans son accord.', 'Il manque du matériel ? Onglet Matériel › Demander du matériel.', 'Livraison reçue ? Photo du bon de livraison (onglet Matériel).']],
   ['En fin de chantier', ['Photos « Après » et chantier nettoyé.', 'Faites signer le client sur le téléphone (onglet Travaux › Réception).', 'Bouton « Chantier terminé » : le rapport et le mail au client sont préparés automatiquement.']],
   ['Le soir', ['Saisissez vos heures : départ et retour au dépôt, pause, chantier(s).', 'Le panier repas est calculé tout seul.', 'Un rappel arrive à 17h30 si ce n\'est pas fait.']],
-  ['Le vendredi', ['Contrôle de votre camion : Compte › Contrôle véhicule (kilométrage + 7 points).']],
+  ['Le vendredi', ['Nettoyage et contrôle de votre camion : touchez le bandeau orange « Camions » sur l\'accueil (ou Compte › Camions : contrôles). Kilométrage + 7 points, « Tout est fait » coche tout d\'un coup.']],
+  ['Une fois par mois', ['Niveaux du camion (huile, liquide de refroidissement, lave-glace, AdBlue), moteur froid : pour chacun, « Niveau OK », « Appoint fait » ou « Manque de produit ». Le rappel apparaît à partir du 1er vendredi du mois.']],
   ['Congés', ['Onglet Heures › Demander un congé. Vous recevez la réponse par notification.']],
   ['Bon à savoir', ['Les photos ne vont jamais dans votre galerie : elles partent directement dans le dossier OneDrive du chantier.', 'Sans réseau, tout est gardé dans le téléphone et envoyé au retour du réseau.', 'Aucune géolocalisation, aucun accès à vos contacts ni à votre galerie.']]
 ]

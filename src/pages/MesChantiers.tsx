@@ -4,6 +4,7 @@ import { supabase, STATUTS, type Chantier } from '../lib/supabase'
 import { ajouterJours, dateCourte, isoJour } from '../lib/format'
 import { estStaff, useAuth } from '../lib/auth'
 import { RappelNotifications } from '../components/Notifications'
+import { RappelCamions } from '../components/RappelCamions'
 
 export default function MesChantiers() {
   const { membre } = useAuth()
@@ -47,6 +48,7 @@ export default function MesChantiers() {
         <h1>Mes chantiers</h1>
         {estStaff(membre) && <Link className="btn pri" to="/gestion/chantiers/nouveau">+ Chantier</Link>}
       </div>
+      <RappelCamions />
 
       <RappelNotifications />
       {new Date().getDay() === 5 && !estStaff(membre) && (
