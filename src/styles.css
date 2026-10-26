@@ -500,3 +500,44 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .niv-chip.manque { background: var(--danger-bg); color: var(--danger); }
 .bandeau-camion { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: var(--warn); background: var(--warn-bg); border: 2px solid #ef9f27; border-radius: var(--rayon); padding: 12px 14px; font-weight: 700; }
 .bandeau-camion small { display: block; font-weight: 400; color: var(--ink-2); }
+
+/* Gestion › Camions */
+.vg-resume { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.vg-resume div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--rayon); padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+.vg-resume b { font-size: 22px; line-height: 1.1; }
+.vg-resume span { font-size: 12px; color: var(--muted); font-weight: 700; }
+.vg-resume .e-ok { background: var(--ok-bg); border-color: transparent; } .vg-resume .e-ok b { color: var(--ok); }
+.vg-resume .e-du { background: var(--warn-bg); border-color: #ef9f27; } .vg-resume .e-du b { color: var(--warn); }
+.vg-resume .e-alerte { background: var(--danger-bg); border-color: #e7b3b3; } .vg-resume .e-alerte b { color: var(--danger); }
+.vg-anomalie { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
+.vg-anomalie p { margin: 4px 0 0; }
+.vg-camion { gap: 12px; }
+.vg-tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.vg-tete h2 { margin: 0 0 6px; font-size: 19px; }
+.plaque { display: inline-block; font-family: ui-monospace, monospace; font-weight: 800; font-size: 14px; letter-spacing: 1px; color: #111; background: #fff; border: 2px solid #111; border-left: 12px solid #1e4fb4; border-radius: 4px; padding: 2px 8px; }
+.vg-km { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: var(--surface-2); border: 0; border-radius: 10px; padding: 10px 12px; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.vg-km b { font-size: 20px; }
+.vg-km span { font-size: 13px; color: var(--muted); font-weight: 700; }
+.vg-km .e-proche { color: var(--warn); }
+.vg-km .km-vide { color: var(--accent-ink); font-size: 15px; }
+.vg-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vg-tuile { display: flex; flex-direction: column; gap: 2px; text-align: left; border-radius: 10px; padding: 10px 12px; border: 1px solid var(--line); background: var(--surface); font: inherit; color: inherit; }
+button.vg-tuile { cursor: pointer; }
+.vg-tuile span { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.vg-tuile b { font-size: 17px; }
+.vg-tuile small { font-size: 13px; color: var(--ink-2); }
+.vg-tuile.e-ok { background: var(--ok-bg); border-color: transparent; } .vg-tuile.e-ok b { color: var(--ok); }
+.vg-tuile.e-du, .vg-tuile.e-proche { background: var(--warn-bg); border-color: #ef9f27; } .vg-tuile.e-du b, .vg-tuile.e-proche b { color: var(--warn); }
+.vg-tuile.e-retard { background: var(--danger-bg); border-color: #e7b3b3; } .vg-tuile.e-retard b, .vg-tuile.e-retard small { color: var(--danger); }
+.vg-tuile.e-vide { border-style: dashed; } .vg-tuile.e-vide small { color: var(--accent-ink); font-weight: 700; }
+.vg-niveaux { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.vg-niv { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; font-size: 12px; }
+.vg-niv i { width: 14px; height: 14px; border-radius: 50%; background: #c6d1db; }
+.vg-niv.n-ok i { background: var(--ok); } .vg-niv.n-appoint i { background: var(--accent); } .vg-niv.n-manque i { background: var(--danger); }
+.vg-niv span { font-weight: 700; line-height: 1.2; }
+.vg-niv small { color: var(--muted); }
+.vg-niv.n-manque small { color: var(--danger); font-weight: 700; }
+.vg-histo { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.vg-histo li { display: grid; grid-template-columns: 56px 1fr 20px; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.ok-txt { color: var(--ok); font-weight: 800; }
+.vg-sous-titre { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: -6px; }
