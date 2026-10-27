@@ -1,15 +1,7 @@
 import { isoJour, lundi } from './format'
 
-/** Contrôle du vendredi : nettoyage et points de sécurité, chaque semaine. */
-export const POINTS_VENDREDI = [
-  'Cabine nettoyée et rangée',
-  'Benne / caisse vidée et balayée',
-  'Carrosserie et vitres propres',
-  'Outillage rangé et attaché',
-  'Pneus : pas de crevaison ni de choc',
-  'Éclairage, clignotants, aucun voyant allumé',
-  'Papiers et carte carburant dans le camion'
-]
+/** Nettoyage du vendredi : fait ou pas fait, chaque semaine. */
+export const NETTOYAGE = 'Nettoyage'
 
 /** Au-delà de ce délai sans vérification, un point d'entretien repasse « à vérifier ». */
 export const DELAI_ENTRETIEN = 30
@@ -82,7 +74,8 @@ export function derniersReleves(vid: string, ctrls: ControleV[]): Record<string,
 
 /** État d'un camion : nettoyage de la semaine et entretien (niveaux + usure) de moins de 30 jours. */
 export function etatVehicule(vid: string, ctrls: ControleV[]) {
-  const hebdo = ctrls.find((c) => c.vehicule_id === vid && c.type === 'hebdo')
+  // Dernier nettoyage réellement fait (les anciens contrôles à cases comptent comme faits)
+  const hebdo = ctrls.find((c) => c.vehicule_id === vid && c.type === 'hebdo' && c.points?.[NETTOYAGE] !== 'pas_fait')
   const releves = derniersReleves(vid, ctrls)
   const aVerifier = POINTS_ENTRETIEN.filter((p) => !releves[p.nom]?.aJour).map((p) => p.nom)
   const aReprendre = POINTS_ENTRETIEN.filter((p) => releves[p.nom]?.etat.gravite === 'mauvais').map((p) => p.nom)

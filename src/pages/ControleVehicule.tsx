@@ -5,10 +5,7 @@ import { useAuth } from '../lib/auth'
 import { dateCourte } from '../lib/format'
 import { IcoRetour, IcoCheck } from '../components/Icones'
 import type { Vehicule } from './gestion/Vehicules'
-import { NIVEAUX, USURES, POINTS_ENTRETIEN, POINTS_VENDREDI, etatVehicule, etatDe, ilYaJours, texteReleve, type ControleV, type PointEntretien, type Releve } from '../lib/vehicules'
-
-/** Conservé pour compatibilité avec les anciens imports. */
-export const POINTS_VEHICULE = POINTS_VENDREDI
+import { NIVEAUX, USURES, POINTS_ENTRETIEN, NETTOYAGE, etatVehicule, etatDe, ilYaJours, texteReleve, type ControleV, type PointEntretien, type Releve } from '../lib/vehicules'
 
 export default function ControleVehicule() {
   const nav = useNavigate()
@@ -37,7 +34,7 @@ export default function ControleVehicule() {
     <div className="page">
       <button className="retour" onClick={() => nav(-1)}><IcoRetour /> Retour</button>
       <h1>Camions</h1>
-      <p className="aide">Chaque vendredi : nettoyage et contrôle. Niveaux et usure : à vérifier au moins tous les 30 jours, on voit à chaque fois la dernière vérification.</p>
+      <p className="aide">Chaque vendredi : nettoyage du camion. Niveaux et usure : à vérifier au moins tous les 30 jours, on voit à chaque fois la dernière vérification.</p>
       {msg && <p className="ok">{msg}</p>}
       {vehicules.length === 0 && <div className="vide">Aucun camion enregistré pour l'instant.</div>}
       {vehicules.map((x) => {
@@ -46,7 +43,7 @@ export default function ControleVehicule() {
           <button key={x.id} className="carte veh-carte" onClick={() => { setMsg(''); setVid(x.id) }}>
             <div className="titre-ligne"><strong>{x.nom}</strong>{x.immatriculation && <span className="sous">{x.immatriculation}</span>}</div>
             <div className="veh-etats">
-              <Etat fait={e.vendrediFait} urgent={vendredi} titre="Vendredi" detail={e.vendrediFait ? `fait par ${e.hebdo?.membres?.prenom ?? '—'} le ${dateCourte(e.hebdo?.jour)}` : 'nettoyage à faire'} />
+              <Etat fait={e.vendrediFait} urgent={vendredi} titre="Nettoyage" detail={e.vendrediFait ? `fait par ${e.hebdo?.membres?.prenom ?? '—'} le ${dateCourte(e.hebdo?.jour)}` : 'à faire cette semaine'} />
               <Etat fait={e.entretienAJour && !e.aReprendre.length} urgent={!e.entretienAJour || e.aReprendre.length > 0} titre="Niveaux et usure" detail={e.aReprendre.length ? `à reprendre : ${e.aReprendre.join(', ')}` : e.entretienAJour ? 'à jour' : `à vérifier : ${e.aVerifier.join(', ')}`} />
             </div>
             <span className="veh-go">{e.vendrediFait && e.entretienAJour ? 'Voir / refaire' : 'Faire le contrôle'} ›</span>
@@ -68,24 +65,20 @@ function Etat({ fait, urgent, titre, detail }: { fait: boolean; urgent: boolean;
 
 function Formulaire({ v, ctrls, membreId, onRetour, onFini }: { v: Vehicule; ctrls: ControleV[]; membreId: string; onRetour: () => void; onFini: (m: string) => void }) {
   const e = etatVehicule(v.id, ctrls)
-  const [faireVendredi, setFaireVendredi] = useState(!e.vendrediFait)
+  const [nettoyage, setNettoyage] = useState<'fait' | 'pas_fait' | null>(null)
   const [km, setKm] = useState('')
-  const [points, setPoints] = useState<Record<string, boolean>>({})
   const [entretien, setEntretien] = useState<Record<string, string>>({})
   const [probleme, setProbleme] = useState('')
   const [erreur, setErreur] = useState('')
   const [envoi, setEnvoi] = useState(false)
 
-  const cochés = POINTS_VENDREDI.filter((p) => points[p]).length
   const releves = Object.keys(entretien).length
 
   async function valider(ev: React.FormEvent) {
     ev.preventDefault()
     setErreur('')
-    if (!faireVendredi && !releves && !probleme.trim()) return setErreur('Faites le contrôle du vendredi ou vérifiez au moins un niveau.')
+    if (!nettoyage && !releves && !probleme.trim()) return setErreur('Indiquez le nettoyage ou vérifiez au moins un niveau.')
     if (km && v.km && Number(km) < v.km) return setErreur(`Le kilométrage est inférieur au dernier relevé (${v.km.toLocaleString('fr-FR')} km).`)
-    const nonFaits = faireVendredi ? POINTS_VENDREDI.filter((p) => !points[p]) : []
-    if (nonFaits.length && !confirm(`${nonFaits.length} point${nonFaits.length > 1 ? 's' : ''} non coché${nonFaits.length > 1 ? 's' : ''} : ${nonFaits.length > 1 ? 'ils seront signalés' : 'il sera signalé'} à Aurélien et Adeline. Continuer ?`)) return
 
     const mauvais = POINTS_ENTRETIEN.flatMap((p) => {
       const s = etatDe(p, entretien[p.nom])
@@ -93,13 +86,13 @@ function Formulaire({ v, ctrls, membreId, onRetour, onFini }: { v: Vehicule; ctr
     })
     const lignes: Record<string, unknown>[] = []
     const kmN = km ? Number(km) : null
-    if (faireVendredi) {
-      const texte = [probleme.trim(), nonFaits.length ? `Non fait : ${nonFaits.join(', ')}` : ''].filter(Boolean).join(' · ')
-      lignes.push({ vehicule_id: v.id, membre_id: membreId, type: 'hebdo', km: kmN, points, anomalie: texte || null })
+    if (nettoyage) {
+      const texte = [probleme.trim(), nettoyage === 'pas_fait' ? 'Nettoyage non fait' : ''].filter(Boolean).join(' · ')
+      lignes.push({ vehicule_id: v.id, membre_id: membreId, type: 'hebdo', km: kmN, points: { [NETTOYAGE]: nettoyage }, anomalie: texte || null })
     }
-    if (releves || (!faireVendredi && probleme.trim())) {
-      const texte = [!faireVendredi ? probleme.trim() : '', mauvais.join(' · ')].filter(Boolean).join(' · ')
-      lignes.push({ vehicule_id: v.id, membre_id: membreId, type: 'mensuel', km: faireVendredi ? null : kmN, points: entretien, anomalie: texte || null })
+    if (releves || (!nettoyage && probleme.trim())) {
+      const texte = [!nettoyage ? probleme.trim() : '', mauvais.join(' · ')].filter(Boolean).join(' · ')
+      lignes.push({ vehicule_id: v.id, membre_id: membreId, type: 'mensuel', km: nettoyage ? null : kmN, points: entretien, anomalie: texte || null })
     }
     setEnvoi(true)
     const { error } = await supabase.from('controles_vehicules').insert(lignes)
@@ -144,27 +137,17 @@ function Formulaire({ v, ctrls, membreId, onRetour, onFini }: { v: Vehicule; ctr
           <label>Kilométrage au compteur<input inputMode="numeric" value={km} onChange={(x) => setKm(x.target.value.replace(/\D/g, ''))} placeholder={v.km ? `dernier relevé : ${v.km.toLocaleString('fr-FR')}` : 'ex. 48 200'} /></label>
         </section>
 
-        <section className="carte">
-          <div className="titre-ligne">
-            <h2>Vendredi : nettoyage et contrôle</h2>
-            {faireVendredi && <span className="veh-compteur">{cochés}/{POINTS_VENDREDI.length}</span>}
-          </div>
-          {!faireVendredi ? (
-            <div className="veh-deja">
-              <span>{e.vendrediFait ? `Déjà fait cette semaine par ${e.hebdo?.membres?.prenom ?? '—'} le ${dateCourte(e.hebdo?.jour)}.` : 'Pas fait cette fois-ci.'}</span>
-              <button type="button" className="lien" onClick={() => setFaireVendredi(true)}>{e.vendrediFait ? 'Refaire' : 'Faire maintenant'}</button>
+        <section className={`carte ${!e.vendrediFait ? 'accent' : ''}`}>
+          <h2>Nettoyage du camion</h2>
+          <div className="veh-niveau">
+            <div className="choix veh-segments n2">
+              <button type="button" className="niv-bon" aria-pressed={nettoyage === 'fait'} onClick={() => setNettoyage(nettoyage === 'fait' ? null : 'fait')}>Fait</button>
+              <button type="button" className="niv-mauvais" aria-pressed={nettoyage === 'pas_fait'} onClick={() => setNettoyage(nettoyage === 'pas_fait' ? null : 'pas_fait')}>Pas fait</button>
             </div>
-          ) : (
-            <>
-              <ul className="taches veh-taches">
-                {POINTS_VENDREDI.map((p) => (
-                  <li key={p}><label className={points[p] ? 'fait' : ''}><input type="checkbox" checked={!!points[p]} onChange={() => setPoints({ ...points, [p]: !points[p] })} /><span>{p}</span></label></li>
-                ))}
-              </ul>
-              {cochés < POINTS_VENDREDI.length && <button type="button" className="lien" onClick={() => setPoints(Object.fromEntries(POINTS_VENDREDI.map((p) => [p, true])))}>Tout est fait</button>}
-              <button type="button" className="lien" onClick={() => { setFaireVendredi(false); setPoints({}) }}>{e.vendrediFait ? 'Ne pas refaire' : 'Pas de nettoyage cette fois-ci'}</button>
-            </>
-          )}
+            <small className={`veh-dernier d-${e.vendrediFait ? 'bon' : 'vieux'}`}>
+              {e.vendrediFait ? '✓ ' : '! '}Dernier nettoyage : {e.hebdo ? `${dateCourte(e.hebdo.jour)} · ${e.hebdo.membres?.prenom ?? '—'}` : 'jamais'}{e.vendrediFait ? ' (cette semaine)' : ''}
+            </small>
+          </div>
         </section>
 
         {bloc('Niveaux', 'Moteur froid, camion à plat. Touchez seulement ce que vous avez vérifié : la date et votre prénom sont enregistrés.', NIVEAUX, true)}

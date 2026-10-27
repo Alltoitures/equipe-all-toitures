@@ -118,7 +118,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
             <div key={a.id} className="vg-anomalie">
               <div>
                 <strong>{liste.find((v) => v.id === a.vehicule_id)?.nom}</strong>
-                <span className="sous">{a.membres?.prenom ?? '—'} · {dateCourte(a.jour)} · {a.type === 'mensuel' ? 'niveaux / usure' : 'vendredi'}</span>
+                <span className="sous">{a.membres?.prenom ?? '—'} · {dateCourte(a.jour)} · {a.type === 'mensuel' ? 'niveaux / usure' : 'nettoyage'}</span>
                 <p>{a.anomalie}</p>
               </div>
               <button className="btn" onClick={() => onTraite(a.id)}>Traité</button>
@@ -150,7 +150,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
 
             <div className="vg-grille">
               <div className={`vg-tuile ${e.vendrediFait ? 'e-ok' : vendredi ? 'e-du' : ''}`}>
-                <span>Nettoyage vendredi</span>
+                <span>Nettoyage</span>
                 <b>{e.vendrediFait ? '✓ Fait' : 'À faire'}</b>
                 <small>{e.vendrediFait ? `${e.hebdo?.membres?.prenom ?? '—'} · ${dateCourte(e.hebdo?.jour)}` : e.hebdo ? `dernier : ${dateCourte(e.hebdo.jour)}` : 'jamais fait'}</small>
               </div>
@@ -196,7 +196,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
                     {histo.map((c) => (
                       <li key={c.id}>
                         <span>{dateCourte(c.jour)}</span>
-                        <span>{c.type === 'mensuel' ? 'Niveaux / usure' : 'Vendredi'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}</span>
+                        <span>{c.type === 'mensuel' ? 'Niveaux / usure' : c.points?.Nettoyage === 'pas_fait' ? 'Nettoyage non fait' : 'Nettoyage'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}</span>
                         <span className={c.anomalie ? 'urgent' : 'ok-txt'}>{c.anomalie ? '⚠' : '✓'}</span>
                       </li>
                     ))}
