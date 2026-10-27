@@ -6,12 +6,13 @@ import { dateCourte, isoJour, telAffiche } from '../lib/format'
 import { estGerant, estStaff, useAuth } from '../lib/auth'
 import { IcoAlerte, IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Documents from '../components/Documents'
+import { PhotosChantier } from '../components/Photos'
 import Meteo from '../components/Meteo'
 import { DemandesMateriel, Reception, SecuriteJour } from '../components/ChantierPlus'
 import RealisationCarte from '../components/RealisationCarte'
 import AvisGoogle from '../components/AvisGoogle'
 
-type Onglet = 'fiche' | 'travaux' | 'materiel' | 'documents'
+type Onglet = 'fiche' | 'travaux' | 'photos' | 'materiel' | 'documents'
 
 const PHASES: { id: Phase; nom: string }[] = [
   { id: 'avant', nom: 'Avant' },
@@ -180,6 +181,7 @@ export default function Chantier() {
         {([
           ['fiche', 'Fiche'],
           ['travaux', `Travaux ${aCocher.length ? `${faites}/${aCocher.length}` : ''}`],
+          ['photos', 'Photos'],
           ['materiel', 'Matériel'],
           ['documents', 'Documents']
         ] as [Onglet, string][]).map(([o, l]) => (
@@ -286,7 +288,7 @@ export default function Chantier() {
             )}
           </section>
 
-          <Reception chantier={c} />
+          <Reception chantier={c} taches={taches} />
           {estGerant(membre) && <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />}
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
           {c.statut === 'termine' && estGerant(membre) && <RealisationCarte chantierId={c.id} />}
@@ -330,6 +332,7 @@ export default function Chantier() {
         </>
       )}
 
+      {onglet === 'photos' && <PhotosChantier chantierId={c.id} />}
       {onglet === 'documents' && <Documents chantierId={c.id} />}
 
       <div className="barre-actions">

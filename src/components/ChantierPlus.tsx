@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { supabase, erreurLisible, type Chantier } from '../lib/supabase'
+import { supabase, erreurLisible, type Chantier, type Tache } from '../lib/supabase'
 import { ajouterPhoto, compresser } from '../lib/photos'
 import { dateCourte, isoJour } from '../lib/format'
 import { useAuth } from '../lib/auth'
 import { IcoPhoto } from './Icones'
+import { NOMS_PHASE, Visionneuse, photosAnnexe, usePhotosChantier } from './Photos'
 
 // ---------------------------------------------------------------- Sécurité du jour
 export const POINTS_SECURITE = [
@@ -145,44 +146,104 @@ export function DemandesMateriel({ chantierId }: { chantierId: string }) {
   )
 }
 
-// ---------------------------------------------------------------- Réception client (signature)
-interface Rec { signataire: string; sans_reserve: boolean; reserves: string | null; signe_le: string }
+// ---------------------------------------------------------------- Réception client : PV avec photos, signature, PDF
+interface Rec { id?: string; signataire: string; sans_reserve: boolean; reserves: string | null; signe_le: string; pv_nom?: string | null }
+interface PvPret { url: string; fichier: File; range: boolean; photos: number }
 
-export function Reception({ chantier }: { chantier: Chantier }) {
+function pdfDepuisBase64(b64: string, nom: string): PvPret['fichier'] {
+  const bin = atob(b64)
+  const u = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i)
+  return new File([u], nom, { type: 'application/pdf' })
+}
+
+async function partagerPv(pv: PvPret, client: string) {
+  const donnees = { files: [pv.fichier], title: 'PV de réception', text: `PV de réception des travaux - ${client} - ALL TOITURES` }
+  if (navigator.canShare?.(donnees)) {
+    try { await navigator.share(donnees) } catch { /* partage annulé */ }
+  } else window.open(pv.url, '_blank')
+}
+
+export function Reception({ chantier, taches = [] }: { chantier: Chantier; taches?: Tache[] }) {
   const { membre } = useAuth()
   const [rec, setRec] = useState<Rec | null | undefined>(undefined)
   const [ouvert, setOuvert] = useState(false)
+  const [pv, setPv] = useState<PvPret | null>(null)
+  const [occupe, setOccupe] = useState('')
+  const [erreur, setErreur] = useState('')
   useEffect(() => {
-    supabase.from('receptions').select('signataire, sans_reserve, reserves, signe_le').eq('chantier_id', chantier.id).maybeSingle().then(({ data }) => setRec((data as Rec) ?? null))
+    supabase.from('receptions').select('id, signataire, sans_reserve, reserves, signe_le, pv_nom').eq('chantier_id', chantier.id).maybeSingle().then(({ data }) => setRec((data as Rec) ?? null))
   }, [chantier.id])
   if (rec === undefined || !membre) return null
+
+  async function ouvrirPv() {
+    if (pv) return window.open(pv.url, '_blank')
+    setErreur('')
+    setOccupe('Ouverture du PV…')
+    const { data } = await supabase.functions.invoke('photos-chantier', { body: { chantier: chantier.id, action: 'pv-lien' } })
+    if (data?.lien) { window.open(data.lien, '_blank'); setOccupe(''); return }
+    // PV absent (réception signée avant la mise en place du PDF) : on le fabrique.
+    setOccupe('Préparation du PV…')
+    const r = await supabase.functions.invoke('photos-chantier', { body: { chantier: chantier.id, action: 'pv', reception: rec!.id } })
+    setOccupe('')
+    if (r.data?.pdf) {
+      const fichier = pdfDepuisBase64(r.data.pdf, r.data.nom)
+      const p = { url: URL.createObjectURL(fichier), fichier, range: r.data.range, photos: r.data.photos }
+      setPv(p)
+      window.open(p.url, '_blank')
+    } else setErreur('PV indisponible pour le moment. Réessayez avec du réseau.')
+  }
+
   return (
     <section className="carte">
       <h2>Réception par le client</h2>
       {rec ? (
-        <p>✅ Signée par <strong>{rec.signataire}</strong> le {dateCourte(rec.signe_le)} · {rec.sans_reserve ? 'sans réserve' : `réserves : ${rec.reserves}`}</p>
+        <>
+          <p>✅ Signée par <strong>{rec.signataire}</strong> le {dateCourte(rec.signe_le)} · {rec.sans_reserve ? 'sans réserve' : `réserves : ${rec.reserves}`}</p>
+          <div className="boutons">
+            <button className="btn" disabled={!!occupe} onClick={ouvrirPv}>{occupe || 'Voir le PV (PDF)'}</button>
+            {pv && <button className="btn" onClick={() => partagerPv(pv, chantier.client_nom)}>Envoyer au client</button>}
+          </div>
+          {erreur && <p className="erreur">{erreur}</p>}
+        </>
       ) : (
         <>
-          <p className="sous">À la fin du chantier, faites signer le client sur le téléphone. La signature est rangée dans le dossier et reprise dans le rapport.</p>
-          <button className="btn" onClick={() => setOuvert(true)}>Faire signer le client</button>
+          <p className="sous">À la fin du chantier, le client lit le PV de réception sur le téléphone, avec les photos des travaux en annexe, puis signe. Le PV signé (PDF) est rangé dans le dossier du chantier.</p>
+          <button className="btn pri" onClick={() => setOuvert(true)}>Faire signer le PV de réception</button>
         </>
       )}
-      {ouvert && <Signature chantier={chantier} membreId={membre.id} fermer={(r) => { setOuvert(false); if (r) setRec(r) }} />}
+      {ouvert && (
+        <Signature
+          chantier={chantier}
+          taches={taches}
+          membreId={membre.id}
+          fermer={(r, p) => { setOuvert(false); if (r) setRec(r); if (p) setPv(p) }}
+        />
+      )}
     </section>
   )
 }
 
-function Signature({ chantier, membreId, fermer }: { chantier: Chantier; membreId: string; fermer: (r: Rec | null) => void }) {
+function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier; taches: Tache[]; membreId: string; fermer: (r: Rec | null, pv?: PvPret | null) => void }) {
   const toile = useRef<HTMLCanvasElement>(null)
+  const { photos } = usePhotosChantier(chantier.id)
   const [nom, setNom] = useState(chantier.client_nom)
   const [sansReserve, setSansReserve] = useState(true)
   const [reserves, setReserves] = useState('')
   const [signe, setSigne] = useState(false)
   const [erreur, setErreur] = useState('')
-  const [occupe, setOccupe] = useState(false)
+  const [etape, setEtape] = useState<'lecture' | 'envoi' | 'fini'>('lecture')
+  const [resultat, setResultat] = useState<{ rec: Rec; pv: PvPret | null } | null>(null)
+  const [vue, setVue] = useState<number | null>(null)
+
+  const annexe = photos ? photosAnnexe(photos) : []
+  const bordereau = taches.filter((t) => t.categorie === 'bordereau')
+  const travaux = bordereau.length ? bordereau : taches.filter((t) => t.categorie === 'travaux')
+  const adresse = [chantier.adresse, [chantier.code_postal, chantier.ville].filter(Boolean).join(' ')].filter(Boolean).join(', ')
 
   useEffect(() => {
-    const cv = toile.current!
+    const cv = toile.current
+    if (!cv) return
     const r = cv.getBoundingClientRect()
     cv.width = r.width * 2
     cv.height = r.height * 2
@@ -200,7 +261,7 @@ function Signature({ chantier, membreId, fermer }: { chantier: Chantier; membreI
     cv.addEventListener('pointermove', bouge)
     cv.addEventListener('pointerup', haut)
     return () => { cv.removeEventListener('pointerdown', bas); cv.removeEventListener('pointermove', bouge); cv.removeEventListener('pointerup', haut) }
-  }, [])
+  }, [etape])
 
   function effacer() {
     const cv = toile.current!
@@ -209,10 +270,11 @@ function Signature({ chantier, membreId, fermer }: { chantier: Chantier; membreI
   }
 
   async function enregistrer() {
-    if (!signe) return setErreur('La signature est vide.')
+    if (!nom.trim()) return setErreur('Indiquez le nom du signataire.')
     if (!sansReserve && !reserves.trim()) return setErreur('Indiquez les réserves.')
-    setOccupe(true)
+    if (!signe) return setErreur('Le client doit signer dans le cadre.')
     setErreur('')
+    setEtape('envoi')
     try {
       const cv = toile.current!
       // Fond blanc pour un fichier lisible partout.
@@ -232,36 +294,108 @@ function Signature({ chantier, membreId, fermer }: { chantier: Chantier; membreI
       const up = await supabase.storage.from('photos').upload(chemin, blob, { contentType: 'image/png' })
       if (up.error) throw up.error
       const r = { chantier_id: chantier.id, membre_id: membreId, signataire: nom.trim(), sans_reserve: sansReserve, reserves: sansReserve ? null : reserves.trim(), signature_path: chemin }
-      const ins = await supabase.from('receptions').insert(r)
+      const ins = await supabase.from('receptions').insert(r).select('id, signe_le').single()
       if (ins.error) throw ins.error
-      fermer({ ...r, signe_le: new Date().toISOString() })
+      const rec: Rec = { ...r, id: ins.data.id, signe_le: ins.data.signe_le }
+      // PV PDF avec photos en annexe, rangé dans « F - Suivi chantier ».
+      const res = await supabase.functions.invoke('photos-chantier', { body: { chantier: chantier.id, action: 'pv', reception: rec.id } })
+      let pv: PvPret | null = null
+      if (res.data?.pdf) {
+        const fichier = pdfDepuisBase64(res.data.pdf, res.data.nom)
+        pv = { url: URL.createObjectURL(fichier), fichier, range: res.data.range, photos: res.data.photos }
+      }
+      setResultat({ rec, pv })
+      setEtape('fini')
     } catch (e) {
+      setEtape('lecture')
       setErreur(navigator.onLine ? erreurLisible(e) : 'Pas de réseau : la signature doit être enregistrée avec une connexion.')
-    } finally {
-      setOccupe(false)
     }
+  }
+
+  if (etape === 'fini' && resultat) {
+    const { rec, pv } = resultat
+    return (
+      <div className="fond-modal">
+        <div className="modal pv-fini">
+          <div className="pv-ok">✓</div>
+          <h2>PV de réception signé</h2>
+          <p>Signé par <strong>{rec.signataire}</strong>, {rec.sans_reserve ? 'sans réserve' : 'avec réserves'}.</p>
+          {pv ? (
+            <>
+              <p className="sous">{pv.photos} photo{pv.photos > 1 ? 's' : ''} en annexe · {pv.range ? 'rangé dans le dossier du chantier (F - Suivi chantier)' : 'sera rangé dans le dossier dès que possible'}.</p>
+              <button className="btn pri large" onClick={() => partagerPv(pv, chantier.client_nom)}>Envoyer le PV au client</button>
+              <button className="btn large" onClick={() => window.open(pv.url, '_blank')}>Voir le PDF</button>
+            </>
+          ) : (
+            <p className="sous">La signature est enregistrée. Le PDF sera disponible depuis la fiche (« Voir le PV ») dès que le réseau le permet.</p>
+          )}
+          <button className="lien" onClick={() => fermer(rec, pv)}>Fermer</button>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="fond-modal">
-      <div className="modal">
-        <h2>Réception des travaux</h2>
-        <p className="aide">Le client confirme que les travaux sont terminés.</p>
-        <label>Nom du signataire<input value={nom} onChange={(e) => setNom(e.target.value)} /></label>
-        <div className="choix">
+      <div className="modal pv-modal">
+        <div className="titre-ligne">
+          <h2>PV de réception</h2>
+          <button className="lien" onClick={() => fermer(null)} disabled={etape === 'envoi'}>Annuler</button>
+        </div>
+        <p className="aide">Faites lire le procès-verbal au client, avec les photos des travaux, avant qu'il signe en bas.</p>
+
+        <article className="pv-doc">
+          <header>
+            <img src="/logo-couleur.png" alt="ALL TOITURES" />
+            <h3>Procès-verbal de réception des travaux</h3>
+            <small>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}{chantier.reference ? ` · ${chantier.reference}` : ''}</small>
+          </header>
+          <dl>
+            <dt>Entreprise</dt><dd>ALL TOITURES</dd>
+            <dt>Maître d'ouvrage</dt><dd>{chantier.client_nom}</dd>
+            {adresse && <><dt>Chantier</dt><dd>{adresse}</dd></>}
+            {chantier.bon?.objet && <><dt>Objet</dt><dd>{chantier.bon.objet}</dd></>}
+          </dl>
+          {travaux.length > 0 && (
+            <>
+              <h4>Travaux réalisés</h4>
+              <ul className="pv-travaux">
+                {travaux.map((t) => t.est_groupe ? <li key={t.id} className="g">{t.libelle}</li> : (
+                  <li key={t.id}>{t.libelle}{t.quantite != null && <small> · {String(t.quantite).replace('.', ',')} {t.unite ?? ''}</small>}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          <h4>Annexe : photos des travaux {annexe.length > 0 && <small>({annexe.length})</small>}</h4>
+          {!photos && <p className="sous">Chargement des photos…</p>}
+          {photos && annexe.length === 0 && <p className="sous">Aucune photo avant / après pour ce chantier. Pensez à prendre les photos « Après » avant la réception.</p>}
+          {annexe.length > 0 && (
+            <div className="pv-photos">
+              {annexe.map((p, i) => (
+                <button key={p.id} onClick={() => setVue(i)}>
+                  <img src={p.miniature ?? p.grande ?? ''} alt="" loading="lazy" />
+                  <span>{NOMS_PHASE[p.phase]}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <p className="pv-mention">La réception est prononcée contradictoirement à la date du jour. Elle fait courir la garantie de parfait achèvement (1 an), de bon fonctionnement (2 ans) et décennale (10 ans).</p>
+        </article>
+
+        <span className="q-label">Décision du client</span>
+        <div className="choix pv-choix">
           <button type="button" aria-pressed={sansReserve} onClick={() => setSansReserve(true)}>Sans réserve</button>
           <button type="button" aria-pressed={!sansReserve} onClick={() => setSansReserve(false)}>Avec réserves</button>
         </div>
-        {!sansReserve && <textarea rows={3} value={reserves} onChange={(e) => setReserves(e.target.value)} placeholder="Réserves du client" />}
-        <span className="q-label">Signature du client</span>
+        {!sansReserve && <textarea rows={3} value={reserves} onChange={(e) => setReserves(e.target.value)} placeholder="Réserves du client (ce qui reste à reprendre)" />}
+        <label>Nom du signataire<input value={nom} onChange={(e) => setNom(e.target.value)} /></label>
+        <span className="q-label">Signature du client <small>(« Lu et approuvé »)</small></span>
         <canvas ref={toile} className="toile-signature" />
-        <button type="button" className="lien" onClick={effacer}>Effacer</button>
+        <button type="button" className="lien" onClick={effacer}>Effacer la signature</button>
         {erreur && <p className="erreur">{erreur}</p>}
-        <div className="boutons">
-          <button type="button" className="btn" onClick={() => fermer(null)}>Annuler</button>
-          <button type="button" className="btn go" disabled={occupe} onClick={enregistrer}>{occupe ? 'Enregistrement…' : 'Valider'}</button>
-        </div>
+        <button type="button" className="btn go large" disabled={etape === 'envoi'} onClick={enregistrer}>{etape === 'envoi' ? 'Création du PV…' : 'Valider la réception'}</button>
       </div>
+      {vue !== null && <Visionneuse photos={annexe} index={vue} changer={setVue} fermer={() => setVue(null)} />}
     </div>
   )
 }
