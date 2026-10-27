@@ -495,6 +495,18 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .veh-segments button.niv-ok[aria-pressed='true'] { background: var(--ok); border-color: var(--ok); }
 .veh-segments button.niv-appoint[aria-pressed='true'] { background: var(--accent-ink); border-color: var(--accent-ink); }
 .veh-segments button.niv-manque[aria-pressed='true'] { background: var(--danger); border-color: var(--danger); }
+.veh-segments.n2 { grid-template-columns: repeat(2, 1fr); }
+.veh-segments.n4 { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 520px) { .veh-segments.n4 { grid-template-columns: repeat(4, 1fr); } }
+.veh-segments button.niv-bon[aria-pressed='true'] { background: var(--ok); border-color: var(--ok); color: #fff; }
+.veh-segments button.niv-moyen[aria-pressed='true'] { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
+.veh-segments button.niv-mauvais[aria-pressed='true'] { background: var(--danger); border-color: var(--danger); color: #fff; }
+.veh-dernier { font-size: 12px; color: var(--muted); }
+.veh-dernier.d-bon { color: var(--ok); }
+.veh-dernier.d-moyen { color: var(--accent-ink); font-weight: 700; }
+.veh-dernier.d-mauvais, .veh-dernier.d-vieux, .veh-dernier.d-jamais { color: var(--danger); font-weight: 700; }
+.vg-niveaux.vg-entretien { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.vg-niv.n-moyen i { background: var(--accent); } .vg-niv.n-vieux i { background: #c6d1db; } .vg-niv.n-vieux small { color: var(--danger); }
 .niv-chip { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin: 2px 4px 0 0; background: var(--ok-bg); color: var(--ok); }
 .niv-chip.appoint { background: var(--accent-soft); color: var(--accent-ink); }
 .niv-chip.manque { background: var(--danger-bg); color: var(--danger); }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase, erreurLisible } from '../../lib/supabase'
 import { dateCourte, isoJour } from '../../lib/format'
 import { IcoRetour } from '../../components/Icones'
-import { NIVEAUX, etatVehicule, moisLabel, type ControleV } from '../../lib/vehicules'
+import { POINTS_ENTRETIEN, etatVehicule, ilYaJours, type ControleV } from '../../lib/vehicules'
 
 export interface Vehicule { id: string; nom: string; immatriculation: string | null; km: number | null; prochain_entretien_km: number | null; prochaine_revision: string | null; controle_technique: string | null; notes: string | null; actif: boolean }
 
@@ -18,7 +18,7 @@ export default function Vehicules() {
 
   const charger = () => Promise.all([
     supabase.from('vehicules').select('*').eq('actif', true).order('nom'),
-    supabase.from('controles_vehicules').select('id, type, jour, km, points, anomalie, anomalie_traitee, vehicule_id, membres(prenom)').order('jour', { ascending: false }).order('created_at', { ascending: false }).limit(150)
+    supabase.from('controles_vehicules').select('id, type, jour, km, points, anomalie, anomalie_traitee, vehicule_id, membres(prenom)').gte('jour', ilYaJours(365)).order('jour', { ascending: false }).order('created_at', { ascending: false }).limit(1000)
   ]).then(([v, c]) => {
     setListe((v.data ?? []) as Vehicule[])
     setCtrls((c.data ?? []) as unknown as ControleV[])
@@ -95,7 +95,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
   const [ouvert, setOuvert] = useState<string | null>(null)
   const etats = liste.map((v) => ({ v, e: etatVehicule(v.id, ctrls) }))
   const nettoyes = etats.filter((x) => x.e.vendrediFait).length
-  const niveauxOk = etats.filter((x) => x.e.niveauxFaits).length
+  const niveauxOk = etats.filter((x) => x.e.entretienAJour).length
   const anomalies = ctrls.filter((c) => c.anomalie && !c.anomalie_traitee && liste.some((v) => v.id === c.vehicule_id))
   const vendredi = new Date().getDay() === 5
 
@@ -106,7 +106,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
       {liste.length > 0 && (
         <div className="vg-resume">
           <div className={nettoyes === liste.length ? 'e-ok' : vendredi ? 'e-du' : ''}><b>{nettoyes}/{liste.length}</b><span>nettoyés cette semaine</span></div>
-          <div className={niveauxOk === liste.length ? 'e-ok' : etats.some((x) => x.e.niveauxDus) ? 'e-du' : ''}><b>{niveauxOk}/{liste.length}</b><span>niveaux de {moisLabel()}</span></div>
+          <div className={niveauxOk === liste.length ? 'e-ok' : 'e-du'}><b>{niveauxOk}/{liste.length}</b><span>niveaux et usure à jour</span></div>
           <div className={anomalies.length ? 'e-alerte' : 'e-ok'}><b>{anomalies.length}</b><span>{anomalies.length > 1 ? 'problèmes signalés' : 'problème signalé'}</span></div>
         </div>
       )}
@@ -118,7 +118,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
             <div key={a.id} className="vg-anomalie">
               <div>
                 <strong>{liste.find((v) => v.id === a.vehicule_id)?.nom}</strong>
-                <span className="sous">{a.membres?.prenom ?? '—'} · {dateCourte(a.jour)} · {a.type === 'mensuel' ? 'niveaux' : 'vendredi'}</span>
+                <span className="sous">{a.membres?.prenom ?? '—'} · {dateCourte(a.jour)} · {a.type === 'mensuel' ? 'niveaux / usure' : 'vendredi'}</span>
                 <p>{a.anomalie}</p>
               </div>
               <button className="btn" onClick={() => onTraite(a.id)}>Traité</button>
@@ -127,13 +127,12 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
         </section>
       )}
 
-      {liste.length === 0 && <div className="vide">Ajoutez vos camions : l'équipe fera le nettoyage du vendredi et les niveaux du mois depuis son téléphone.</div>}
+      {liste.length === 0 && <div className="vide">Ajoutez vos camions : l'équipe fera le nettoyage du vendredi et vérifiera les niveaux et l'usure depuis son téléphone.</div>}
 
       {etats.map(({ v, e }) => {
         const ct = echeance(v.controle_technique)
         const rev = echeance(v.prochaine_revision)
         const resteKm = v.km != null && v.prochain_entretien_km != null ? v.prochain_entretien_km - v.km : null
-        const niv = e.niveauxFaits ? (e.mensuel?.points as Record<string, string>) : (e.mensuel?.points as Record<string, string> | undefined)
         const histo = ctrls.filter((c) => c.vehicule_id === v.id).slice(0, 8)
         return (
           <section key={v.id} className="carte vg-camion">
@@ -155,10 +154,10 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
                 <b>{e.vendrediFait ? '✓ Fait' : 'À faire'}</b>
                 <small>{e.vendrediFait ? `${e.hebdo?.membres?.prenom ?? '—'} · ${dateCourte(e.hebdo?.jour)}` : e.hebdo ? `dernier : ${dateCourte(e.hebdo.jour)}` : 'jamais fait'}</small>
               </div>
-              <div className={`vg-tuile ${e.niveauxFaits ? 'e-ok' : e.niveauxDus ? 'e-du' : ''}`}>
-                <span>Niveaux {moisLabel()}</span>
-                <b>{e.niveauxFaits ? '✓ Faits' : 'À faire'}</b>
-                <small>{e.niveauxFaits ? `${e.mensuel?.membres?.prenom ?? '—'} · ${dateCourte(e.mensuel?.jour)}` : e.mensuel ? `derniers : ${dateCourte(e.mensuel.jour)}` : 'jamais faits'}</small>
+              <div className={`vg-tuile ${e.aReprendre.length ? 'e-retard' : e.entretienAJour ? 'e-ok' : 'e-du'}`}>
+                <span>Niveaux et usure</span>
+                <b>{e.aReprendre.length ? 'À reprendre' : e.entretienAJour ? '✓ À jour' : 'À vérifier'}</b>
+                <small>{e.aReprendre.length ? e.aReprendre.join(', ') : e.entretienAJour ? (e.aSurveiller.length ? `à surveiller : ${e.aSurveiller.join(', ')}` : 'moins de 30 jours') : `${e.aVerifier.length} point${e.aVerifier.length > 1 ? 's' : ''} à vérifier`}</small>
               </div>
               <button className={`vg-tuile ${ct.cls}`} onClick={() => onModifier(v)}>
                 <span>Contrôle technique</span>
@@ -172,18 +171,20 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
               </button>
             </div>
 
-            {niv && <span className="vg-sous-titre">Niveaux relevés le {dateCourte(e.mensuel?.jour)}</span>}
-            {niv && (
-              <div className="vg-niveaux">
-                {NIVEAUX.map((n) => (
-                  <div key={n} className={`vg-niv n-${niv[n] ?? 'inconnu'}`}>
+            <span className="vg-sous-titre">Dernières vérifications</span>
+            <div className="vg-niveaux vg-entretien">
+              {POINTS_ENTRETIEN.map((p) => {
+                const r = e.releves[p.nom]
+                const cls = !r ? 'inconnu' : r.etat.gravite === 'mauvais' ? 'manque' : r.etat.gravite === 'moyen' ? 'moyen' : r.aJour ? 'ok' : 'vieux'
+                return (
+                  <div key={p.nom} className={`vg-niv n-${cls}`} title={r ? `${r.prenom} · ${dateCourte(r.jour)}` : 'jamais vérifié'}>
                     <i />
-                    <span>{n}</span>
-                    <small>{niv[n] === 'ok' ? 'OK' : niv[n] === 'appoint' ? 'appoint fait' : niv[n] === 'manque' ? 'à compléter' : '—'}</small>
+                    <span>{p.nom}</span>
+                    <small>{r ? `${r.etat.label} · ${dateCourte(r.jour)}` : 'jamais'}</small>
                   </div>
-                ))}
-              </div>
-            )}
+                )
+              })}
+            </div>
 
             {v.notes && <p className="sous">{v.notes}</p>}
 
@@ -195,7 +196,7 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
                     {histo.map((c) => (
                       <li key={c.id}>
                         <span>{dateCourte(c.jour)}</span>
-                        <span>{c.type === 'mensuel' ? 'Niveaux' : 'Vendredi'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}</span>
+                        <span>{c.type === 'mensuel' ? 'Niveaux / usure' : 'Vendredi'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}</span>
                         <span className={c.anomalie ? 'urgent' : 'ok-txt'}>{c.anomalie ? '⚠' : '✓'}</span>
                       </li>
                     ))}
