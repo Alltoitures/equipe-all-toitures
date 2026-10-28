@@ -96,6 +96,24 @@ export const SECTIONS: Section[] = [
 
 export const UNITES = ['m²', 'ml', 'u', 'ens.', 'm³', 'h']
 
+/** Boutons rapides de la rubrique Mesures : un appui crée la ligne avec la bonne unité. */
+export const MESURES_RAPIDES: { ouvrage: string; unite: string }[] = [
+  { ouvrage: 'Couverture', unite: 'm²' },
+  { ouvrage: 'Faîtage', unite: 'ml' },
+  { ouvrage: 'Arêtier', unite: 'ml' },
+  { ouvrage: 'Noue', unite: 'ml' },
+  { ouvrage: 'Rive', unite: 'ml' },
+  { ouvrage: 'Gouttière', unite: 'ml' },
+  { ouvrage: 'Descente', unite: 'ml' },
+  { ouvrage: 'Solin / abergement', unite: 'ml' },
+  { ouvrage: 'Chéneau', unite: 'ml' },
+  { ouvrage: 'Tuiles à remplacer', unite: 'u' },
+  { ouvrage: 'Chapeau / sortie de ventilation', unite: 'u' },
+  { ouvrage: 'Fenêtre de toit', unite: 'u' },
+  { ouvrage: 'Habillage bandeau / sous-face', unite: 'ml' },
+  { ouvrage: 'Isolation', unite: 'm²' }
+]
+
 export function nbReponses(f: Fiche): number {
   return SECTIONS.flatMap((s) => s.questions).filter((q) => {
     const v = f[q.id]

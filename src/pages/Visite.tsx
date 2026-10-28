@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
+import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, MESURES_RAPIDES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
@@ -245,7 +245,12 @@ export default function Visite() {
               </div>
             </div>
           ))}
-          <button type="button" className="btn" onClick={() => majMesures([...mesures, { ouvrage: '', qte: '', unite: 'm²', remarque: '' }])}>+ Mesure</button>
+          <div className="choix mesures-rapides">
+            {MESURES_RAPIDES.map((r) => (
+              <button type="button" key={r.ouvrage} onClick={() => majMesures([...mesures, { ouvrage: r.ouvrage, qte: '', unite: r.unite, remarque: '' }])}>+ {r.ouvrage}</button>
+            ))}
+          </div>
+          <button type="button" className="btn" onClick={() => majMesures([...mesures, { ouvrage: '', qte: '', unite: 'm²', remarque: '' }])}>+ Autre mesure</button>
         </section>
 
         <section className="carte">

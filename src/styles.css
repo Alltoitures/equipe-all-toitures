@@ -327,6 +327,8 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .mesure-ligne select { flex: 0 0 64px; }
 .mesure-ligne input:nth-child(3) { flex: 1; }
 .mesure-ligne .btn { flex: 0 0 36px; padding: 0; }
+.mesures-rapides { margin: 10px 0 8px; }
+.mesures-rapides button { font-size: 13px; }
 .visite-actions { grid-template-columns: 1fr 1fr; }
 
 /* ---------- Accueil (tableau de bord) ---------- */
