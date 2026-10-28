@@ -137,3 +137,6 @@ export function statutRdv(v: Pick<Visite, 'statut' | 'rdv_statut'>): { nom: stri
   const nom = v.rdv_statut ?? (v.statut === 'terminee' ? 'Devis à faire' : 'À venir')
   return STATUTS_RDV.find((s) => s.nom === nom) ?? { nom, classe: 'rdv-sanssuite' }
 }
+
+/** Choix rapides pour légender une photo de visite (repris dans le nom du fichier et le rapport client). */
+export const LEGENDES_PHOTO = ['Vue générale', 'Couverture', 'Faîtage', 'Noue', 'Rive', 'Gouttière', 'Descente', 'Solin', 'Abergement', 'Chéneau', 'Cheminée', 'Ventilation', 'Fenêtre de toit', 'Sous-face', 'Charpente', 'Intérieur / dégât']

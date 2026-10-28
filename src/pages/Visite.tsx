@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, MESURES_RAPIDES, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
+import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, MESURES_RAPIDES, LEGENDES_PHOTO, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
@@ -20,7 +20,7 @@ export default function Visite() {
   const [etat, setEtat] = useState<'' | 'attente' | 'ok' | 'hors'>('')
   const [message, setMessage] = useState('')
   const [erreur, setErreur] = useState('')
-  const [legende, setLegende] = useState('')
+  const [aLegender, setALegender] = useState<{ blob: Blob; url: string; ouvrage: string; precision: string }[]>([])
   const minuteur = useRef<number | undefined>(undefined)
   const cle = `at-visite-${id}`
 
@@ -104,16 +104,32 @@ export default function Visite() {
     planifier(fiche, i)
   }
 
+  /** Les photos prises passent d'abord par l'écran de légende, puis partent dans la file d'envoi. */
   async function photos(fichiers: FileList | null) {
     if (!fichiers?.length || !v) return
-    const n = fichiers.length
+    const nouvelles: { blob: Blob; url: string; ouvrage: string; precision: string }[] = []
     for (const f of Array.from(fichiers)) {
       const blob = await compresser(f)
-      await ajouterPhotoVisite({ visite_id: v.id, legende: legende.trim() || undefined, blob })
+      nouvelles.push({ blob, url: URL.createObjectURL(blob), ouvrage: '', precision: '' })
     }
-    setNbPhotos((x) => x + n)
-    setLegende('')
-    setMessage(`${n} photo${n > 1 ? 's' : ''} enregistrée${n > 1 ? 's' : ''}. Rangement automatique dans OneDrive.`)
+    setALegender((x) => [...x, ...nouvelles])
+  }
+
+  function majLegende(i: number, k: 'ouvrage' | 'precision', val: string) {
+    setALegender((x) => x.map((p, j) => (j === i ? { ...p, [k]: val } : p)))
+  }
+
+  async function enregistrerPhotos() {
+    if (!v) return
+    const liste = aLegender
+    for (const p of liste) {
+      const legende = [p.ouvrage, p.precision.trim()].filter(Boolean).join(' – ')
+      await ajouterPhotoVisite({ visite_id: v.id, legende: legende || undefined, blob: p.blob })
+      URL.revokeObjectURL(p.url)
+    }
+    setALegender([])
+    setNbPhotos((x) => x + liste.length)
+    setMessage(`${liste.length} photo${liste.length > 1 ? 's' : ''} enregistrée${liste.length > 1 ? 's' : ''}. Rangement automatique dans OneDrive.`)
   }
 
   async function terminer() {
@@ -255,12 +271,32 @@ export default function Visite() {
 
         <section className="carte">
           <h2>Photos <span className="sous">{nbPhotos}</span></h2>
-          <label>Légende (facultatif, pour les prochaines photos)<input value={legende} onChange={(e) => setLegende(e.target.value)} placeholder="Ex. : versant nord, chéneau" /></label>
+          <p className="aide">Après chaque photo, choisissez ce qu'elle montre : la légende sert au rapport client.</p>
           <p className="aide">Rangées dans OneDrive : Visite - AO › {v.date_rdv?.slice(0, 4) ?? 'année'} › dossier du client › Photos visite. Rien dans la galerie du téléphone.</p>
         </section>
 
         {!termine && <button type="button" className="btn go large" onClick={terminer}>Visite terminée</button>}
       </fieldset>
+
+      {aLegender.length > 0 && (
+        <div className="legender" role="dialog" aria-label="Légender les photos">
+          <div className="legender-in">
+            <h2>Que montre{aLegender.length > 1 ? 'nt ces photos' : ' cette photo'} ?</h2>
+            {aLegender.map((p, i) => (
+              <div className="leg-photo" key={p.url}>
+                <img src={p.url} alt="" />
+                <div className="choix">
+                  {LEGENDES_PHOTO.map((o) => (
+                    <button type="button" key={o} aria-pressed={p.ouvrage === o} onClick={() => majLegende(i, 'ouvrage', p.ouvrage === o ? '' : o)}>{o}</button>
+                  ))}
+                </div>
+                <input value={p.precision} onChange={(e) => majLegende(i, 'precision', e.target.value)} placeholder="Précision : fendue, versant nord, tuile cassée…" />
+              </div>
+            ))}
+            <button type="button" className="btn go large" onClick={enregistrerPhotos}>Enregistrer {aLegender.length > 1 ? `les ${aLegender.length} photos` : 'la photo'}</button>
+          </div>
+        </div>
+      )}
 
       {!termine && (
         <div className="barre-actions visite-actions">
