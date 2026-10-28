@@ -47,7 +47,8 @@ export const SECTIONS: Section[] = [
         id: 'travaux', type: 'multi', label: 'Travaux envisagés',
         options: ['Rénovation couverture', 'Réparation / fuite', 'Faîtage', 'Gouttières / descentes', 'Couloir / solin / abergement', 'Fenêtre de toit', 'Charpente', 'Isolation (sarking / combles)', 'Extension / surélévation bois', 'Habillage bandeau / sous-face', 'Démoussage / traitement', 'Cheminée', 'Autre']
       },
-      { id: 'delai', type: 'choix', label: 'Délai souhaité', options: ['Urgent', 'Moins d\'1 mois', '1 à 3 mois', 'Plus de 3 mois', 'Pas de date'] }
+      { id: 'delai', type: 'choix', label: 'Délai souhaité', options: ['Urgent', 'Moins d\'1 mois', '1 à 3 mois', 'Plus de 3 mois', 'Pas de date'] },
+      { id: 'budget', type: 'texte', label: 'Budget / délai évoqués', aide: 'Ce que le client a dit : enveloppe, date butoir, autres devis en cours…', lignes: 2 }
     ]
   },
   {
@@ -80,13 +81,15 @@ export const SECTIONS: Section[] = [
       { id: 'stationnement', type: 'choix', label: 'Stationnement', options: ['Sur la propriété', 'Dans la rue', 'Difficile', 'Autorisation voirie'] },
       { id: 'mitoyennete', type: 'choix', label: 'Mitoyenneté / voisin', options: ['Non', 'Oui'] },
       { id: 'urbanisme', type: 'choix', label: 'Urbanisme', options: ['Rien à prévoir', 'Déclaration préalable', 'Permis', 'Secteur ABF', 'À vérifier'] },
-      { id: 'protections', type: 'multi', label: 'À prévoir', options: ['Bâchage', 'Protection jardin / sol', 'Benne', 'Évacuation gravats', 'Coupure électrique', 'Présence du client'] }
+      { id: 'protections', type: 'multi', label: 'À prévoir', options: ['Bâchage', 'Protection jardin / sol', 'Benne', 'Évacuation gravats', 'Coupure électrique', 'Présence du client'] },
+      { id: 'tiers', type: 'texte', label: 'Intervenants tiers', aide: 'Installateur PV, électricien, syndic… et qui fait quoi.', lignes: 2 }
     ]
   },
   {
     titre: 'À ne pas oublier',
     questions: [
-      { id: 'points', type: 'texte', label: 'Points à ne pas oublier', aide: 'Pour le devis et le chantier.', lignes: 4 }
+      { id: 'points', type: 'texte', label: 'Points à ne pas oublier', aide: 'Pour le devis et le chantier.', lignes: 4 },
+      { id: 'rapport_client', type: 'texte', label: 'Pour le rapport client', aide: 'Ce qu\'il faut mettre en avant auprès du client : urgent, à prévoir, en option…', lignes: 3 }
     ]
   }
 ]
