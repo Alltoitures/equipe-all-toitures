@@ -270,7 +270,7 @@ export default function Chantier() {
             <ul className="bordereau">
               {bordereau.map((t) =>
                 t.est_groupe ? (
-                  <li key={t.id} className="groupe-ligne">{t.libelle}</li>
+                  <li key={t.id} className={`groupe-ligne${/^\s*\d+\.\d+/.test(t.libelle) ? ' sous' : ''}`}>{t.libelle}</li>
                 ) : (
                   <li key={t.id}>
                     <label className={t.fait ? 'fait' : ''}>

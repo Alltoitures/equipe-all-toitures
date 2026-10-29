@@ -3,10 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible, ROLES, STATUTS, type Chantier, type Membre, type Statut, type Tache } from '../../lib/supabase'
 import { normaliserTel } from '../../lib/format'
 import { IcoRetour } from '../../components/Icones'
+import { ajouter, changerNiveau, deplacerGroupe, deplacerLigne, ecrireGroupe, lireGroupe, numerotationStandard, peutDescendreNiveau, renumeroter, retirer, type LigneBordereau } from '../../lib/bordereau'
 
 type Form = Omit<Chantier, 'id' | 'termine_le'>
 type Cat = 'travaux' | 'bordereau'
-type LigneTache = { id?: string; categorie: Cat; numero: string; est_groupe: boolean; libelle: string; quantite: string; unite: string }
+type LigneTache = LigneBordereau
 type Bon = NonNullable<Chantier['bon']>
 const CHAMPS_BON = ['devis', 'objet', 'client_nom', 'sur_place', 'sur_place_note', 'duree', 'duree_note', 'intervenants', 'intervenants_note', 'acces', 'materiaux_note'] as const
 type BonTxt = Record<(typeof CHAMPS_BON)[number] | 'materiaux' | 'materiel' | 'vigilance', string>
@@ -55,6 +56,7 @@ export default function ChantierEdition() {
   const [bon, setBon] = useState<BonTxt>(bonVersTexte(null))
   const [erreur, setErreur] = useState('')
   const [occupe, setOccupe] = useState(false)
+  const [auto, setAuto] = useState(true)
 
   useEffect(() => {
     supabase.from('membres').select('*').eq('actif', true).in('role', ['chef', 'ouvrier', 'apprenti']).order('prenom')
@@ -75,7 +77,12 @@ export default function ChantierEdition() {
       setTel(co.data?.client_telephone ?? '')
       setAffectes(new Set((af.data ?? []).map((a) => a.membre_id)))
       setTachesInit((ta.data ?? []) as Tache[])
-      setTaches(((ta.data ?? []) as Tache[]).map((t) => ({ id: t.id, categorie: (t.categorie ?? 'bordereau') as Cat, numero: t.numero ?? '', est_groupe: !!t.est_groupe, libelle: t.libelle, quantite: t.quantite?.toString() ?? '', unite: t.unite ?? '' })))
+      const lues: LigneTache[] = ((ta.data ?? []) as Tache[]).map((t) => {
+        const base = { id: t.id, categorie: (t.categorie ?? 'bordereau') as Cat, numero: t.numero ?? '', est_groupe: !!t.est_groupe, niveau: 1 as const, libelle: t.libelle, quantite: t.quantite?.toString() ?? '', unite: t.unite ?? '' }
+        return t.est_groupe ? { ...base, ...lireGroupe(t.libelle) } : base
+      })
+      setTaches(lues)
+      setAuto(numerotationStandard(lues.filter((t) => t.categorie === 'bordereau')))
     })
   }, [id])
 
@@ -121,7 +128,7 @@ export default function ChantierEdition() {
       for (const t of taches) {
         if (!t.libelle.trim()) continue
         const ligne = {
-          chantier_id: cid, categorie: t.categorie, ordre: rang[t.categorie]++, libelle: t.libelle.trim(),
+          chantier_id: cid, categorie: t.categorie, ordre: rang[t.categorie]++, libelle: t.est_groupe ? ecrireGroupe(t) : t.libelle.trim(),
           numero: t.est_groupe ? null : t.numero.trim() || null, est_groupe: t.est_groupe,
           quantite: !t.est_groupe && t.quantite ? Number(t.quantite.replace(',', '.')) : null,
           unite: t.est_groupe ? null : t.unite || null
@@ -144,14 +151,20 @@ export default function ChantierEdition() {
     nav('/gestion/chantiers', { replace: true })
   }
 
-  const nouvelle = (categorie: Cat, libelle = '', est_groupe = false): LigneTache => ({ categorie, numero: '', est_groupe, libelle, quantite: '', unite: '' })
+  const nouvelle = (categorie: Cat, libelle = '', est_groupe = false, niveau: 1 | 2 = 1): LigneTache => ({ categorie, numero: '', est_groupe, niveau, libelle, quantite: '', unite: '' })
   const maj = (i: number, v: Partial<LigneTache>) => setTaches(taches.map((x, k) => (k === i ? { ...x, ...v } : x)))
+  // Bordereau : manipulé à part, toujours rangé après les travaux dans la liste.
+  const bord = taches.filter((t) => t.categorie === 'bordereau')
+  const setBord = (b: LigneTache[]) => setTaches([...taches.filter((t) => t.categorie !== 'bordereau'), ...b])
+  const majB = (i: number, v: Partial<LigneTache>) => setBord(bord.map((x, k) => (k === i ? { ...x, ...v } : x)))
   const champBon = (k: keyof BonTxt) => ({ value: bon[k], onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setBon({ ...bon, [k]: e.target.value }) })
 
   function collerTaches(categorie: Cat) {
     const t = prompt(categorie === 'travaux' ? 'Collez les travaux à réaliser (une ligne par étape) :' : 'Collez le bordereau (une ligne par poste) :')
     if (!t) return
-    setTaches([...taches, ...t.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => nouvelle(categorie, l))])
+    const ajout = t.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => nouvelle(categorie, l))
+    if (categorie === 'bordereau') setBord(auto ? renumeroter([...bord, ...ajout]) : [...bord, ...ajout])
+    else setTaches([...taches, ...ajout])
   }
 
   return (
@@ -261,23 +274,39 @@ export default function ChantierEdition() {
 
         <section className="carte">
           <h2>Bordereau (sans prix)</h2>
-          {taches.map((t, i) => t.categorie !== 'bordereau' ? null : t.est_groupe ? (
-            <div key={i} className="ligne-tache">
-              <input className="groupe" placeholder="Titre de groupe" value={t.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} />
-              <button type="button" className="btn ghost" onClick={() => setTaches(taches.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
+          <label className="case">
+            <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); if (e.target.checked) setBord(renumeroter(bord)) }} />
+            Numérotation automatique <small>(titres 1, sous-titres 1.1, ouvrages 1.1.1)</small>
+          </label>
+          <p className="aide">Les flèches d'un titre ou d'un sous-titre déplacent tout son contenu. Un ouvrage en haut ou en bas de son groupe passe dans le groupe voisin. ⇥ transforme un titre en sous-titre du titre au-dessus, ⇤ fait l'inverse. Un « — » comme numéro est conservé (hors devis).</p>
+          {bord.map((t, i) => t.est_groupe ? (
+            <div key={t.id ?? `n${i}`} className={`ligne-tache ${t.niveau === 2 ? 'niv2' : 'niv1'}`}>
+              <input className="court" placeholder="N°" value={t.numero} readOnly={auto} onChange={(e) => majB(i, { numero: e.target.value })} />
+              <input className="groupe" placeholder={t.niveau === 2 ? 'Sous-titre' : 'Titre'} value={t.libelle} onChange={(e) => majB(i, { libelle: e.target.value })} />
+              <span className="fleches">
+                <button type="button" onClick={() => setBord(deplacerGroupe(bord, i, -1, auto))} aria-label="Monter le groupe">▲</button>
+                <button type="button" onClick={() => setBord(deplacerGroupe(bord, i, 1, auto))} aria-label="Descendre le groupe">▼</button>
+              </span>
+              <button type="button" className="btn ghost" disabled={t.niveau === 1 && !peutDescendreNiveau(bord, i)} onClick={() => setBord(changerNiveau(bord, i, auto))} aria-label={t.niveau === 1 ? 'En faire un sous-titre' : 'En faire un titre'}>{t.niveau === 1 ? '⇥' : '⇤'}</button>
+              <button type="button" className="btn ghost" onClick={() => setBord(retirer(bord, i, auto))} aria-label="Retirer">×</button>
             </div>
           ) : (
-            <div key={i} className="ligne-tache">
-              <input className="court" placeholder="N°" value={t.numero} onChange={(e) => maj(i, { numero: e.target.value })} />
-              <input placeholder="Désignation" value={t.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} />
-              <input className="court" placeholder="Qté" inputMode="decimal" value={t.quantite} onChange={(e) => maj(i, { quantite: e.target.value })} />
-              <input className="court" placeholder="Unité" value={t.unite} onChange={(e) => maj(i, { unite: e.target.value })} />
-              <button type="button" className="btn ghost" onClick={() => setTaches(taches.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
+            <div key={t.id ?? `n${i}`} className="ligne-tache">
+              <input className="court" placeholder="N°" value={t.numero} onChange={(e) => majB(i, { numero: e.target.value })} />
+              <input placeholder="Désignation" value={t.libelle} onChange={(e) => majB(i, { libelle: e.target.value })} />
+              <input className="court" placeholder="Qté" inputMode="decimal" value={t.quantite} onChange={(e) => majB(i, { quantite: e.target.value })} />
+              <input className="court" placeholder="Unité" value={t.unite} onChange={(e) => majB(i, { unite: e.target.value })} />
+              <span className="fleches">
+                <button type="button" onClick={() => setBord(deplacerLigne(bord, i, -1, auto))} aria-label="Monter l'ouvrage">▲</button>
+                <button type="button" onClick={() => setBord(deplacerLigne(bord, i, 1, auto))} aria-label="Descendre l'ouvrage">▼</button>
+              </span>
+              <button type="button" className="btn ghost" onClick={() => setBord(retirer(bord, i, auto))} aria-label="Retirer">×</button>
             </div>
           ))}
           <div className="boutons">
-            <button type="button" className="btn" onClick={() => setTaches([...taches, nouvelle('bordereau')])}>+ Ligne</button>
-            <button type="button" className="btn" onClick={() => setTaches([...taches, nouvelle('bordereau', '', true)])}>+ Groupe</button>
+            <button type="button" className="btn" onClick={() => setBord(ajouter(bord, nouvelle('bordereau'), auto))}>+ Ligne</button>
+            <button type="button" className="btn" onClick={() => setBord(ajouter(bord, nouvelle('bordereau', '', true, 1), auto))}>+ Titre</button>
+            <button type="button" className="btn" onClick={() => setBord(ajouter(bord, nouvelle('bordereau', '', true, 2), auto))}>+ Sous-titre</button>
             <button type="button" className="btn" onClick={() => collerTaches('bordereau')}>Coller</button>
           </div>
         </section>
