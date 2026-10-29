@@ -188,3 +188,43 @@ export function mettreDans(liste: LigneBordereau[], i: number, cible: string, au
     t.sous.push({ g: x, lignes }, ...enfants)
   })
 }
+/** Titre → sous-titre du titre précédent, ou sous-titre → titre (sans changer l'ordre affiché). */
+export function changerNiveau(liste: LigneBordereau[], i: number, auto: boolean) {
+  return operer(liste, i, auto, (a, g) => {
+    const ti = a.titres.findIndex((t) => t.g === g)
+    if (ti > 0) {
+      const [t] = a.titres.splice(ti, 1)
+      g.niveau = 2
+      a.titres[ti - 1].sous.push({ g, lignes: t.lignes }, ...t.sous)
+      return
+    }
+    const pi = a.titres.findIndex((t) => t.sous.some((s) => s.g === g))
+    if (pi < 0) return
+    const sous = a.titres[pi].sous
+    const si = sous.findIndex((s) => s.g === g)
+    const [s] = sous.splice(si, 1)
+    g.niveau = 1
+    a.titres.splice(pi + 1, 0, { g, lignes: s.lignes, sous: sous.splice(si) })
+  })
+}
+
+/** Le titre peut-il devenir sous-titre ? (il faut un titre au-dessus) */
+export function peutDescendreNiveau(liste: LigneBordereau[], i: number) {
+  return liste.slice(0, i).some((x) => x.est_groupe)
+}
+
+/** Supprime une ligne ; un groupe supprimé laisse ses ouvrages au groupe précédent. */
+export function retirer(liste: LigneBordereau[], i: number, auto: boolean) {
+  const r = liste.filter((_, k) => k !== i)
+  return auto ? renumeroter(r) : r
+}
+
+export function ajouter(liste: LigneBordereau[], l: LigneBordereau, auto: boolean) {
+  const r = [...liste, l]
+  return auto ? renumeroter(r) : r
+}
+
+/** Numérotation automatique proposée si les numéros existants sont du type 1, 1.2, 1.2.3 (ou vides). */
+export function numerotationStandard(liste: LigneBordereau[]) {
+  return liste.every((x) => !x.numero.trim() || /^\d+(\.\d+)*$/.test(x.numero.trim()) || garde(x.numero))
+}
