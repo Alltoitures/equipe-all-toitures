@@ -79,10 +79,10 @@ function numeroter(a: Arbre) {
 }
 
 /** Applique une opération sur une copie de la liste, puis renumérote si demandé. */
-function operer(liste: LigneBordereau[], i: number, auto: boolean, op: (a: Arbre, cible: LigneBordereau) => void): LigneBordereau[] {
+function operer(liste: LigneBordereau[], i: number, auto: boolean, op: (a: Arbre, cible: LigneBordereau, copie: LigneBordereau[]) => void): LigneBordereau[] {
   const copie = liste.map((x) => ({ ...x }))
   const a = versArbre(copie)
-  op(a, copie[i])
+  op(a, copie[i], copie)
   if (auto) numeroter(a)
   return aplatir(a)
 }
@@ -122,46 +122,69 @@ export function deplacerGroupe(liste: LigneBordereau[], i: number, sens: -1 | 1,
     if (j >= 0 && j < sous.length) [sous[si], sous[j]] = [sous[j], sous[si]]
     else if (sens < 0 && pi > 0) a.titres[pi - 1].sous.push(...sous.splice(si, 1))
     else if (sens > 0 && pi < a.titres.length - 1) a.titres[pi + 1].sous.unshift(...sous.splice(si, 1))
+    else {
+      // Tout en haut ou tout en bas : le sous-titre devient un titre.
+      const [x] = sous.splice(si, 1)
+      g.niveau = 1
+      a.titres.splice(sens < 0 ? pi : pi + 1, 0, { g, lignes: x.lignes, sous: [] })
+    }
   })
 }
 
-/** Titre → sous-titre du titre précédent, ou sous-titre → titre (sans changer l'ordre affiché). */
-export function changerNiveau(liste: LigneBordereau[], i: number, auto: boolean) {
-  return operer(liste, i, auto, (a, g) => {
-    const ti = a.titres.findIndex((t) => t.g === g)
-    if (ti > 0) {
-      const [t] = a.titres.splice(ti, 1)
-      g.niveau = 2
-      a.titres[ti - 1].sous.push({ g, lignes: t.lignes }, ...t.sous)
+/** Destinations proposées pour une ligne ou un groupe : les titres et sous-titres où il peut aller. */
+export function destinations(liste: LigneBordereau[], i: number): { valeur: string; texte: string }[] {
+  const x = liste[i]
+  const nom = (g: LigneBordereau) => [g.numero, g.libelle || (g.niveau === 1 ? 'Titre sans nom' : 'Sous-titre sans nom')].filter(Boolean).join(' · ')
+  const r: { valeur: string; texte: string }[] = []
+  if (x.est_groupe && x.niveau === 2) r.push({ valeur: 'titre', texte: 'En faire un titre' })
+  liste.forEach((g, k) => {
+    if (!g.est_groupe || k === i) return
+    if (x.est_groupe && g.niveau === 2) return // un groupe ne va que sous un titre
+    r.push({ valeur: String(k), texte: (g.niveau === 2 ? '\u00a0\u00a0\u00a0' : '') + (x.est_groupe ? 'Sous-titre de : ' : 'Dans : ') + nom(g) })
+  })
+  return r
+}
+
+/** Range une ligne ou un groupe dans le titre / sous-titre choisi (à la fin), avec tout son contenu. */
+export function mettreDans(liste: LigneBordereau[], i: number, cible: string, auto: boolean) {
+  const k = cible === 'titre' ? -1 : Number(cible)
+  return operer(liste, i, auto, (a, x, copie) => {
+    const dest = k >= 0 ? copie[k] : null
+    if (!x.est_groupe) {
+      if (!dest) return
+      for (const b of [a.lignes, ...a.titres.flatMap((t) => [t.lignes, ...t.sous.map((s) => s.lignes)])]) {
+        const p = b.indexOf(x)
+        if (p >= 0) b.splice(p, 1)
+      }
+      const t = a.titres.find((t) => t.g === dest)
+      const so = a.titres.flatMap((t) => t.sous).find((s) => s.g === dest)
+      ;(t ? t.lignes : so ? so.lignes : a.lignes).push(x)
       return
     }
-    const pi = a.titres.findIndex((t) => t.sous.some((s) => s.g === g))
-    if (pi < 0) return
-    const sous = a.titres[pi].sous
-    const si = sous.findIndex((s) => s.g === g)
-    const [s] = sous.splice(si, 1)
-    g.niveau = 1
-    a.titres.splice(pi + 1, 0, { g, lignes: s.lignes, sous: sous.splice(si) })
+    // Groupe : on le détache avec tout son contenu.
+    let lignes: LigneBordereau[]
+    let enfants: Sous[] = []
+    let place: number
+    const ti = a.titres.findIndex((t) => t.g === x)
+    if (ti >= 0) {
+      const [t] = a.titres.splice(ti, 1)
+      lignes = t.lignes
+      enfants = t.sous
+      place = ti
+    } else {
+      const pi = a.titres.findIndex((t) => t.sous.some((s) => s.g === x))
+      const sous = a.titres[pi].sous
+      const [s] = sous.splice(sous.findIndex((s) => s.g === x), 1)
+      lignes = s.lignes
+      place = pi + 1
+    }
+    const t = dest ? a.titres.find((t) => t.g === dest) : null
+    if (!t) {
+      x.niveau = 1
+      a.titres.splice(place, 0, { g: x, lignes, sous: enfants })
+      return
+    }
+    x.niveau = 2
+    t.sous.push({ g: x, lignes }, ...enfants)
   })
-}
-
-/** Le titre peut-il devenir sous-titre ? (il faut un titre au-dessus) */
-export function peutDescendreNiveau(liste: LigneBordereau[], i: number) {
-  return liste.slice(0, i).some((x) => x.est_groupe)
-}
-
-/** Supprime une ligne ; un groupe supprimé laisse ses ouvrages au groupe précédent. */
-export function retirer(liste: LigneBordereau[], i: number, auto: boolean) {
-  const r = liste.filter((_, k) => k !== i)
-  return auto ? renumeroter(r) : r
-}
-
-export function ajouter(liste: LigneBordereau[], l: LigneBordereau, auto: boolean) {
-  const r = [...liste, l]
-  return auto ? renumeroter(r) : r
-}
-
-/** Numérotation automatique proposée si les numéros existants sont du type 1, 1.2, 1.2.3 (ou vides). */
-export function numerotationStandard(liste: LigneBordereau[]) {
-  return liste.every((x) => !x.numero.trim() || /^\d+(\.\d+)*$/.test(x.numero.trim()) || garde(x.numero))
 }

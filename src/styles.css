@@ -300,6 +300,7 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .ligne-tache .fleches { flex: 0 0 30px; display: flex; flex-direction: column; gap: 2px; }
 .ligne-tache .fleches button { height: 20px; min-height: 0; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 10px; line-height: 1; cursor: pointer; }
 .ligne-tache .btn:disabled { opacity: 0.35; }
+.ligne-tache select.vers { flex: 0 0 40px; width: 40px; min-height: 42px; padding: 0 4px; text-align: center; }
 .bordereau .groupe-ligne.sous { background: transparent; text-transform: none; letter-spacing: 0; padding: 8px 8px 4px; border-left: 3px solid var(--surface-2); }
 .tuiles-docs .doc-dossier { min-width: 0; padding: 10px; }
 .nav-jour h2 { text-transform: none; margin: 0; font-size: 16px; text-align: center; }
