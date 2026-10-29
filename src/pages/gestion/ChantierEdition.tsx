@@ -278,37 +278,37 @@ export default function ChantierEdition() {
             <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); if (e.target.checked) setBord(renumeroter(bord)) }} />
             Numérotation automatique <small>(titres 1, sous-titres 1.1, ouvrages 1.1.1)</small>
           </label>
-          <p className="aide">▲ ▼ déplacent un titre ou un sous-titre avec tout son contenu (un sous-titre qui sort tout en haut ou tout en bas devient un titre). ↪ range la ligne ou le groupe directement dans le titre ou le sous-titre choisi : un titre rangé sous un autre devient sous-titre, et « En faire un titre » fait l'inverse. ⇥ / ⇤ change le niveau sur place. Un « — » comme numéro est conservé (hors devis).</p>
+          <p className="aide">▲ ▼ : monter ou descendre (un titre ou un sous-titre emmène tous ses ouvrages). « Ranger dans… » : choisir le titre ou le sous-titre où mettre la ligne — un titre rangé sous un autre devient sous-titre, « En faire un titre » fait l'inverse. ⇥ / ⇤ : passer de titre à sous-titre sur place. Un « — » comme numéro est conservé (hors devis).</p>
           {bord.map((t, i) => t.est_groupe ? (
-            <div key={t.id ?? `n${i}`} className={`ligne-tache ${t.niveau === 2 ? 'niv2' : 'niv1'}`}>
+            <div key={t.id ?? `n${i}`} className={`ligne-tache ligne-bord ${t.niveau === 2 ? 'niv2' : 'niv1'}`}>
               <input className="court" placeholder="N°" value={t.numero} readOnly={auto} onChange={(e) => majB(i, { numero: e.target.value })} />
               <input className="groupe" placeholder={t.niveau === 2 ? 'Sous-titre' : 'Titre'} value={t.libelle} onChange={(e) => majB(i, { libelle: e.target.value })} />
-              <span className="fleches">
-                <button type="button" onClick={() => setBord(deplacerGroupe(bord, i, -1, auto))} aria-label="Monter le groupe">▲</button>
-                <button type="button" onClick={() => setBord(deplacerGroupe(bord, i, 1, auto))} aria-label="Descendre le groupe">▼</button>
-              </span>
+              <div className="outils">
+              <button type="button" className="btn fl" onClick={() => setBord(deplacerGroupe(bord, i, -1, auto))} aria-label="Monter le groupe">▲</button>
+              <button type="button" className="btn fl" onClick={() => setBord(deplacerGroupe(bord, i, 1, auto))} aria-label="Descendre le groupe">▼</button>
               <select className="vers" value="" onChange={(e) => e.target.value && setBord(mettreDans(bord, i, e.target.value, auto))} aria-label="Ranger dans un titre ou sous-titre">
-                <option value="">↪</option>
+                <option value="">Ranger…</option>
                 {destinations(bord, i).map((d) => <option key={d.valeur} value={d.valeur}>{d.texte}</option>)}
               </select>
               <button type="button" className="btn ghost" disabled={t.niveau === 1 && !peutDescendreNiveau(bord, i)} onClick={() => setBord(changerNiveau(bord, i, auto))} aria-label={t.niveau === 1 ? 'En faire un sous-titre' : 'En faire un titre'}>{t.niveau === 1 ? '⇥' : '⇤'}</button>
               <button type="button" className="btn ghost" onClick={() => setBord(retirer(bord, i, auto))} aria-label="Retirer">×</button>
+              </div>
             </div>
           ) : (
-            <div key={t.id ?? `n${i}`} className="ligne-tache">
+            <div key={t.id ?? `n${i}`} className="ligne-tache ligne-bord">
               <input className="court" placeholder="N°" value={t.numero} onChange={(e) => majB(i, { numero: e.target.value })} />
               <input placeholder="Désignation" value={t.libelle} onChange={(e) => majB(i, { libelle: e.target.value })} />
+              <div className="outils">
               <input className="court" placeholder="Qté" inputMode="decimal" value={t.quantite} onChange={(e) => majB(i, { quantite: e.target.value })} />
               <input className="court" placeholder="Unité" value={t.unite} onChange={(e) => majB(i, { unite: e.target.value })} />
-              <span className="fleches">
-                <button type="button" onClick={() => setBord(deplacerLigne(bord, i, -1, auto))} aria-label="Monter l'ouvrage">▲</button>
-                <button type="button" onClick={() => setBord(deplacerLigne(bord, i, 1, auto))} aria-label="Descendre l'ouvrage">▼</button>
-              </span>
+              <button type="button" className="btn fl" onClick={() => setBord(deplacerLigne(bord, i, -1, auto))} aria-label="Monter l'ouvrage">▲</button>
+              <button type="button" className="btn fl" onClick={() => setBord(deplacerLigne(bord, i, 1, auto))} aria-label="Descendre l'ouvrage">▼</button>
               <select className="vers" value="" onChange={(e) => e.target.value && setBord(mettreDans(bord, i, e.target.value, auto))} aria-label="Ranger dans un titre ou sous-titre">
-                <option value="">↪</option>
+                <option value="">Ranger…</option>
                 {destinations(bord, i).map((d) => <option key={d.valeur} value={d.valeur}>{d.texte}</option>)}
               </select>
               <button type="button" className="btn ghost" onClick={() => setBord(retirer(bord, i, auto))} aria-label="Retirer">×</button>
+              </div>
             </div>
           ))}
           <div className="boutons">

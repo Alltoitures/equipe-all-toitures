@@ -297,10 +297,17 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .ligne-tache.niv2 { padding-left: 14px; }
 .ligne-tache.niv2 input.groupe { text-transform: none; background: transparent; border-left: 3px solid var(--line); }
 .ligne-tache input[readonly] { color: var(--muted); background: var(--surface-2); }
-.ligne-tache .fleches { flex: 0 0 30px; display: flex; flex-direction: column; gap: 2px; }
-.ligne-tache .fleches button { height: 20px; min-height: 0; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 10px; line-height: 1; cursor: pointer; }
 .ligne-tache .btn:disabled { opacity: 0.35; }
-.ligne-tache select.vers { flex: 0 0 40px; width: 40px; min-height: 42px; padding: 0 4px; text-align: center; }
+.ligne-bord { flex-wrap: wrap; row-gap: 6px; padding: 8px 0; border-top: 1px solid var(--line); }
+.ligne-bord > input:not(.court) { flex: 1 1 calc(100% - 70px); }
+.ligne-bord .outils { flex: 1 0 100%; display: flex; gap: 6px; align-items: center; }
+.ligne-bord .outils .btn { flex: 0 0 42px; min-height: 40px; padding: 0; }
+.ligne-bord .outils .btn.fl { font-size: 14px; }
+.ligne-bord .outils select.vers { flex: 1; min-width: 0; min-height: 40px; padding: 0 8px; font-size: 13px; }
+.ligne-bord.niv1 { margin-top: 6px; }
+.ligne-bord .outils input.court { flex: 0 0 48px; }
+.ligne-bord .outils .btn.fl { flex-basis: 38px; }
+.ligne-bord .outils .btn.ghost { flex-basis: 30px; }
 .bordereau .groupe-ligne.sous { background: transparent; text-transform: none; letter-spacing: 0; padding: 8px 8px 4px; border-left: 3px solid var(--surface-2); }
 .tuiles-docs .doc-dossier { min-width: 0; padding: 10px; }
 .nav-jour h2 { text-transform: none; margin: 0; font-size: 16px; text-align: center; }
