@@ -329,7 +329,7 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .mesure-ligne .btn { flex: 0 0 36px; padding: 0; }
 .mesures-rapides { margin: 10px 0 8px; }
 .mesures-rapides button { font-size: 13px; }
-.visite-actions { grid-template-columns: 1fr 1fr; }
+.visite-actions { grid-template-columns: 1fr 1fr 1fr; }
 
 /* ---------- Accueil (tableau de bord) ---------- */
 .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -606,3 +606,17 @@ button.vg-tuile { cursor: pointer; }
 .leg-photo { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .leg-photo img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; }
 .leg-photo input { min-height: 42px; padding: 8px 10px; }
+
+/* Croquis de visite */
+.croquis { position: fixed; inset: 0; z-index: 60; background: #0B1921; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
+.croquis-haut { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; color: #fff; }
+.croquis-haut .lien { color: #B9C6D0; }
+.croquis-zone { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 0 8px; }
+.croquis-toile { width: 100%; max-height: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border-radius: 8px; touch-action: none; }
+.croquis-texte { display: flex; gap: 8px; padding: 8px 12px 0; }
+.croquis-texte input { flex: 1; }
+.croquis-outils { background: var(--bg, #fff); border-radius: 14px 14px 0 0; margin-top: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.croquis-outils .choix button { font-size: 13px; padding: 7px 10px; }
+.croquis-outils .pastille { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.croquis-photo { display: inline-flex; align-items: center; font-size: 13px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+.mesures-groupe { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted, #5E707C); margin: 10px 0 4px; }

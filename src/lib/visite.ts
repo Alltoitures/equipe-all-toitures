@@ -56,7 +56,9 @@ export const SECTIONS: Section[] = [
     questions: [
       { id: 'batiment', type: 'choix', label: 'Bâtiment', options: ['Maison', 'Immeuble / copropriété', 'Bâtiment pro', 'Annexe / garage', 'Autre'] },
       { id: 'hauteur', type: 'choix', label: 'Hauteur', options: ['Plain-pied', 'R+1', 'R+2 et plus'] },
+      { id: 'hauteur_m', type: 'texte', label: 'Hauteur en mètres', aide: 'À l\'égout et au faîtage, ex. : égout 5,50 m · faîtage 8 m.', lignes: 1 },
       { id: 'couverture', type: 'choix', label: 'Couverture existante', options: ['Tuile mécanique', 'Tuile canal', 'Tuile plate', 'Ardoise', 'Bac acier', 'Fibrociment', 'Zinc', 'Étanchéité / membrane', 'Aucune (neuf)'] },
+      { id: 'tuile_modele', type: 'texte', label: 'Modèle de tuile', aide: 'Marque et référence si visible, couleur, tuiles à douille / chatières présentes.', lignes: 1 },
       { id: 'pans', type: 'choix', label: 'Forme', options: ['1 pan', '2 pans', '4 pans', 'Complexe', 'Toit plat'] },
       { id: 'pente', type: 'choix', label: 'Pente', options: ['Faible', 'Moyenne', 'Forte'] }
     ]
@@ -76,12 +78,14 @@ export const SECTIONS: Section[] = [
   {
     titre: 'Accès et chantier',
     questions: [
-      { id: 'moyens', type: 'multi', label: 'Moyens d\'accès', options: ['Échelle', 'Échafaudage', 'Échafaudage roulant', 'Nacelle', 'Levage / grue', 'Ligne de vie', 'Filets'] },
+      { id: 'moyens', type: 'multi', label: 'Moyens d\'accès', options: ['Échelle', 'Échafaudage', 'Échafaudage roulant', 'Sapin d\'accès', 'Nacelle', 'Monte-charge', 'Levage / grue'] },
+      { id: 'securite', type: 'multi', label: 'Sécurité', options: ['Garde-corps de rive', 'Garde-corps bas de pente', 'Ligne de vie', 'Harnais', 'Filets'] },
       { id: 'acces', type: 'choix', label: 'Accès', options: ['Facile', 'Moyen', 'Difficile'] },
+      { id: 'portail', type: 'texte', label: 'Largeur du portail / accès camion', aide: 'Ex. : portail 2,80 m, camion dans la cour.', lignes: 1 },
       { id: 'stationnement', type: 'choix', label: 'Stationnement', options: ['Sur la propriété', 'Dans la rue', 'Difficile', 'Autorisation voirie'] },
       { id: 'mitoyennete', type: 'choix', label: 'Mitoyenneté / voisin', options: ['Non', 'Oui'] },
       { id: 'urbanisme', type: 'choix', label: 'Urbanisme', options: ['Rien à prévoir', 'Déclaration préalable', 'Permis', 'Secteur ABF', 'À vérifier'] },
-      { id: 'protections', type: 'multi', label: 'À prévoir', options: ['Bâchage', 'Protection jardin / sol', 'Benne', 'Évacuation gravats', 'Coupure électrique', 'Présence du client'] },
+      { id: 'protections', type: 'multi', label: 'À prévoir', options: ['Bâchage', 'Protection jardin / sol', 'Benne gravats', 'Benne à bois', 'Évacuation gravats', 'Coupure électrique', 'Présence du client'] },
       { id: 'tiers', type: 'texte', label: 'Intervenants tiers', aide: 'Installateur PV, électricien, syndic… et qui fait quoi.', lignes: 2 }
     ]
   },
@@ -96,23 +100,57 @@ export const SECTIONS: Section[] = [
 
 export const UNITES = ['m²', 'ml', 'u', 'ens.', 'm³', 'h']
 
-/** Boutons rapides de la rubrique Mesures : un appui crée la ligne avec la bonne unité. */
-export const MESURES_RAPIDES: { ouvrage: string; unite: string }[] = [
-  { ouvrage: 'Couverture', unite: 'm²' },
-  { ouvrage: 'Faîtage', unite: 'ml' },
-  { ouvrage: 'Arêtier', unite: 'ml' },
-  { ouvrage: 'Noue', unite: 'ml' },
-  { ouvrage: 'Rive', unite: 'ml' },
-  { ouvrage: 'Gouttière', unite: 'ml' },
-  { ouvrage: 'Descente', unite: 'ml' },
-  { ouvrage: 'Solin / abergement', unite: 'ml' },
-  { ouvrage: 'Chéneau', unite: 'ml' },
-  { ouvrage: 'Tuiles à remplacer', unite: 'u' },
-  { ouvrage: 'Chapeau / sortie de ventilation', unite: 'u' },
-  { ouvrage: 'Fenêtre de toit', unite: 'u' },
-  { ouvrage: 'Habillage bandeau / sous-face', unite: 'ml' },
-  { ouvrage: 'Isolation', unite: 'm²' }
+/** Boutons rapides de la rubrique Mesures, rangés par lot : un appui crée la ligne avec la bonne unité. */
+export const MESURES_GROUPES: { lot: string; items: { ouvrage: string; unite: string }[] }[] = [
+  { lot: 'Dépose', items: [
+    { ouvrage: 'Dépose couverture', unite: 'm²' },
+    { ouvrage: 'Dépose liteaux / voliges', unite: 'm²' },
+    { ouvrage: 'Dépose zinguerie', unite: 'ml' }
+  ] },
+  { lot: 'Charpente', items: [
+    { ouvrage: 'Chevrons', unite: 'ml' },
+    { ouvrage: 'Pannes', unite: 'ml' },
+    { ouvrage: 'Volige', unite: 'm²' },
+    { ouvrage: 'Planche de rive', unite: 'ml' }
+  ] },
+  { lot: 'Couverture', items: [
+    { ouvrage: 'Couverture', unite: 'm²' },
+    { ouvrage: 'Écran sous-toiture', unite: 'm²' },
+    { ouvrage: 'Liteaux', unite: 'ml' },
+    { ouvrage: 'Contre-liteaux', unite: 'ml' },
+    { ouvrage: 'Faîtage', unite: 'ml' },
+    { ouvrage: 'Arêtier', unite: 'ml' },
+    { ouvrage: 'Rive', unite: 'ml' },
+    { ouvrage: 'About / fronton', unite: 'u' },
+    { ouvrage: 'Tuiles à remplacer', unite: 'u' },
+    { ouvrage: 'Tuile à douille', unite: 'u' },
+    { ouvrage: 'Tuile chatière', unite: 'u' },
+    { ouvrage: 'Chapeau / sortie de ventilation', unite: 'u' },
+    { ouvrage: 'Fenêtre de toit', unite: 'u' },
+    { ouvrage: 'Isolation', unite: 'm²' }
+  ] },
+  { lot: 'Zinguerie', items: [
+    { ouvrage: 'Gouttière', unite: 'ml' },
+    { ouvrage: 'Descente', unite: 'ml' },
+    { ouvrage: 'Naissance', unite: 'u' },
+    { ouvrage: 'Coude', unite: 'u' },
+    { ouvrage: 'Dauphin', unite: 'u' },
+    { ouvrage: 'Noue', unite: 'ml' },
+    { ouvrage: 'Couloir', unite: 'ml' },
+    { ouvrage: 'Solin / abergement', unite: 'ml' },
+    { ouvrage: 'Chéneau', unite: 'ml' },
+    { ouvrage: 'Couvre-joint', unite: 'ml' },
+    { ouvrage: 'Main courante', unite: 'ml' }
+  ] },
+  { lot: 'Habillage', items: [
+    { ouvrage: 'Habillage bandeau', unite: 'ml' },
+    { ouvrage: 'Profilé U', unite: 'ml' },
+    { ouvrage: 'Lambris sous-face', unite: 'm²' }
+  ] }
 ]
+
+/** Liste à plat (suggestions de saisie). */
+export const MESURES_RAPIDES = MESURES_GROUPES.flatMap((g) => g.items)
 
 export function nbReponses(f: Fiche): number {
   return SECTIONS.flatMap((s) => s.questions).filter((q) => {
@@ -139,4 +177,4 @@ export function statutRdv(v: Pick<Visite, 'statut' | 'rdv_statut'>): { nom: stri
 }
 
 /** Choix rapides pour légender une photo de visite (repris dans le nom du fichier et le rapport client). */
-export const LEGENDES_PHOTO = ['Vue générale', 'Couverture', 'Faîtage', 'Noue', 'Rive', 'Gouttière', 'Descente', 'Solin', 'Abergement', 'Chéneau', 'Cheminée', 'Ventilation', 'Fenêtre de toit', 'Sous-face', 'Charpente', 'Intérieur / dégât']
+export const LEGENDES_PHOTO = ['Vue générale', 'Couverture', 'Faîtage', 'Noue', 'Rive', 'Gouttière', 'Descente', 'Solin', 'Abergement', 'Chéneau', 'Cheminée', 'Ventilation', 'Fenêtre de toit', 'Sous-face', 'Charpente', 'Intérieur / dégât', 'Croquis']

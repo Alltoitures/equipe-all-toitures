@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
-import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, MESURES_RAPIDES, LEGENDES_PHOTO, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
+import { SECTIONS, TYPES_TRAVAUX, statutRdv, UNITES, MESURES_GROUPES, LEGENDES_PHOTO, nbReponses, type Fiche, type Mesure, type Question, type Visite as TVisite } from '../lib/visite'
 import { ajouterPhotoVisite, compresser } from '../lib/photos'
 import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
-import { IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
+import { IcoCroquis, IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Meteo from '../components/Meteo'
+import Croquis from '../components/Croquis'
 
 type Infos = Pick<TVisite, 'client_nom' | 'telephone' | 'email' | 'adresse' | 'code_postal' | 'ville' | 'type_travaux'>
 
@@ -21,6 +22,7 @@ export default function Visite() {
   const [message, setMessage] = useState('')
   const [erreur, setErreur] = useState('')
   const [aLegender, setALegender] = useState<{ blob: Blob; url: string; ouvrage: string; precision: string }[]>([])
+  const [croquis, setCroquis] = useState(false)
   const minuteur = useRef<number | undefined>(undefined)
   const cle = `at-visite-${id}`
 
@@ -261,22 +263,34 @@ export default function Visite() {
               </div>
             </div>
           ))}
-          <div className="choix mesures-rapides">
-            {MESURES_RAPIDES.map((r) => (
-              <button type="button" key={r.ouvrage} onClick={() => majMesures([...mesures, { ouvrage: r.ouvrage, qte: '', unite: r.unite, remarque: '' }])}>+ {r.ouvrage}</button>
-            ))}
-          </div>
+          {MESURES_GROUPES.map((g) => (
+            <div key={g.lot}>
+              <div className="mesures-groupe">{g.lot}</div>
+              <div className="choix mesures-rapides">
+                {g.items.map((r) => (
+                  <button type="button" key={r.ouvrage} onClick={() => majMesures([...mesures, { ouvrage: r.ouvrage, qte: '', unite: r.unite, remarque: '' }])}>+ {r.ouvrage}</button>
+                ))}
+              </div>
+            </div>
+          ))}
           <button type="button" className="btn" onClick={() => majMesures([...mesures, { ouvrage: '', qte: '', unite: 'm²', remarque: '' }])}>+ Autre mesure</button>
         </section>
 
         <section className="carte">
           <h2>Photos <span className="sous">{nbPhotos}</span></h2>
-          <p className="aide">Après chaque photo, choisissez ce qu'elle montre : la légende sert au rapport client.</p>
+          <p className="aide">Après chaque photo, choisissez ce qu'elle montre : la légende sert au rapport client. Le bouton « Croquis » permet de dessiner un plan ou d'annoter une photo.</p>
           <p className="aide">Rangées dans OneDrive : Visite - AO › {v.date_rdv?.slice(0, 4) ?? 'année'} › dossier du client › Photos visite. Rien dans la galerie du téléphone.</p>
         </section>
 
         {!termine && <button type="button" className="btn go large" onClick={terminer}>Visite terminée</button>}
       </fieldset>
+
+      {croquis && (
+        <Croquis fermer={(b) => {
+          setCroquis(false)
+          if (b) setALegender((x) => [...x, { blob: b, url: URL.createObjectURL(b), ouvrage: 'Croquis', precision: '' }])
+        }} />
+      )}
 
       {aLegender.length > 0 && (
         <div className="legender" role="dialog" aria-label="Légender les photos">
@@ -310,6 +324,10 @@ export default function Visite() {
             <span>Galerie</span>
             <input type="file" accept="image/*" multiple hidden onChange={(e) => { photos(e.target.files); e.target.value = '' }} />
           </label>
+          <button type="button" className="act-photo" onClick={() => setCroquis(true)}>
+            <IcoCroquis />
+            <span>Croquis</span>
+          </button>
         </div>
       )}
     </div>
