@@ -2,10 +2,11 @@
 //  - { chantier, action: 'liste' }            -> photos du chantier (miniature + grande image), classées par phase
 //  - { chantier, action: 'pv', reception }    -> fabrique le PV de réception PDF (photos en annexe),
 //                                                le range dans « F - Suivi chantier » et le renvoie (base64)
+//  - { chantier, action: 'pv-apercu' }      -> même PV, non signé (« PROJET - À SIGNER »), lu par le client avant signature
 //  - { chantier, action: 'pv-lien' }          -> lien de téléchargement du PV déjà rangé dans OneDrive
 // Droits : la personne connectée doit voir le chantier (règles de la base).
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from 'npm:pdf-lib@1.17.1'
+import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFImage, type PDFPage } from 'npm:pdf-lib@1.17.1'
 
 const DRIVE = Deno.env.get('ONEDRIVE_DRIVE_ID') ?? 'b!4efKqbnV-EKC_9Z0oks90n3mvlMiPLJFjdsjFcMnwiyAgT6m5zLnSriFuukUJq2m'
 const TENANT = Deno.env.get('MS_TENANT_ID') ?? 'f7c2d61b-b7b9-4c0c-ac90-3ed776b9b9de'
@@ -95,7 +96,7 @@ const LIGNE = rgb(0.86, 0.89, 0.92)
 function propre(s: string): string {
   return (s ?? '')
     .replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/\u2026/g, '...').replace(/[\u2013\u2014]/g, '-')
-    .replace(/\u00A0|\u202F/g, ' ').replace(/[\u2192]/g, '->')
+    .replace(/\u00A0|\u202F/g, ' ').replace(/\u00B2/g, '2').replace(/\u00B3/g, '3').replace(/[\u2192]/g, '->')
     .replace(/[^\x09\x0A\x0D\x20-\x7E\u00A0-\u00FF\u0152\u0153\u20AC]/g, '')
 }
 
@@ -139,7 +140,14 @@ async function telecharger(url: string | null): Promise<ArrayBuffer | null> {
 type Rec = { id: string; signataire: string; sans_reserve: boolean; reserves: string | null; signature_path: string; signe_le: string; membres: { prenom: string; nom: string } | null }
 type Ch = { id: string; reference: string | null; client_nom: string; adresse: string | null; code_postal: string | null; ville: string | null; date_debut: string | null; bon: Record<string, unknown> | null; onedrive_item_id: string | null }
 
-async function fabriquerPv(c: Ch, r: Rec, photos: Photo[]): Promise<Uint8Array> {
+const FOND = rgb(0.953, 0.965, 0.976)
+const ENTREPRISE = ['ALL TOITURES - SARL', 'SIREN 910 250 521 - RCS Lyon', '5 ch. du Favier, 69230 Saint-Genis-Laval', 'Entreprise qualifiée QUALIBAT - alltoitures.com']
+const MENTION_TOITURE = 'La toiture n\'étant pas accessible au maître d\'ouvrage, la réception est prononcée au vu des photos jointes en annexe, qui font partie intégrante du présent procès-verbal.'
+
+/** PV de réception. Sans `r` : aperçu « PROJET - À SIGNER » que le client lit avant de signer. */
+async function fabriquerPv(c: Ch, r: Rec | null, photos: Photo[]): Promise<Uint8Array> {
+  const apercu = !r
+  const date = r?.signe_le ?? new Date().toISOString()
   const doc = await PDFDocument.create()
   doc.setTitle(`PV de réception - ${c.client_nom}`)
   doc.setAuthor('ALL TOITURES')
@@ -151,48 +159,72 @@ async function fabriquerPv(c: Ch, r: Rec, photos: Photo[]): Promise<Uint8Array> 
 
   const logoOct = await telecharger(LOGO)
   const logo = logoOct ? await image(doc, logoOct) : null
+  const droite = (p: PDFPage, s: string, yy: number, taille: number, police = f, couleur = GRIS) =>
+    p.drawText(propre(s), { x: W - M - police.widthOfTextAtSize(propre(s), taille), y: yy, size: taille, font: police, color: couleur })
   const entete = (p: PDFPage) => {
     if (logo) {
-      const h = 34, w = (logo.width / logo.height) * h
-      p.drawImage(logo, { x: M, y: H - M - h + 6, width: w, height: h })
+      const h = 40, w = (logo.width / logo.height) * h
+      p.drawImage(logo, { x: M, y: H - M - h + 8, width: w, height: h })
     } else p.drawText('ALL TOITURES', { x: M, y: H - M - 16, size: 16, font: fb, color: BLEU })
-    p.drawText('ALL TOITURES - 5 ch. du Favier, 69230 Saint-Genis-Laval', { x: W - M - f.widthOfTextAtSize('ALL TOITURES - 5 ch. du Favier, 69230 Saint-Genis-Laval', 8.5), y: H - M - 6, size: 8.5, font: f, color: GRIS })
-    p.drawText('alltoitures.com', { x: W - M - f.widthOfTextAtSize('alltoitures.com', 8.5), y: H - M - 18, size: 8.5, font: f, color: GRIS })
-    p.drawLine({ start: { x: M, y: H - M - 36 }, end: { x: W - M, y: H - M - 36 }, thickness: 1, color: LIGNE })
+    droite(p, ENTREPRISE[0], H - M - 2, 8.5, fb, NUIT)
+    ENTREPRISE.slice(1).forEach((l, i) => droite(p, l, H - M - 13 - i * 10.5, 8))
+    p.drawRectangle({ x: M, y: H - M - 48, width: W - 2 * M, height: 2, color: BLEU })
+    if (apercu) {
+      // Filigrane : document non signé.
+      const t = 'PROJET - A SIGNER', taille = 58, w = fb.widthOfTextAtSize(t, taille), a = (35 * Math.PI) / 180
+      p.drawText(t, { x: W / 2 - (Math.cos(a) * w) / 2 + Math.sin(a) * taille * 0.35, y: H / 2 - (Math.sin(a) * w) / 2 - Math.cos(a) * taille * 0.35, size: taille, font: fb, color: rgb(0.85, 0.89, 0.92), rotate: degrees(35), opacity: 0.5 })
+    }
   }
-  const pied = (p: PDFPage, n: number) => {
-    const t = `PV de réception - ${propre(c.client_nom)} - page ${n}`
-    p.drawText(propre(t), { x: W / 2 - f.widthOfTextAtSize(propre(t), 8) / 2, y: 24, size: 8, font: f, color: GRIS })
-  }
-  let nPage = 1
-  const nouvellePage = () => { pied(page, nPage++); page = doc.addPage([W, H]); entete(page); y = H - M - 56 }
+  const nouvellePage = () => { page = doc.addPage([W, H]); entete(page); y = H - M - 70 }
   const place = (h: number) => { if (y - h < 70) nouvellePage() }
   const texte = (s: string, o: { taille?: number; gras?: boolean; couleur?: ReturnType<typeof rgb>; x?: number; largeur?: number; interligne?: number } = {}) => {
     const taille = o.taille ?? 10.5, police = o.gras ? fb : f, x = o.x ?? M, larg = o.largeur ?? W - 2 * M, il = o.interligne ?? taille * 1.4
     for (const l of couper(s, police, taille, larg)) { place(il); page.drawText(l, { x, y: y - taille, size: taille, font: police, color: o.couleur ?? NUIT }); y -= il }
   }
-  const titreSection = (s: string) => { y -= 10; place(30); texte(s.toUpperCase(), { taille: 9.5, gras: true, couleur: BLEU }); page.drawLine({ start: { x: M, y: y + 2 }, end: { x: W - M, y: y + 2 }, thickness: 0.6, color: LIGNE }); y -= 6 }
+  const titreSection = (s: string, garder = 34) => {
+    y -= 12; place(garder)
+    page.drawRectangle({ x: M, y: y - 18, width: W - 2 * M, height: 18, color: FOND })
+    page.drawRectangle({ x: M, y: y - 18, width: 3, height: 18, color: BLEU })
+    page.drawText(propre(s.toUpperCase()), { x: M + 10, y: y - 12.5, size: 9, font: fb, color: NUIT })
+    y -= 26
+  }
 
   entete(page)
-  y = H - M - 70
-  texte('PROCÈS-VERBAL DE RÉCEPTION DES TRAVAUX', { taille: 17, gras: true })
-  texte(`Établi le ${dateFr(r.signe_le)} à ${heureFr(r.signe_le)}${c.reference ? ` - chantier ${c.reference}` : ''}`, { taille: 9.5, couleur: GRIS })
+  y = H - M - 78
+  texte('PROCÈS-VERBAL DE RÉCEPTION DES TRAVAUX', { taille: 18, gras: true })
+  texte('Article 1792-6 du Code civil', { taille: 9, couleur: GRIS })
+  y -= 8
+
+  // Cartouche de références
+  const refs: [string, string][] = [
+    ['Chantier', c.reference ?? '-'],
+    ['Devis', c.bon?.devis ? String(c.bon.devis) : '-'],
+    ['Date', dateFr(date)]
+  ]
+  const lc = (W - 2 * M - 16) / 3
+  refs.forEach(([lib, val], i) => {
+    const x = M + i * (lc + 8)
+    page.drawRectangle({ x, y: y - 38, width: lc, height: 38, color: FOND })
+    page.drawText(propre(lib.toUpperCase()), { x: x + 10, y: y - 14, size: 7.5, font: fb, color: GRIS })
+    page.drawText(propre(val), { x: x + 10, y: y - 29, size: 11, font: fb, color: NUIT })
+  })
+  y -= 46
 
   titreSection('Les parties')
   const adresse = [c.adresse, [c.code_postal, c.ville].filter(Boolean).join(' ')].filter(Boolean).join(', ')
   const col = (lib: string, val: string) => {
     place(16)
-    page.drawText(propre(lib), { x: M, y: y - 10.5, size: 10.5, font: fb, color: NUIT })
-    const lignes = couper(val, f, 10.5, W - 2 * M - 150)
-    lignes.forEach((l, i) => { if (i) place(15); page.drawText(l, { x: M + 150, y: y - 10.5, size: 10.5, font: f, color: NUIT }); y -= 15 })
+    page.drawText(propre(lib), { x: M, y: y - 10.5, size: 10, font: fb, color: GRIS })
+    const lignes = couper(val, f, 10.5, W - 2 * M - 140)
+    lignes.forEach((l, i) => { if (i) place(15); page.drawText(l, { x: M + 140, y: y - 10.5, size: 10.5, font: f, color: NUIT }); y -= 15 })
+    y -= 2
   }
-  col('Entreprise', 'ALL TOITURES - charpente, couverture, zinguerie')
+  col('Entreprise', 'ALL TOITURES - charpente, couverture, zinguerie, ossature bois')
   col('Maître d\'ouvrage', c.client_nom)
   if (adresse) col('Adresse du chantier', adresse)
   const objet = (c.bon?.objet as string | undefined) ?? ''
   if (objet) col('Objet des travaux', objet)
-  if (c.bon?.devis) col('Devis', String(c.bon.devis))
-  if (c.date_debut) col('Période', `du ${dateFr(c.date_debut)} au ${dateFr(r.signe_le)}`)
+  if (c.date_debut) col('Période des travaux', `du ${dateFr(c.date_debut)} au ${dateFr(date)}`)
 
   const { data: taches } = await admin.from('taches').select('libelle, quantite, unite, categorie, est_groupe, numero, fait').eq('chantier_id', c.id).order('ordre')
   const lignes = ((taches ?? []) as { libelle: string; quantite: number | null; unite: string | null; categorie: string; est_groupe: boolean; numero: string | null; fait: boolean }[])
@@ -207,56 +239,65 @@ async function fabriquerPv(c: Ch, r: Rec, photos: Photo[]): Promise<Uint8Array> 
     }
   }
 
-  titreSection('Décision du maître d\'ouvrage')
+  titreSection('Constat et décision du maître d\'ouvrage', 420)
+  texte(MENTION_TOITURE, { taille: 10, interligne: 14 })
+  if (photos.length) texte(`Annexe : ${photos.length} photo${photos.length > 1 ? 's' : ''} des travaux.`, { taille: 9, couleur: GRIS })
+  y -= 8
   const coche = (ok: boolean, lib: string) => {
-    place(18)
-    page.drawRectangle({ x: M, y: y - 11, width: 10, height: 10, borderColor: NUIT, borderWidth: 1 })
-    if (ok) page.drawText('X', { x: M + 2, y: y - 9.5, size: 9, font: fb, color: NUIT })
-    page.drawText(propre(lib), { x: M + 18, y: y - 10, size: 10.5, font: ok ? fb : f, color: NUIT })
-    y -= 18
+    place(20)
+    page.drawRectangle({ x: M, y: y - 12, width: 12, height: 12, borderColor: NUIT, borderWidth: 1.2 })
+    if (ok) page.drawText('X', { x: M + 2.6, y: y - 10.3, size: 10, font: fb, color: NUIT })
+    page.drawText(propre(lib), { x: M + 20, y: y - 10.5, size: 10.5, font: ok ? fb : f, color: NUIT })
+    y -= 20
   }
-  coche(r.sans_reserve, 'Réception prononcée sans réserve')
-  coche(!r.sans_reserve, 'Réception prononcée avec les réserves suivantes :')
-  if (!r.sans_reserve && r.reserves) texte(r.reserves, { x: M + 18, largeur: W - 2 * M - 18 })
-  y -= 4
-  texte('La réception est prononcée contradictoirement à la date ci-dessus. Elle fait courir la garantie de parfait achèvement (1 an), la garantie de bon fonctionnement (2 ans) et la garantie décennale (10 ans).', { taille: 9, couleur: GRIS, interligne: 12 })
-  if (photos.length) texte(`Les travaux étant réalisés en toiture, ${photos.length} photo${photos.length > 1 ? 's' : ''} des travaux ${photos.length > 1 ? 'sont jointes' : 'est jointe'} en annexe et ${photos.length > 1 ? 'font' : 'fait'} partie du présent procès-verbal.`, { taille: 9, couleur: GRIS, interligne: 12 })
+  coche(!!r && r.sans_reserve, 'Réception prononcée SANS RÉSERVE')
+  coche(!!r && !r.sans_reserve, 'Réception prononcée AVEC LES RÉSERVES suivantes :')
+  if (r && !r.sans_reserve && r.reserves) texte(r.reserves, { x: M + 20, largeur: W - 2 * M - 20 })
+  if (apercu) {
+    for (let i = 0; i < 3; i++) { place(18); page.drawLine({ start: { x: M + 20, y: y - 14 }, end: { x: W - M, y: y - 14 }, thickness: 0.5, color: LIGNE, dashArray: [2, 2] }); y -= 18 }
+  }
+  y -= 6
+  texte('La réception est prononcée contradictoirement à la date ci-dessus. Elle marque le point de départ de la garantie de parfait achèvement (1 an), de la garantie de bon fonctionnement des éléments d\'équipement (2 ans) et de la garantie décennale (10 ans).', { taille: 9, couleur: GRIS, interligne: 12 })
 
   // Signatures
-  titreSection('Signatures')
-  place(130)
+  titreSection('Signatures', 200)
+  texte(`Fait à ${c.ville ?? '...................'}, le ${dateFr(date)}${r ? ` à ${heureFr(date)}` : ''}.`, { taille: 10 })
+  y -= 6
   const larg = (W - 2 * M - 20) / 2
-  const sig = await admin.storage.from('photos').download(r.signature_path)
-  page.drawText('Le maître d\'ouvrage', { x: M, y: y - 11, size: 10, font: fb, color: NUIT })
-  page.drawText(propre(r.signataire), { x: M, y: y - 25, size: 10, font: f, color: NUIT })
-  page.drawText('Pour ALL TOITURES', { x: M + larg + 20, y: y - 11, size: 10, font: fb, color: NUIT })
-  page.drawText(propre([r.membres?.prenom, r.membres?.nom].filter(Boolean).join(' ')), { x: M + larg + 20, y: y - 25, size: 10, font: f, color: NUIT })
-  page.drawRectangle({ x: M, y: y - 120, width: larg, height: 88, borderColor: LIGNE, borderWidth: 1 })
-  page.drawText('PV établi sur place depuis l\'application', { x: M + larg + 20, y: y - 40, size: 8.5, font: f, color: GRIS })
-  page.drawText('ALL TOITURES, en présence du maître d\'ouvrage.', { x: M + larg + 20, y: y - 51, size: 8.5, font: f, color: GRIS })
-  if (sig.data) {
-    const im = await image(doc, await sig.data.arrayBuffer())
-    if (im) {
-      // L'image de signature contient en bas une ligne de texte : on la garde, elle date la signature.
-      const r2 = Math.min((larg - 10) / im.width, 80 / im.height)
-      page.drawImage(im, { x: M + 5, y: y - 116, width: im.width * r2, height: im.height * r2 })
+  const xs = [M, M + larg + 20]
+  page.drawText('Le maître d\'ouvrage', { x: xs[0], y: y - 11, size: 10, font: fb, color: NUIT })
+  page.drawText('Pour ALL TOITURES', { x: xs[1], y: y - 11, size: 10, font: fb, color: NUIT })
+  page.drawText(propre(r?.signataire ?? c.client_nom), { x: xs[0], y: y - 24, size: 9.5, font: f, color: NUIT })
+  page.drawText(propre(r ? [r.membres?.prenom, r.membres?.nom].filter(Boolean).join(' ') : ''), { x: xs[1], y: y - 24, size: 9.5, font: f, color: NUIT })
+  page.drawText('« Lu et approuvé, bon pour réception »', { x: xs[0], y: y - 36, size: 8, font: f, color: GRIS })
+  for (const x of xs) page.drawRectangle({ x, y: y - 128, width: larg, height: 84, borderColor: LIGNE, borderWidth: 1 })
+  if (r) {
+    const sig = await admin.storage.from('photos').download(r.signature_path)
+    if (sig.data) {
+      const im = await image(doc, await sig.data.arrayBuffer())
+      if (im) {
+        const r2 = Math.min((larg - 10) / im.width, 76 / im.height)
+        page.drawImage(im, { x: xs[0] + 5, y: y - 124, width: im.width * r2, height: im.height * r2 })
+      }
     }
+    page.drawText('Signé électroniquement sur place', { x: xs[1] + 10, y: y - 70, size: 8.5, font: f, color: GRIS })
+    page.drawText(propre(`le ${dateFr(date)} à ${heureFr(date)}`), { x: xs[1] + 10, y: y - 82, size: 8.5, font: f, color: GRIS })
+  } else {
+    page.drawText('Signature après lecture', { x: xs[0] + 10, y: y - 90, size: 8.5, font: f, color: LIGNE })
   }
-  y -= 130
-  pied(page, nPage)
+  y -= 136
 
   // Annexe photos : 2 colonnes x 3 lignes par page
   if (photos.length) {
     const cols = 2, rangs = 3, gap = 14
-    const cw = (W - 2 * M - gap) / cols, chh = (H - M - 56 - 70 - gap * (rangs - 1)) / rangs - 14
+    const cw = (W - 2 * M - gap) / cols, chh = (H - M - 70 - 80 - gap * (rangs - 1)) / rangs - 14
     let i = 0
     for (const p of photos) {
       if (i % (cols * rangs) === 0) {
-        nPage++
         page = doc.addPage([W, H]); entete(page)
-        page.drawText(propre(`ANNEXE - PHOTOS DES TRAVAUX${i ? ' (suite)' : ''}`), { x: M, y: H - M - 56, size: 11, font: fb, color: BLEU })
+        page.drawText(propre(`ANNEXE - PHOTOS DES TRAVAUX${i ? ' (suite)' : ''}`), { x: M, y: H - M - 70, size: 11, font: fb, color: BLEU })
       }
-      const k = i % (cols * rangs), cx = M + (k % cols) * (cw + gap), top = H - M - 70 - Math.floor(k / cols) * (chh + 14 + gap)
+      const k = i % (cols * rangs), cx = M + (k % cols) * (cw + gap), top = H - M - 82 - Math.floor(k / cols) * (chh + 14 + gap)
       const oct = await telecharger(p.grande ?? p.miniature)
       const im = oct ? await image(doc, oct) : null
       if (im) {
@@ -265,9 +306,16 @@ async function fabriquerPv(c: Ch, r: Rec, photos: Photo[]): Promise<Uint8Array> 
       } else page.drawRectangle({ x: cx, y: top - chh, width: cw, height: chh, borderColor: LIGNE, borderWidth: 1 })
       page.drawText(propre(`${i + 1}. ${PHASE[p.phase] ?? p.phase} - ${dateFr(p.prise_le)}${p.prenom ? ` - ${p.prenom}` : ''}`), { x: cx, y: top - chh - 11, size: 8.5, font: f, color: GRIS })
       i++
-      if (i % (cols * rangs) === 0 || i === photos.length) pied(page, nPage)
     }
   }
+
+  // Pieds de page numérotés « page n / N ».
+  const pages = doc.getPages()
+  pages.forEach((p, n) => {
+    const t = propre(`PV de réception - ${c.client_nom} - page ${n + 1} / ${pages.length}`)
+    p.drawLine({ start: { x: M, y: 38 }, end: { x: W - M, y: 38 }, thickness: 0.5, color: LIGNE })
+    p.drawText(t, { x: W / 2 - f.widthOfTextAtSize(t, 8) / 2, y: 24, size: 8, font: f, color: GRIS })
+  })
   return await doc.save()
 }
 
@@ -319,6 +367,12 @@ Deno.serve(async (req) => {
       const g = await fetch(`${GRAPH}/drives/${DRIVE}/items/${r.pv_onedrive_id}?$select=id,name,@microsoft.graph.downloadUrl`, { headers: { Authorization: `Bearer ${t}` } })
       const j = await g.json()
       return g.ok ? rep({ lien: j['@microsoft.graph.downloadUrl'], nom: j.name }) : rep({ erreur: 'PV introuvable dans OneDrive' }, 404)
+    }
+
+    if (action === 'pv-apercu') {
+      const photos = choixAnnexe(await listerPhotos(c.id, t))
+      const pdf = await fabriquerPv(c as Ch, null, photos)
+      return rep({ nom: `PV_reception_${nomClient(c.client_nom)}_a_signer.pdf`, photos: photos.length, pdf: base64(pdf) })
     }
 
     if (action === 'pv') {

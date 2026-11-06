@@ -776,3 +776,26 @@ input:focus, select:focus, textarea:focus { background: #fff; }
 .etat-val.a { background: var(--warn-bg); color: var(--warn); }
 .etat-val.v { background: var(--ok-bg); color: var(--ok); }
 .barre-valider { position: sticky; bottom: calc(var(--nav) + env(safe-area-inset-bottom) + 8px); z-index: 4; }
+
+/* ---------- PV de réception : lecture → décision → signature ---------- */
+.fond-modal.plein { align-items: stretch; }
+.modal.plein { max-width: 760px; height: 100dvh; max-height: 100dvh; border-radius: 0 !important; overflow-y: auto; padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
+.pv-haut { position: sticky; top: calc(-1 * (env(safe-area-inset-top) + 12px)); z-index: 3; background: var(--surface); margin: -12px -16px 0; padding: 12px 16px 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.pv-etapes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.pv-etapes li { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); border-bottom: 3px solid var(--line); padding-bottom: 6px; }
+.pv-etapes li b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--line); color: var(--ink-2); font-size: 12px; }
+.pv-etapes li.en-cours { color: var(--ink); border-color: var(--accent); }
+.pv-etapes li.en-cours b { background: var(--accent-ink); color: #fff; }
+.pv-etapes li.fait { color: var(--ok); border-color: var(--ok); }
+.pv-etapes li.fait b { background: var(--ok); color: #fff; }
+.pv-pages { display: flex; flex-direction: column; gap: 10px; margin: 0 -8px; }
+.pv-pages img { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: 0 2px 10px rgba(11, 25, 33, 0.14); background: #fff; }
+.pv-charge { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 60px 0; color: var(--muted); font-weight: 700; }
+.roue { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: tourne 0.8s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+.pv-lu { background: var(--accent-soft); border-radius: 12px; padding: 14px; font-weight: 700; }
+.pv-lu.grise { background: var(--surface-2); color: var(--muted); }
+.pv-choix { display: grid; grid-template-columns: 1fr 1fr; }
+.pv-choix button { min-height: 56px; border-radius: 14px; font-size: 16px; }
+.pv-resume { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.toile-signature.grande { height: 260px; border-radius: 14px; }
