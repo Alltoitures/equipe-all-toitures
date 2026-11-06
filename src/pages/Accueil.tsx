@@ -112,7 +112,6 @@ export default function Accueil() {
   if (new Date().getDay() === 5 && tb.vehicules_actifs > tb.controles_vehicules_semaine) alertes.push({ texte: `Contrôle du vendredi : ${tb.vehicules_actifs - tb.controles_vehicules_semaine} véhicule${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''} pas encore contrôlé${tb.vehicules_actifs - tb.controles_vehicules_semaine > 1 ? 's' : ''}`, lien: '/gestion/vehicules', niveau: 'bleu' })
   if (tb.niveaux_vehicules_mois != null && tb.vehicules_actifs > tb.niveaux_vehicules_mois) { const n = tb.vehicules_actifs - tb.niveaux_vehicules_mois; alertes.push({ texte: `Niveaux et usure : ${n} camion${n > 1 ? 's' : ''} à vérifier (plus de 30 jours)`, lien: '/gestion/vehicules', niveau: 'orange' }) }
   if (new Date().getHours() >= 10 && tb.securite_manquante?.length) alertes.push({ texte: `Point sécurité non fait : ${tb.securite_manquante.join(', ')}`, lien: '/gestion/planning', niveau: 'orange' })
-  if (tb.absents_aujourdhui?.length) alertes.push({ texte: `Absent${tb.absents_aujourdhui.length > 1 ? 's' : ''} aujourd'hui : ${tb.absents_aujourdhui.join(', ')}`, lien: '/gestion/conges', niveau: 'bleu' })
   if (tb.imprevus_ouverts) alertes.push({ texte: `${tb.imprevus_ouverts} imprévu${tb.imprevus_ouverts > 1 ? 's' : ''} à traiter`, lien: '/gestion', niveau: 'rouge' })
   if (tb.jours_a_valider) alertes.push({ texte: `${tb.jours_a_valider} journée${tb.jours_a_valider > 1 ? 's' : ''} d'heures à valider`, lien: '/gestion/heures', niveau: 'orange' })
   if (tb.sans_bon) alertes.push({ texte: `${tb.sans_bon} chantier${tb.sans_bon > 1 ? 's' : ''} sans bon d'intervention`, lien: '/gestion/chantiers', niveau: 'bleu' })
@@ -131,54 +130,58 @@ export default function Accueil() {
   const perdus = stat('Refusé') + stat('Sans suite')
   const enAttente = stat('Devis envoyé')
 
+  const urgents = alertes.filter((a) => a.niveau === 'rouge')
+  const aPrevoir = alertes.filter((a) => a.niveau === 'orange')
+  const pourInfo = alertes.filter((a) => a.niveau === 'bleu')
+  const visitesJour = [...tb.prochaines_visites].filter((v) => v.date === isoJour()).sort((a, b) => (minutesHeure(a.heure) ?? 9999) - (minutesHeure(b.heure) ?? 9999))
+  const visitesSuite = [...tb.prochaines_visites].filter((v) => v.date > isoJour()).sort((a, b) => a.date.localeCompare(b.date) || (minutesHeure(a.heure) ?? 9999) - (minutesHeure(b.heure) ?? 9999))
+  const enCours = tb.semaine.filter((c) => c.statut === 'en_cours' || (c.debut && c.debut <= isoJour() && (!c.fin || c.fin >= isoJour())))
+  const dateDuJour = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+
   return (
     <div className="page accueil">
-      <div className="titre-ligne">
+      <div className="acc-tete">
+        <span className="sous">{dateDuJour}</span>
         <h1>Bonjour {membre?.prenom}</h1>
+        <p className="acc-resume">
+          {urgents.length ? <b className="r">{urgents.length} urgent{urgents.length > 1 ? 's' : ''}</b> : <b className="v">Rien d'urgent</b>}
+          {' · '}{visitesJour.length} visite{visitesJour.length > 1 ? 's' : ''} aujourd'hui · {enCours.length} chantier{enCours.length > 1 ? 's' : ''} en cours
+        </p>
       </div>
 
       <RappelNotifications />
-      <div className="nav-jour">
-        <button className="btn" onClick={() => setJour(moisDecale(jour, -1))} aria-label="Mois précédent">‹</button>
-        <h2>{moisAnnee(tb.mois)}</h2>
-        <button className="btn" disabled={courant} onClick={() => { const n = moisDecale(jour, 1); setJour(n.slice(0, 7) === isoJour().slice(0, 7) ? isoJour() : n) }} aria-label="Mois suivant">›</button>
-      </div>
 
-      <div className="kpis">
-        {gerant && (
-          <Link to="/visites" className="kpi">
-            <small>Visites du mois</small>
-            <strong>{tb.visites_mois}</strong>
-            <span>{tb.visites_faites} faite{tb.visites_faites > 1 ? 's' : ''}{courant ? ` · ${tb.visites_a_venir} à venir` : ''}</span>
+      {/* 1. Ce qui ne peut pas attendre */}
+      {urgents.length > 0 && (
+        <section className="carte acc-urgent">
+          <h2>🔴 Urgent</h2>
+          <ul className="alertes">
+            {urgents.map((a, i) => <li key={i}><Link to={a.lien} className="alerte rouge">{a.texte}<span>›</span></Link></li>)}
+          </ul>
+        </section>
+      )}
+
+      {/* 2. Aujourd'hui : visites et équipes */}
+      <section className="carte">
+        <div className="titre-ligne"><h2>Aujourd'hui</h2>{gerant && <Link className="lien" to="/visites">Visites</Link>}</div>
+        {gerant && visitesJour.map((v) => (
+          <Link key={v.id} to={`/visites/${v.id}`} className="acc-ligne">
+            <span className="acc-heure">{heureAffichee(v.heure)}</span>
+            <span><strong>Visite · {v.client}</strong><small>{[v.ville, v.type].filter(Boolean).join(' · ')}</small></span>
           </Link>
-        )}
-        {gerant && (
-          <div className="kpi accent">
-            <small>Taux de signature</small>
-            <strong>{signes + perdus ? `${Math.round((signes / (signes + perdus)) * 100)} %` : '—'}</strong>
-            <span>{signes} signé{signes > 1 ? 's' : ''} · {enAttente} devis en attente</span>
-          </div>
-        )}
-        <Link to="/chantiers" className="kpi">
-          <small>Terminés ce mois</small>
-          <strong>{tb.chantiers_termines_mois}</strong>
-          <span>chantier{tb.chantiers_termines_mois > 1 ? 's' : ''}</span>
-        </Link>
-        <Link to="/gestion/heures" className="kpi">
-          <small>Heures équipe</small>
-          <strong>{hFormat(tb.heures_mois)}</strong>
-          <span>{tb.paniers_mois} panier{tb.paniers_mois > 1 ? 's' : ''}</span>
-        </Link>
-        {!gerant && (
-          <div className="kpi">
-            <small>Photos</small>
-            <strong>{tb.photos_mois}</strong>
-            <span>ce mois-ci</span>
-          </div>
-        )}
-      </div>
+        ))}
+        {enCours.map((c) => (
+          <Link key={c.id} to={`/chantier/${c.id}`} className="acc-ligne">
+            <span className="acc-anneau" style={{ ['--p' as string]: `${c.avancement ?? 0}` }}><b>{c.avancement ?? 0}</b></span>
+            <span><strong>{c.client}</strong><small>{[c.equipe || 'équipe à affecter', c.ville].filter(Boolean).join(' · ')}</small></span>
+          </Link>
+        ))}
+        {(!gerant || visitesJour.length === 0) && enCours.length === 0 && <p className="sous">Pas de visite ni de chantier en cours aujourd'hui.</p>}
+        {tb.absents_aujourdhui?.length ? <p className="aide">Absent{tb.absents_aujourdhui.length > 1 ? 's' : ''} : {tb.absents_aujourdhui.join(', ')}</p> : null}
+      </section>
 
-      {courant && envois.length > 0 && (
+      {/* 3. À envoyer */}
+      {envois.length > 0 && (
         <section className="carte">
           <h2>À envoyer <span className="sous">{envois.length}</span></h2>
           <ul className="envois">
@@ -189,35 +192,74 @@ export default function Accueil() {
               </li>
             ))}
           </ul>
-          <p className="aide">Une ligne disparaît quand vous touchez « Envoyé », ou d'elle-même dans l'heure quand le mail part de votre Outlook.</p>
         </section>
       )}
 
-      {courant && (
+      {/* 4. À prévoir, puis pour info (repliable) */}
+      {aPrevoir.length > 0 && (
         <section className="carte">
-          <h2>À faire</h2>
-          {alertes.length === 0 && <p className="sous">Rien en attente. ✓</p>}
+          <h2>🟠 À prévoir <span className="sous">{aPrevoir.length}</span></h2>
           <ul className="alertes">
-            {alertes.map((a, i) => (
-              <li key={i}><Link to={a.lien} className={`alerte ${a.niveau}`}>{a.texte}<span>›</span></Link></li>
-            ))}
+            {aPrevoir.map((a, i) => <li key={i}><Link to={a.lien} className="alerte orange">{a.texte}<span>›</span></Link></li>)}
           </ul>
         </section>
       )}
+      {pourInfo.length > 0 && (
+        <details className="carte acc-replie">
+          <summary><h2>ℹ️ Pour info <span className="sous">{pourInfo.length}</span></h2></summary>
+          <ul className="alertes">
+            {pourInfo.map((a, i) => <li key={i}><Link to={a.lien} className="alerte bleu">{a.texte}<span>›</span></Link></li>)}
+          </ul>
+        </details>
+      )}
 
-      {courant && gerant && (
+      {gerant && visitesSuite.length > 0 && (
         <section className="carte">
-          <div className="titre-ligne"><h2>Prochaines visites</h2><Link className="lien" to="/visites">Tout voir</Link></div>
-          {tb.prochaines_visites.length === 0 && <p className="sous">Aucune visite dans les 7 prochains jours.</p>}
-          {[...tb.prochaines_visites].sort((a, b) => a.date.localeCompare(b.date) || (minutesHeure(a.heure) ?? 9999) - (minutesHeure(b.heure) ?? 9999)).map((v) => (
+          <h2>Prochaines visites</h2>
+          {visitesSuite.map((v) => (
             <Link key={v.id} to={`/visites/${v.id}`} className="ligne-simple">
               <span><strong>{v.client}</strong><small>{[v.ville, v.type].filter(Boolean).join(' · ')}</small></span>
-              <span className="d">{v.date === isoJour() ? "Aujourd'hui" : dateCourte(v.date)} · <strong>{heureAffichee(v.heure)}</strong></span>
+              <span className="d">{dateCourte(v.date)} · <strong>{heureAffichee(v.heure)}</strong></span>
             </Link>
           ))}
         </section>
       )}
 
+      {/* 5. Le mois en chiffres */}
+      <div className="nav-jour acc-mois">
+        <button className="btn mini" onClick={() => setJour(moisDecale(jour, -1))} aria-label="Mois précédent">‹</button>
+        <h2>{moisAnnee(tb.mois)}</h2>
+        <button className="btn mini" disabled={courant} onClick={() => { const n = moisDecale(jour, 1); setJour(n.slice(0, 7) === isoJour().slice(0, 7) ? isoJour() : n) }} aria-label="Mois suivant">›</button>
+      </div>
+      <div className="kpis">
+        {gerant && (
+          <Link to="/visites" className="kpi">
+            <small>Visites</small>
+            <strong>{tb.visites_mois}</strong>
+            <span>{tb.visites_faites} faite{tb.visites_faites > 1 ? 's' : ''}{courant ? ` · ${tb.visites_a_venir} à venir` : ''}</span>
+          </Link>
+        )}
+        {gerant && (
+          <div className="kpi accent">
+            <small>Signature</small>
+            <strong>{signes + perdus ? `${Math.round((signes / (signes + perdus)) * 100)} %` : '—'}</strong>
+            <span>{signes} signé{signes > 1 ? 's' : ''} · {enAttente} en attente</span>
+          </div>
+        )}
+        <Link to="/chantiers" className="kpi">
+          <small>Chantiers terminés</small>
+          <strong>{tb.chantiers_termines_mois}</strong>
+          <span>{tb.chantiers_en_cours} en cours · {tb.chantiers_a_venir} à venir</span>
+        </Link>
+        <Link to="/gestion/heures" className="kpi">
+          <small>Heures équipe</small>
+          <strong>{hFormat(tb.heures_mois)}</strong>
+          <span>{tb.paniers_mois} panier{tb.paniers_mois > 1 ? 's' : ''}</span>
+        </Link>
+      </div>
+
+      <details className="acc-stats">
+        <summary className="btn large">📊 Statistiques détaillées</summary>
       {st && gerant && (
         <>
           <section className="carte">
@@ -272,6 +314,7 @@ export default function Accueil() {
           </table>
         )}
       </section>
+      </details>
     </div>
   )
 }
