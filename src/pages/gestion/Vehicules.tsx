@@ -90,123 +90,142 @@ function echeance(d: string | null): { cls: string; txt: string } {
   return { cls: 'e-ok', txt: j > 60 ? `dans ${Math.round(j / 30)} mois` : `dans ${j} j` }
 }
 
+type Niveau = 'ok' | 'attention' | 'alerte'
+interface Statut { niveau: Niveau; titre: string; detail: string; actions: { txt: string; niveau: Niveau }[] }
+
+/** Un seul feu par camion : ce qu'il faut retenir, et la liste de ce qu'il y a à faire. */
+function statutCamion(v: Vehicule, e: ReturnType<typeof etatVehicule>, anomalies: ControleV[]): Statut {
+  const actions: Statut['actions'] = []
+  for (const a of anomalies) actions.push({ txt: `Signalé par ${a.membres?.prenom ?? '—'} : ${a.anomalie}`, niveau: 'alerte' })
+  if (e.aReprendre.length) actions.push({ txt: `À reprendre : ${e.aReprendre.join(', ')}`, niveau: 'alerte' })
+  const ct = v.controle_technique ? joursAvant(v.controle_technique) : null
+  const rev = v.prochaine_revision ? joursAvant(v.prochaine_revision) : null
+  const resteKm = v.km != null && v.prochain_entretien_km != null ? v.prochain_entretien_km - v.km : null
+  if (ct != null && ct < 0) actions.push({ txt: `Contrôle technique dépassé (${dateCourte(v.controle_technique)})`, niveau: 'alerte' })
+  else if (ct != null && ct <= 30) actions.push({ txt: `Contrôle technique dans ${ct} j : prendre rendez-vous`, niveau: 'attention' })
+  if (rev != null && rev < 0) actions.push({ txt: `Révision dépassée (${dateCourte(v.prochaine_revision)})`, niveau: 'alerte' })
+  else if (rev != null && rev <= 30) actions.push({ txt: `Révision dans ${rev} j`, niveau: 'attention' })
+  if (resteKm != null && resteKm <= 0) actions.push({ txt: `Entretien dépassé de ${(-resteKm).toLocaleString('fr-FR')} km`, niveau: 'alerte' })
+  else if (resteKm != null && resteKm <= 1500) actions.push({ txt: `Entretien dans ${resteKm.toLocaleString('fr-FR')} km`, niveau: 'attention' })
+  if (e.aSurveiller.length) actions.push({ txt: `À surveiller : ${e.aSurveiller.join(', ')}`, niveau: 'attention' })
+  if (!e.entretienAJour && !e.aReprendre.length) actions.push({ txt: `Niveaux et usure à vérifier (${e.aVerifier.length} point${e.aVerifier.length > 1 ? 's' : ''})`, niveau: 'attention' })
+  if (!e.vendrediFait && new Date().getDay() >= 5) actions.push({ txt: 'Nettoyage du vendredi pas fait', niveau: 'attention' })
+  if (!v.controle_technique || !v.prochaine_revision || v.km == null) actions.push({ txt: 'Infos à compléter (km, CT, révision)', niveau: 'attention' })
+  const niveau: Niveau = actions.some((x) => x.niveau === 'alerte') ? 'alerte' : actions.length ? 'attention' : 'ok'
+  return {
+    niveau,
+    titre: niveau === 'ok' ? 'Tout est en ordre' : niveau === 'alerte' ? (actions.filter((x) => x.niveau === 'alerte').length > 1 ? `${actions.filter((x) => x.niveau === 'alerte').length} problèmes` : 'Problème à régler') : `${actions.length} point${actions.length > 1 ? 's' : ''} à prévoir`,
+    detail: actions[0]?.txt ?? `Nettoyé ${e.hebdo ? `le ${dateCourte(e.hebdo.jour)}` : '—'} · niveaux à jour`,
+    actions
+  }
+}
+
 /** Partie affichage, séparée pour pouvoir la prévisualiser. */
 export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: { liste: Vehicule[]; ctrls: ControleV[]; onAjouter: () => void; onModifier: (v: Vehicule) => void; onTraite: (id: string) => void }) {
-  const [ouvert, setOuvert] = useState<string | null>(null)
-  const etats = liste.map((v) => ({ v, e: etatVehicule(v.id, ctrls) }))
+  const [choisi, setChoisi] = useState<string | null>(null)
+  const anomaliesDe = (id: string) => ctrls.filter((c) => c.vehicule_id === id && c.anomalie && !c.anomalie_traitee)
+  const etats = liste.map((v) => { const e = etatVehicule(v.id, ctrls); return { v, e, st: statutCamion(v, e, anomaliesDe(v.id)) } })
+  const ordre: Record<Niveau, number> = { alerte: 0, attention: 1, ok: 2 }
+  etats.sort((a, b) => ordre[a.st.niveau] - ordre[b.st.niveau] || a.v.nom.localeCompare(b.v.nom))
   const nettoyes = etats.filter((x) => x.e.vendrediFait).length
-  const niveauxOk = etats.filter((x) => x.e.entretienAJour).length
-  const anomalies = ctrls.filter((c) => c.anomalie && !c.anomalie_traitee && liste.some((v) => v.id === c.vehicule_id))
-  const vendredi = new Date().getDay() === 5
+  const cur = etats.find((x) => x.v.id === choisi)
+
+  if (cur) {
+    const { v, e, st } = cur
+    const histo = ctrls.filter((c) => c.vehicule_id === v.id).slice(0, 12)
+    const resteKm = v.km != null && v.prochain_entretien_km != null ? v.prochain_entretien_km - v.km : null
+    const ct = echeance(v.controle_technique)
+    const rev = echeance(v.prochaine_revision)
+    return (
+      <>
+        <button className="retour" onClick={() => setChoisi(null)}><IcoRetour /> Tous les camions</button>
+        <header className={`vg-hero n-${st.niveau}`}>
+          <div>
+            <h1>{v.nom}</h1>
+            {v.immatriculation && <span className="plaque">{v.immatriculation}</span>}
+          </div>
+          <span className="vg-feu"><i />{st.titre}</span>
+        </header>
+
+        {st.actions.length > 0 && (
+          <section className="carte">
+            <h2>À faire</h2>
+            <ul className="vg-actions">
+              {st.actions.map((a, i) => <li key={i} className={`n-${a.niveau}`}><i />{a.txt}</li>)}
+            </ul>
+            {anomaliesDe(v.id).map((a) => (
+              <button key={a.id} className="btn" onClick={() => onTraite(a.id)}>✓ Problème « {a.anomalie?.slice(0, 30)}{(a.anomalie?.length ?? 0) > 30 ? '…' : ''} » réglé</button>
+            ))}
+          </section>
+        )}
+
+        <section className="carte">
+          <div className="titre-ligne"><h2>Échéances</h2><button className="lien" onClick={() => onModifier(v)}>Modifier</button></div>
+          <div className="vg-echeances">
+            <div className={ct.cls}><span>Contrôle technique</span><b>{v.controle_technique ? dateCourte(v.controle_technique) : '—'}</b><small>{ct.txt}</small></div>
+            <div className={rev.cls}><span>Révision</span><b>{v.prochaine_revision ? dateCourte(v.prochaine_revision) : '—'}</b><small>{rev.txt}</small></div>
+            <div className={resteKm == null ? 'e-vide' : resteKm <= 0 ? 'e-retard' : resteKm <= 1500 ? 'e-proche' : 'e-ok'}><span>Entretien</span><b>{v.prochain_entretien_km ? `${v.prochain_entretien_km.toLocaleString('fr-FR')} km` : '—'}</b><small>{resteKm == null ? 'à renseigner' : resteKm <= 0 ? 'dépassé' : `encore ${resteKm.toLocaleString('fr-FR')} km`}</small></div>
+            <div><span>Compteur</span><b>{v.km != null ? `${v.km.toLocaleString('fr-FR')} km` : '—'}</b><small>dernier relevé</small></div>
+          </div>
+        </section>
+
+        <section className="carte">
+          <h2>Contrôles de l'équipe</h2>
+          <div className={`vg-ligne-net ${e.vendrediFait ? 'n-ok' : 'n-attention'}`}><i /><span><strong>Nettoyage de la semaine</strong><small>{e.vendrediFait ? `fait par ${e.hebdo?.membres?.prenom ?? '—'} le ${dateCourte(e.hebdo?.jour)}` : e.hebdo ? `pas encore · dernier le ${dateCourte(e.hebdo.jour)}` : 'jamais fait'}</small></span></div>
+          <div className="vg-points">
+            {POINTS_ENTRETIEN.map((p) => {
+              const r = e.releves[p.nom]
+              const n: Niveau = !r || !r.aJour ? 'attention' : r.etat.gravite === 'mauvais' ? 'alerte' : r.etat.gravite === 'moyen' ? 'attention' : 'ok'
+              return (
+                <div key={p.nom} className={`n-${n}`}>
+                  <i />
+                  <span><strong>{p.nom}</strong><small>{r ? `${r.etat.label} · ${dateCourte(r.jour)} · ${r.prenom}` : 'jamais vérifié'}</small></span>
+                </div>
+              )
+            })}
+          </div>
+          <p className="aide">Niveaux et usure : à revérifier tous les {30} jours par l'équipe depuis son téléphone.</p>
+        </section>
+
+        {histo.length > 0 && (
+          <section className="carte">
+            <h2>Historique</h2>
+            <ul className="vg-histo">
+              {histo.map((c) => (
+                <li key={c.id}>
+                  <span>{dateCourte(c.jour)}</span>
+                  <span>{c.type === 'mensuel' ? 'Niveaux / usure' : c.points?.Nettoyage === 'pas_fait' ? 'Nettoyage non fait' : 'Nettoyage'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}{c.anomalie ? ` · ${c.anomalie}` : ''}</span>
+                  <span className={c.anomalie ? 'urgent' : 'ok-txt'}>{c.anomalie ? '⚠' : '✓'}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {v.notes && <section className="carte"><h2>Notes</h2><p className="pre">{v.notes}</p></section>}
+      </>
+    )
+  }
 
   return (
     <>
       <div className="titre-ligne"><h1>Camions</h1><button className="btn pri" onClick={onAjouter}>+ Camion</button></div>
-
       {liste.length > 0 && (
-        <div className="vg-resume">
-          <div className={nettoyes === liste.length ? 'e-ok' : vendredi ? 'e-du' : ''}><b>{nettoyes}/{liste.length}</b><span>nettoyés cette semaine</span></div>
-          <div className={niveauxOk === liste.length ? 'e-ok' : 'e-du'}><b>{niveauxOk}/{liste.length}</b><span>niveaux et usure à jour</span></div>
-          <div className={anomalies.length ? 'e-alerte' : 'e-ok'}><b>{anomalies.length}</b><span>{anomalies.length > 1 ? 'problèmes signalés' : 'problème signalé'}</span></div>
-        </div>
+        <p className="sous">{etats.filter((x) => x.st.niveau === 'ok').length} sur {liste.length} en ordre · {nettoyes}/{liste.length} nettoyés cette semaine</p>
       )}
-
-      {anomalies.length > 0 && (
-        <section className="carte carte-urgente">
-          <h2>À traiter</h2>
-          {anomalies.map((a) => (
-            <div key={a.id} className="vg-anomalie">
-              <div>
-                <strong>{liste.find((v) => v.id === a.vehicule_id)?.nom}</strong>
-                <span className="sous">{a.membres?.prenom ?? '—'} · {dateCourte(a.jour)} · {a.type === 'mensuel' ? 'niveaux / usure' : 'nettoyage'}</span>
-                <p>{a.anomalie}</p>
-              </div>
-              <button className="btn" onClick={() => onTraite(a.id)}>Traité</button>
-            </div>
-          ))}
-        </section>
-      )}
-
       {liste.length === 0 && <div className="vide">Ajoutez vos camions : l'équipe fera le nettoyage du vendredi et vérifiera les niveaux et l'usure depuis son téléphone.</div>}
-
-      {etats.map(({ v, e }) => {
-        const ct = echeance(v.controle_technique)
-        const rev = echeance(v.prochaine_revision)
-        const resteKm = v.km != null && v.prochain_entretien_km != null ? v.prochain_entretien_km - v.km : null
-        const histo = ctrls.filter((c) => c.vehicule_id === v.id).slice(0, 8)
-        return (
-          <section key={v.id} className="carte vg-camion">
-            <div className="vg-tete">
-              <div>
-                <h2>{v.nom}</h2>
-                {v.immatriculation ? <span className="plaque">{v.immatriculation}</span> : <button className="lien" onClick={() => onModifier(v)}>+ immatriculation</button>}
-              </div>
-              <button className="btn" onClick={() => onModifier(v)}>Modifier</button>
-            </div>
-
-            <button className="vg-km" onClick={() => onModifier(v)}>
-              {v.km != null ? <><b>{v.km.toLocaleString('fr-FR')} km</b>{resteKm != null && <span className={resteKm <= 1000 ? 'e-proche' : ''}>entretien dans {resteKm.toLocaleString('fr-FR')} km</span>}</> : <span className="km-vide">Kilométrage à renseigner</span>}
-            </button>
-
-            <div className="vg-grille">
-              <div className={`vg-tuile ${e.vendrediFait ? 'e-ok' : vendredi ? 'e-du' : ''}`}>
-                <span>Nettoyage</span>
-                <b>{e.vendrediFait ? '✓ Fait' : 'À faire'}</b>
-                <small>{e.vendrediFait ? `${e.hebdo?.membres?.prenom ?? '—'} · ${dateCourte(e.hebdo?.jour)}` : e.hebdo ? `dernier : ${dateCourte(e.hebdo.jour)}` : 'jamais fait'}</small>
-              </div>
-              <div className={`vg-tuile ${e.aReprendre.length ? 'e-retard' : e.entretienAJour ? 'e-ok' : 'e-du'}`}>
-                <span>Niveaux et usure</span>
-                <b>{e.aReprendre.length ? 'À reprendre' : e.entretienAJour ? '✓ À jour' : 'À vérifier'}</b>
-                <small>{e.aReprendre.length ? e.aReprendre.join(', ') : e.entretienAJour ? (e.aSurveiller.length ? `à surveiller : ${e.aSurveiller.join(', ')}` : 'moins de 30 jours') : `${e.aVerifier.length} point${e.aVerifier.length > 1 ? 's' : ''} à vérifier`}</small>
-              </div>
-              <button className={`vg-tuile ${ct.cls}`} onClick={() => onModifier(v)}>
-                <span>Contrôle technique</span>
-                <b>{v.controle_technique ? dateCourte(v.controle_technique) : '—'}</b>
-                <small>{ct.txt}</small>
-              </button>
-              <button className={`vg-tuile ${rev.cls}`} onClick={() => onModifier(v)}>
-                <span>Révision</span>
-                <b>{v.prochaine_revision ? dateCourte(v.prochaine_revision) : '—'}</b>
-                <small>{rev.txt}</small>
-              </button>
-            </div>
-
-            <span className="vg-sous-titre">Dernières vérifications</span>
-            <div className="vg-niveaux vg-entretien">
-              {POINTS_ENTRETIEN.map((p) => {
-                const r = e.releves[p.nom]
-                const cls = !r ? 'inconnu' : r.etat.gravite === 'mauvais' ? 'manque' : r.etat.gravite === 'moyen' ? 'moyen' : r.aJour ? 'ok' : 'vieux'
-                return (
-                  <div key={p.nom} className={`vg-niv n-${cls}`} title={r ? `${r.prenom} · ${dateCourte(r.jour)}` : 'jamais vérifié'}>
-                    <i />
-                    <span>{p.nom}</span>
-                    <small>{r ? `${r.etat.label} · ${dateCourte(r.jour)}` : 'jamais'}</small>
-                  </div>
-                )
-              })}
-            </div>
-
-            {v.notes && <p className="sous">{v.notes}</p>}
-
-            {histo.length > 0 && (
-              <>
-                <button className="lien" onClick={() => setOuvert(ouvert === v.id ? null : v.id)}>{ouvert === v.id ? 'Masquer l\'historique' : `Historique (${histo.length})`}</button>
-                {ouvert === v.id && (
-                  <ul className="vg-histo">
-                    {histo.map((c) => (
-                      <li key={c.id}>
-                        <span>{dateCourte(c.jour)}</span>
-                        <span>{c.type === 'mensuel' ? 'Niveaux / usure' : c.points?.Nettoyage === 'pas_fait' ? 'Nettoyage non fait' : 'Nettoyage'} · {c.membres?.prenom ?? '—'}{c.km ? ` · ${c.km.toLocaleString('fr-FR')} km` : ''}</span>
-                        <span className={c.anomalie ? 'urgent' : 'ok-txt'}>{c.anomalie ? '⚠' : '✓'}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-          </section>
-        )
-      })}
+      <div className="liste">
+        {etats.map(({ v, st }) => (
+          <button key={v.id} className={`vg-ligne n-${st.niveau}`} onClick={() => { setChoisi(v.id); window.scrollTo({ top: 0 }) }}>
+            <span className="feu"><i /></span>
+            <span className="txt">
+              <strong>{v.nom}{v.immatriculation && <em className="plaque">{v.immatriculation}</em>}</strong>
+              <b>{st.titre}</b>
+              <small>{st.detail}</small>
+            </span>
+            <span className="chev">›</span>
+          </button>
+        ))}
+      </div>
     </>
   )
 }
