@@ -46,7 +46,7 @@ export default function MesChantiers() {
     <div className="page">
       <div className="titre-ligne">
         <h1>Mes chantiers</h1>
-        {estStaff(membre) && <Link className="btn pri" to="/gestion/chantiers/nouveau">+ Chantier</Link>}
+        {estStaff(membre) ? <Link className="btn pri" to="/gestion/chantiers/nouveau">+ Chantier</Link> : <Link className="btn" to="/outils">🛠 Outils</Link>}
       </div>
       <RappelCamions />
 

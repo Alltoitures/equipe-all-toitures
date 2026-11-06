@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { estGerant, useAuth } from '../../lib/auth'
 import { dateCourte, lundi } from '../../lib/format'
+import { alertesOutil, type Outil } from '../Outillage'
 
 interface ImprevuLigne {
   id: string
@@ -18,7 +19,7 @@ export default function Gestion() {
   const [imprevus, setImprevus] = useState<ImprevuLigne[]>([])
   const [aValider, setAValider] = useState(0)
   const [photosAttente, setPhotosAttente] = useState(0)
-  const [nb, setNb] = useState({ demandes: 0, urgentes: 0, conges: 0, chantiersSansEquipe: 0 })
+  const [nb, setNb] = useState({ demandes: 0, urgentes: 0, conges: 0, chantiersSansEquipe: 0, outils: 0 })
 
   async function charger() {
     const [imp, jr, ph] = await Promise.all([
@@ -26,13 +27,14 @@ export default function Gestion() {
       supabase.from('journees').select('id', { count: 'exact', head: true }).eq('valide', false).lt('jour', lundi()),
       supabase.from('photos').select('id', { count: 'exact', head: true }).neq('onedrive_statut', 'envoye')
     ])
-    const [dm, dmu, cg, ch] = await Promise.all([
+    const [dm, dmu, cg, ch, ou] = await Promise.all([
       supabase.from('demandes_materiel').select('id', { count: 'exact', head: true }).eq('statut', 'ouverte'),
       supabase.from('demandes_materiel').select('id', { count: 'exact', head: true }).eq('statut', 'ouverte').eq('urgent', true),
       supabase.from('conges').select('id', { count: 'exact', head: true }).eq('statut', 'demande'),
-      supabase.from('chantiers').select('id, affectations(membre_id)').neq('statut', 'termine')
+      supabase.from('chantiers').select('id, affectations(membre_id)').neq('statut', 'termine'),
+      supabase.from('outils').select('*').eq('actif', true)
     ])
-    setNb({ demandes: dm.count ?? 0, urgentes: dmu.count ?? 0, conges: cg.count ?? 0, chantiersSansEquipe: ((ch.data ?? []) as { affectations: unknown[] }[]).filter((c) => !c.affectations.length).length })
+    setNb({ demandes: dm.count ?? 0, urgentes: dmu.count ?? 0, conges: cg.count ?? 0, chantiersSansEquipe: ((ch.data ?? []) as { affectations: unknown[] }[]).filter((c) => !c.affectations.length).length, outils: ((ou.data ?? []) as Outil[]).filter((o) => alertesOutil(o).length > 0).length })
     setImprevus((imp.data ?? []) as unknown as ImprevuLigne[])
     setAValider(jr.count ?? 0)
     setPhotosAttente(ph.count ?? 0)
@@ -59,7 +61,8 @@ export default function Gestion() {
             ['/gestion/heures', '⏱', 'Heures à valider', aValider, aValider ? `${aValider} journée${aValider > 1 ? 's' : ''} des semaines passées` : 'Tout est validé'],
             ['/gestion/demandes', '📦', 'Demandes de matériel', nb.demandes, nb.urgentes ? `dont ${nb.urgentes} urgente${nb.urgentes > 1 ? 's' : ''}` : nb.demandes ? 'à commander' : 'Aucune en attente'],
             ['/gestion/conges', '🌴', 'Congés à répondre', nb.conges, nb.conges ? 'la personne attend ta réponse' : 'Aucune demande'],
-            ['/gestion/chantiers', '👷', 'Chantiers sans équipe', nb.chantiersSansEquipe, nb.chantiersSansEquipe ? 'personne n\'est affecté' : 'Tous ont une équipe']
+            ['/gestion/chantiers', '👷', 'Chantiers sans équipe', nb.chantiersSansEquipe, nb.chantiersSansEquipe ? 'personne n\'est affecté' : 'Tous ont une équipe'],
+            ['/outils', '🛠', 'Outils à surveiller', nb.outils, nb.outils ? 'abîmé, sorti longtemps ou vérification' : 'Rien à signaler']
           ] as [string, string, string, number, string][]).map(([to, ico, titre, n, sous]) => (
             <Link key={to} to={to} className={`at-ligne${n ? ' actif' : ''}${to === '/gestion/demandes' && nb.urgentes ? ' urgent' : ''}`}>
               <span className="at-ico">{ico}</span>
@@ -76,6 +79,7 @@ export default function Gestion() {
         <Link to="/gestion/planning" className="tuile"><span className="t-ico">📅</span><strong>Planning</strong><span className="sous">Qui est où cette semaine</span></Link>
         <Link to="/gestion/chantiers" className="tuile"><span className="t-ico">🏠</span><strong>Chantiers</strong><span className="sous">Dossiers et affectations</span></Link>
         <Link to="/gestion/vehicules" className="tuile"><span className="t-ico">🚐</span><strong>Camions</strong><span className="sous">Contrôles, échéances, documents</span></Link>
+        <Link to="/outils" className="tuile"><span className="t-ico">🛠</span><strong>Outillage</strong><span className="sous">Où sont les outils, QR codes</span></Link>
         {estGerant(membre) && <Link to="/gestion/equipe" className="tuile"><span className="t-ico">👥</span><strong>Équipe</strong><span className="sous">Comptes et accès</span></Link>}
       </div>
 

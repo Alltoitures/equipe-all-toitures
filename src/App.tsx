@@ -24,6 +24,7 @@ import Rentabilite from './pages/gestion/Rentabilite'
 import TempsMoyens from './pages/gestion/TempsMoyens'
 import MaBoite from './pages/gestion/MaBoite'
 import ControleVehicule from './pages/ControleVehicule'
+import Outillage, { OutilPage } from './pages/Outillage'
 import Aide from './pages/Aide'
 import RealisationPage from './pages/gestion/Realisation'
 
@@ -58,6 +59,8 @@ function Routeur() {
         <Route path="heures" element={<Heures />} />
         <Route path="compte" element={<Compte />} />
         <Route path="vehicules" element={<ControleVehicule />} />
+        <Route path="outils" element={<Outillage />} />
+        <Route path="outil/:id" element={<OutilPage />} />
         <Route path="aide" element={<Aide />} />
         {staff && (
           <>
