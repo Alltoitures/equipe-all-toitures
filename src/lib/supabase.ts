@@ -110,7 +110,7 @@ export interface Journee {
   panier_manuel: boolean
   commentaire: string | null
   valide: boolean
-  journee_chantiers?: { chantier_id: string; heures: number; chantiers?: { client_nom: string } | null }[]
+  journee_chantiers?: { chantier_id: string; heures: number; periode?: 'matin' | 'apres_midi' | 'journee' | null; chantiers?: { client_nom: string; ville?: string | null } | null }[]
 }
 
 export const ROLES: Record<Role, string> = {

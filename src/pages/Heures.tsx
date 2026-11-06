@@ -4,7 +4,6 @@ import { ajouterJours, dateLongue, heureMaintenant, heuresJournee, hFormat, hhmm
 import { useAuth } from '../lib/auth'
 import MesConges from '../components/MesConges'
 
-interface Repartition { chantier_id: string; heures: string }
 type ChPointage = Pick<Chantier, 'id' | 'client_nom' | 'ville' | 'statut' | 'date_debut' | 'date_fin'> & { affecte: boolean }
 
 function premierDuMois(s: string) { return s.slice(0, 8) + '01' }
@@ -26,7 +25,8 @@ export default function Heures() {
   const [depart, setDepart] = useState('')
   const [retour, setRetour] = useState('')
   const [pause, setPause] = useState(60)
-  const [rep, setRep] = useState<Repartition[]>([])
+  const [matin, setMatin] = useState('')
+  const [aprem, setAprem] = useState('')
   const [commentaire, setCommentaire] = useState('')
   const [valide, setValide] = useState(false)
   const [msg, setMsg] = useState('')
@@ -39,7 +39,7 @@ export default function Heures() {
     if (!membre) return
     const { data } = await supabase
       .from('journees')
-      .select('*, journee_chantiers(chantier_id, heures)')
+      .select('*, journee_chantiers(chantier_id, heures, periode)')
       .eq('membre_id', membre.id)
       .gte('jour', debut)
       .lte('jour', ajouterJours(debut, 6))
@@ -83,7 +83,11 @@ export default function Heures() {
       setPause(j.pause_min)
       setCommentaire(j.commentaire ?? '')
       setValide(j.valide)
-      setRep((j.journee_chantiers ?? []).map((r) => ({ chantier_id: r.chantier_id, heures: String(r.heures) })))
+      const lignes = j.journee_chantiers ?? []
+      const m = lignes.find((r) => r.periode === 'matin' || r.periode === 'journee') ?? lignes[0]
+      const a = lignes.find((r) => r.periode === 'apres_midi' || r.periode === 'journee') ?? lignes[1] ?? m
+      setMatin(m?.chantier_id ?? '')
+      setAprem(a?.chantier_id ?? '')
     } else {
       setMotif('chantier')
       setDepart('')
@@ -92,12 +96,17 @@ export default function Heures() {
       setCommentaire('')
       setValide(false)
       const duJour = chantiers.filter((c) => c.affecte && c.date_debut && c.date_debut <= jour && (c.date_fin ?? c.date_debut) >= jour)
-      setRep(duJour.length === 1 ? [{ chantier_id: duJour[0].id, heures: '' }] : [])
+      const defaut = duJour.length === 1 ? duJour[0].id : ''
+      setMatin(defaut)
+      setAprem(defaut)
     }
   }, [jour, semaine, chantiers])
 
   const total = heuresJournee(depart || null, retour || null, pause)
-  const reparti = rep.reduce((s, r) => s + (parseFloat(r.heures.replace(',', '.')) || 0), 0)
+  // Matin = départ du dépôt → 12 h ; après-midi = le reste (pause déduite).
+  const hMatin = depart ? Math.min(total, Math.max(0, 12 - hDecimal(depart))) : total / 2
+  const hAprem = Math.max(0, total - hMatin)
+  const deuxChantiers = !!matin && !!aprem && matin !== aprem
   const avecHoraires = MOTIF_PAYE[motif] && motif !== 'ecole' && motif !== 'intemperies_annulee'
 
   async function enregistrer(e: React.FormEvent) {
@@ -106,8 +115,7 @@ export default function Heures() {
     setErreur('')
     setMsg('')
     if (avecHoraires && (!depart || !retour)) return setErreur('Indiquez l\'heure de départ et de retour au dépôt.')
-    if (motif === 'chantier' && rep.length === 0) return setErreur('Indiquez sur quel chantier vous avez travaillé.')
-    if (reparti > total + 0.01 && avecHoraires) return setErreur(`Vous avez réparti ${hFormat(reparti)} pour ${hFormat(total)} travaillées.`)
+    if (motif === 'chantier' && !matin && !aprem) return setErreur('Indiquez sur quel chantier vous étiez le matin et l\'après-midi.')
     setOccupe(true)
     try {
       const { data, error } = await supabase
@@ -128,9 +136,13 @@ export default function Heures() {
         .single()
       if (error) throw error
       await supabase.from('journee_chantiers').delete().eq('journee_id', data.id)
-      const lignes = rep
-        .filter((r) => r.chantier_id && parseFloat(r.heures.replace(',', '.')) > 0)
-        .map((r) => ({ journee_id: data.id, chantier_id: r.chantier_id, heures: parseFloat(r.heures.replace(',', '.')) }))
+      const arrondi = (n: number) => Math.round(n * 100) / 100
+      const lignes = !avecHoraires ? [] : matin && matin === aprem
+        ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(total), periode: 'journee' }]
+        : [
+            ...(matin ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(aprem ? hMatin : total), periode: 'matin' }] : []),
+            ...(aprem ? [{ journee_id: data.id, chantier_id: aprem, heures: arrondi(matin ? hAprem : total), periode: 'apres_midi' }] : [])
+          ].filter((l) => l.heures > 0)
       if (lignes.length) {
         const r2 = await supabase.from('journee_chantiers').insert(lignes)
         if (r2.error) throw r2.error
@@ -192,34 +204,18 @@ export default function Heures() {
                   {[0, 30, 45, 60, 90].map((m) => <option key={m} value={m}>{m === 0 ? 'Aucune' : `${m} min`}</option>)}
                 </select>
               </label>
-              <p className="total">Total : <strong>{hFormat(total)}</strong></p>
+              <div className="total-jour"><span className="sous">Total de la journée</span><strong>{hFormat(total)}</strong></div>
 
-              <h3>Répartition par chantier</h3>
-              {rep.map((r, i) => (
-                <div className="ligne-rep" key={i}>
-                  <select value={r.chantier_id} onChange={(e) => setRep(rep.map((x, k) => (k === i ? { ...x, chantier_id: e.target.value } : x)))}>
-                    <option value="">Choisir…</option>
-                    {chantiers.some((c) => c.affecte) && (
-                      <optgroup label="Mes chantiers">
-                        {chantiers.filter((c) => c.affecte).map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
-                      </optgroup>
-                    )}
-                    <optgroup label={chantiers.some((c) => c.affecte) ? 'Autres chantiers' : 'Chantiers'}>
-                      {chantiers.filter((c) => !c.affecte).map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
-                    </optgroup>
-                    {r.chantier_id && !chantiers.some((c) => c.id === r.chantier_id) && <option value={r.chantier_id}>{nomChantier(r.chantier_id)}</option>}
-                  </select>
-                  <input inputMode="decimal" placeholder="h" value={r.heures} onChange={(e) => setRep(rep.map((x, k) => (k === i ? { ...x, heures: e.target.value } : x)))} />
-                  <button type="button" className="btn ghost" onClick={() => setRep(rep.filter((_, k) => k !== i))} aria-label="Retirer">×</button>
-                </div>
-              ))}
-              <div className="boutons">
-                <button type="button" className="btn" onClick={() => setRep([...rep, { chantier_id: '', heures: '' }])}>+ Chantier</button>
-                {rep.length === 1 && total > 0 && (
-                  <button type="button" className="btn" onClick={() => setRep([{ ...rep[0], heures: String(Math.round(total * 100) / 100) }])}>Tout sur ce chantier</button>
-                )}
+              <h3>Où étiez-vous ?</h3>
+              <div className="demi">
+                <span className="lb">Matin{deuxChantiers && <small>{hFormat(hMatin)}</small>}</span>
+                <ChoixChantier valeur={matin} chantiers={chantiers} nom={nomChantier} changer={(v) => { if (!aprem || aprem === matin) setAprem(v); setMatin(v) }} />
               </div>
-              <p className="sous">Réparti : {hFormat(reparti)} sur {hFormat(total)}</p>
+              <div className="demi">
+                <span className="lb">Après-midi{deuxChantiers && <small>{hFormat(hAprem)}</small>}</span>
+                <ChoixChantier valeur={aprem} chantiers={chantiers} nom={nomChantier} changer={setAprem} />
+              </div>
+              {matin && matin === aprem && <p className="sous">Toute la journée sur {nomChantier(matin)}.</p>}
               <p className="aide">Chantier absent de la liste (dépannage, petit SAV) : choisissez le type « Dépôt » et précisez le lieu dans le commentaire.</p>
             </>
           )}
@@ -274,6 +270,30 @@ export default function Heures() {
 
       <MesConges />
     </div>
+  )
+}
+
+function hDecimal(t: string) {
+  const [h, m] = t.split(':').map(Number)
+  return h + (m || 0) / 60
+}
+
+function ChoixChantier({ valeur, chantiers, nom, changer }: { valeur: string; chantiers: ChPointage[]; nom: (id: string) => string; changer: (v: string) => void }) {
+  const mes = chantiers.filter((c) => c.affecte)
+  const autres = chantiers.filter((c) => !c.affecte)
+  return (
+    <select value={valeur} onChange={(e) => changer(e.target.value)}>
+      <option value="">Choisir le chantier…</option>
+      {mes.length > 0 && (
+        <optgroup label="Mes chantiers">
+          {mes.map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
+        </optgroup>
+      )}
+      <optgroup label={mes.length ? 'Autres chantiers' : 'Chantiers'}>
+        {autres.map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
+      </optgroup>
+      {valeur && !chantiers.some((c) => c.id === valeur) && <option value={valeur}>{nom(valeur)}</option>}
+    </select>
   )
 }
 

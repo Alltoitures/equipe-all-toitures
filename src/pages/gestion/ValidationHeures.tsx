@@ -1,92 +1,190 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { supabase, erreurLisible, MOTIFS, type Journee, type Membre, type Motif } from '../../lib/supabase'
-import { ajouterJours, heuresJournee, hFormat, hhmm, isoJour, jourCourt, lundi } from '../../lib/format'
+import { ajouterJours, depuisIso, heuresJournee, hFormat, hhmm, isoJour, jourCourt, lundi } from '../../lib/format'
 import { useAuth } from '../../lib/auth'
 
 const COURT: Record<Motif, string> = {
   chantier: 'Chantier', depot: 'Dépôt', intemperies_commencee: 'Intempéries', intemperies_annulee: 'Intemp. annulée', ecole: 'École', absence: 'Absence'
 }
+type Ligne = NonNullable<Journee['journee_chantiers']>[number]
+interface Conge { membre_id: string; du: string; au: string }
+
+const nomCh = (r?: Ligne) => (r?.chantiers ? `${r.chantiers.client_nom}${r.chantiers.ville ? ` · ${r.chantiers.ville}` : ''}` : '')
+
+// Matin / après-midi d'une journée, y compris les anciennes saisies sans demi-journée.
+function demiJournees(j: Journee): { matin: string; aprem: string } {
+  const l = j.journee_chantiers ?? []
+  if (!l.length) return { matin: COURT[j.motif], aprem: COURT[j.motif] }
+  const m = l.find((r) => r.periode === 'matin' || r.periode === 'journee') ?? l[0]
+  const a = l.find((r) => r.periode === 'apres_midi' || r.periode === 'journee') ?? l[1] ?? m
+  return { matin: nomCh(m), aprem: nomCh(a) }
+}
 
 export default function ValidationHeures() {
   const { membre: moi } = useAuth()
-  const [debut, setDebut] = useState(lundi(ajouterJours(isoJour(), -7)))
+  const [params, setParams] = useSearchParams()
+  const debut = lundi(params.get('s') ?? ajouterJours(isoJour(), -7))
   const [membres, setMembres] = useState<Membre[]>([])
   const [journees, setJournees] = useState<Journee[]>([])
+  const [conges, setConges] = useState<Conge[]>([])
   const [edition, setEdition] = useState<{ m: Membre; jour: string; j?: Journee } | null>(null)
   const [msg, setMsg] = useState('')
+  const [occupe, setOccupe] = useState(false)
 
+  const fin = ajouterJours(debut, 6)
   const jours = Array.from({ length: 6 }, (_, i) => ajouterJours(debut, i))
 
   async function charger() {
-    const [m, j] = await Promise.all([
+    const [m, j, c] = await Promise.all([
       supabase.from('membres').select('*').eq('actif', true).neq('role', 'gerant').order('prenom'),
-      supabase.from('journees').select('*, journee_chantiers(heures, chantiers(client_nom))').gte('jour', debut).lte('jour', ajouterJours(debut, 6))
+      supabase.from('journees').select('*, journee_chantiers(heures, periode, chantiers(client_nom, ville))').gte('jour', debut).lte('jour', fin),
+      supabase.from('conges').select('membre_id, du, au').eq('statut', 'accepte').lte('du', fin).gte('au', debut)
     ])
     setMembres((m.data ?? []) as Membre[])
     setJournees((j.data ?? []) as never)
+    setConges((c.data ?? []) as Conge[])
   }
-  useEffect(() => {
-    charger()
-  }, [debut])
+  useEffect(() => { charger() }, [debut])
 
-  async function valider(ids: string[]) {
+  const enConge = (mid: string, d: string) => conges.some((c) => c.membre_id === mid && c.du <= d && c.au >= d)
+  const manquants = (mid: string) =>
+    jours.filter((d) => d < isoJour() && depuisIso(d).getDay() !== 6 && !enConge(mid, d) && !journees.some((j) => j.membre_id === mid && j.jour === d))
+  const etat = (mid: string): 'manque' | 'a-valider' | 'valide' | 'rien' => {
+    const siennes = journees.filter((j) => j.membre_id === mid)
+    if (manquants(mid).length) return 'manque'
+    if (siennes.some((j) => !j.valide)) return 'a-valider'
+    return siennes.length ? 'valide' : 'rien'
+  }
+
+  // Collaborateur affiché : celui de l'URL (notification), sinon le premier à valider.
+  const choisi = useMemo(() => {
+    const id = params.get('m')
+    return membres.find((m) => m.id === id) ?? membres.find((m) => etat(m.id) === 'a-valider') ?? membres.find((m) => etat(m.id) === 'manque') ?? membres[0]
+  }, [membres, journees, params])
+
+  function aller(o: { s?: string; m?: string }) {
+    const p = new URLSearchParams(params)
+    if (o.s) p.set('s', o.s)
+    if (o.m) p.set('m', o.m)
+    setParams(p, { replace: true })
+    setMsg('')
+  }
+
+  async function valider(ids: string[], suivant = false) {
     if (!ids.length || !moi) return
+    setOccupe(true)
     const { error } = await supabase.from('journees').update({ valide: true, valide_par: moi.id, valide_le: new Date().toISOString() }).in('id', ids)
-    setMsg(error ? erreurLisible(error) : `${ids.length} journée${ids.length > 1 ? 's' : ''} validée${ids.length > 1 ? 's' : ''}.`)
-    charger()
+    setOccupe(false)
+    if (error) return setMsg(erreurLisible(error))
+    setMsg(`${ids.length} journée${ids.length > 1 ? 's' : ''} validée${ids.length > 1 ? 's' : ''}.`)
+    await charger()
+    if (suivant && choisi) {
+      const prochain = membres.find((m) => m.id !== choisi.id && journees.some((j) => j.membre_id === m.id && !j.valide))
+      if (prochain) aller({ m: prochain.id })
+    }
   }
 
-  const nonValidees = journees.filter((j) => !j.valide).map((j) => j.id)
+  const siennes = choisi ? journees.filter((j) => j.membre_id === choisi.id) : []
+  const total = siennes.reduce((s, j) => s + heuresJournee(j.depart, j.retour, j.pause_min), 0)
+  const paniers = siennes.filter((j) => j.panier).length
+  const aValider = siennes.filter((j) => !j.valide).map((j) => j.id)
+  const toutes = journees.filter((j) => !j.valide).map((j) => j.id)
 
   return (
     <div className="page">
-      <h1>Validation des heures</h1>
-      <div className="nav-jour">
-        <button className="btn" onClick={() => setDebut(ajouterJours(debut, -7))}>‹</button>
-        <strong>Semaine du {jourCourt(debut)}</strong>
-        <button className="btn" onClick={() => setDebut(ajouterJours(debut, 7))} disabled={debut >= lundi()}>›</button>
+      <div className="entete-page">
+        <div>
+          <h1>Heures à valider</h1>
+          <span className="sous">Semaine du {jourCourt(debut)} au {jourCourt(ajouterJours(debut, 5))}</span>
+        </div>
+        <div className="boutons">
+          <button className="btn mini" onClick={() => aller({ s: ajouterJours(debut, -7) })} aria-label="Semaine précédente">‹</button>
+          <button className="btn mini" onClick={() => aller({ s: ajouterJours(debut, 7) })} disabled={debut >= lundi()} aria-label="Semaine suivante">›</button>
+        </div>
       </div>
-      {msg && <p className="ok">{msg}</p>}
-      <button className="btn pri large" disabled={!nonValidees.length} onClick={() => valider(nonValidees)}>
-        {nonValidees.length ? `Valider toute la semaine (${nonValidees.length} journées)` : 'Semaine entièrement validée'}
-      </button>
 
-      {membres.map((m) => {
-        const sienne = journees.filter((j) => j.membre_id === m.id)
-        const total = sienne.reduce((s, j) => s + heuresJournee(j.depart, j.retour, j.pause_min), 0)
-        const paniers = sienne.filter((j) => j.panier).length
-        const aValider = sienne.filter((j) => !j.valide).map((j) => j.id)
-        return (
-          <section key={m.id} className="carte">
+      <div className="collabs" role="list">
+        {membres.map((m) => {
+          const e = etat(m.id)
+          return (
+            <button key={m.id} className="collab" aria-pressed={choisi?.id === m.id} onClick={() => aller({ m: m.id })}>
+              {e !== 'rien' && <i className={`point ${e}`} />}
+              <b className="av">{m.prenom[0]}{m.nom?.[0] ?? ''}</b>
+              <span>{m.prenom}</span>
+            </button>
+          )
+        })}
+      </div>
+      <p className="aide">Point orange : à valider · rouge : jour non saisi · vert : semaine validée.</p>
+
+      {msg && <p className="ok">{msg}</p>}
+
+      {choisi && (
+        <>
+          <section className="carte">
             <div className="titre-ligne">
-              <h2>{m.prenom} {m.nom}</h2>
-              <span className="sous">{hFormat(total)} · {paniers} panier{paniers > 1 ? 's' : ''}</span>
+              <h2>{choisi.prenom} {choisi.nom}</h2>
+              {aValider.length === 0 && siennes.length > 0 && <span className="etat-val v">Semaine validée</span>}
             </div>
-            <table className="tableau">
-              <tbody>
-                {jours.map((d) => {
-                  const j = sienne.find((x) => x.jour === d)
-                  const manquant = !j && d < isoJour() && d !== ajouterJours(debut, 5)
-                  return (
-                    <tr key={d} onClick={() => setEdition({ m, jour: d, j })} className={manquant ? 'manquant' : ''}>
-                      <td>{jourCourt(d)}</td>
-                      <td>
-                        {j ? COURT[j.motif] : manquant ? 'Non saisi' : '—'}
-                        {j?.journee_chantiers?.length ? <small className="sous"> {j.journee_chantiers.map((r) => `${r.chantiers?.client_nom} ${r.heures} h`).join(', ')}</small> : null}
-                      </td>
-                      <td className="d">{j ? `${hhmm(j.depart)}–${hhmm(j.retour)}` : ''}</td>
-                      <td className="d">{j ? hFormat(heuresJournee(j.depart, j.retour, j.pause_min)) : ''}</td>
-                      <td>{j?.panier ? 'P' : ''}</td>
-                      <td>{j?.valide ? '✓' : ''}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            {aValider.length > 0 && <button className="btn" onClick={() => valider(aValider)}>Valider pour {m.prenom}</button>}
+            <div className="recap-semaine">
+              <div><strong>{hFormat(total)}</strong><small>Heures</small></div>
+              <div><strong>{siennes.filter((j) => j.motif !== 'absence').length}</strong><small>Jours</small></div>
+              <div><strong>{paniers}</strong><small>Paniers</small></div>
+            </div>
           </section>
-        )
-      })}
+
+          <div className="jours-val">
+            {jours.map((d) => {
+              const j = siennes.find((x) => x.jour === d)
+              const date = depuisIso(d)
+              const conge = enConge(choisi.id, d)
+              const manque = !j && manquants(choisi.id).includes(d)
+              if (!j && !manque && !conge && date.getDay() === 6) return null
+              const dj = j ? demiJournees(j) : null
+              return (
+                <button key={d} className={`jour-val${manque ? ' manque' : ''}${j?.valide ? ' ok-val' : ''}`} onClick={() => setEdition({ m: choisi, jour: d, j })}>
+                  <span className="date"><small>{date.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '')}</small><b>{date.getDate()}</b></span>
+                  <span className="ou">
+                    {j && dj ? (
+                      dj.matin === dj.aprem ? (
+                        <span className="l"><em>JOUR</em><span>{dj.matin}</span></span>
+                      ) : (
+                        <>
+                          <span className="l"><em>MAT</em><span>{dj.matin || '—'}</span></span>
+                          <span className="l"><em>AM</em><span>{dj.aprem || '—'}</span></span>
+                        </>
+                      )
+                    ) : (
+                      <span className="l"><span>{manque ? 'Non saisi' : conge ? 'Congé' : '—'}</span></span>
+                    )}
+                    {j && j.depart && <span className="h">{hhmm(j.depart)} → {hhmm(j.retour)}{j.pause_min ? ` · pause ${j.pause_min} min` : ''}{j.panier ? ' · panier' : ''}</span>}
+                    {j?.commentaire && <span className="h">« {j.commentaire} »</span>}
+                  </span>
+                  <span className="fin">
+                    <strong>{j ? hFormat(heuresJournee(j.depart, j.retour, j.pause_min)) : ''}</strong>
+                    {j && <span className={`etat-val ${j.valide ? 'v' : 'a'}`}>{j.valide ? 'Validé' : 'À valider'}</span>}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          {aValider.length > 0 && (
+            <div className="barre-valider">
+              <button className="btn go large" disabled={occupe} onClick={() => valider(aValider, true)}>
+                {occupe ? 'Validation…' : `Valider la semaine de ${choisi.prenom} (${aValider.length} j)`}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {toutes.length > aValider.length && (
+        <button className="lien" onClick={() => confirm(`Valider les ${toutes.length} journées de toute l'équipe ?`) && valider(toutes)}>
+          Tout valider pour l'équipe ({toutes.length} journées)
+        </button>
+      )}
 
       {edition && <EditionJour {...edition} fermer={() => { setEdition(null); charger() }} />}
     </div>

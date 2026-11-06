@@ -89,6 +89,42 @@ Deno.serve(async (req) => {
       return Response.json({ envoyees: n })
     }
 
+    // Gérant : une notification par collaborateur dont la semaine est à valider.
+    // Vendredi 18 h → semaine en cours ; lundi 8 h → ce qui reste de la semaine passée.
+    if (b.cron === 'heures_a_valider') {
+      const auj = jourParis()
+      const dow = new Date(auj + 'T12:00:00').getDay()
+      const h = heureParis()
+      const lun = dow === 5 && h === 18 ? jourParis(-4) : dow === 1 && h === 8 ? jourParis(-7) : null
+      if (!lun || (await dejaEnvoye(`valider:${auj}`))) return Response.json({ etat: 'rien' })
+      const sam = new Date(new Date(lun + 'T12:00:00').getTime() + 5 * 864e5).toLocaleDateString('sv-SE')
+      const { data: js } = await sb.from('journees').select('membre_id, depart, retour, pause_min, membres(prenom)').eq('valide', false).gte('jour', lun).lte('jour', sam)
+      const parMembre = new Map<string, { prenom: string; jours: number; heures: number }>()
+      for (const j of js ?? []) {
+        const x = j as unknown as { membre_id: string; depart: string | null; retour: string | null; pause_min: number; membres: { prenom: string } | null }
+        const e = parMembre.get(x.membre_id) ?? { prenom: x.membres?.prenom ?? '', jours: 0, heures: 0 }
+        if (x.depart && x.retour) {
+          const [dh, dm] = x.depart.split(':').map(Number)
+          const [rh, rm] = x.retour.split(':').map(Number)
+          e.heures += Math.max(0, (rh * 60 + rm - dh * 60 - dm - (x.pause_min ?? 0)) / 60)
+        }
+        e.jours++
+        parMembre.set(x.membre_id, e)
+      }
+      const gerants = await destinataires({ roles: ['gerant'] })
+      let n = 0
+      for (const [id, e] of parMembre) {
+        const hh = Math.round(e.heures * 2) / 2
+        n += await envoyer(gerants, {
+          title: `Heures de ${e.prenom} à valider`,
+          body: `${e.jours} jour${e.jours > 1 ? 's' : ''} · ${String(hh).replace('.', ',')} h · semaine du ${dateFr(lun)}`,
+          url: `/gestion/heures?m=${id}&s=${lun}`,
+          tag: `heures-${id}`
+        })
+      }
+      return Response.json({ envoyees: n, collaborateurs: parMembre.size })
+    }
+
     const t = b.type as string
     if (t === 'imprevus') {
       const { data: i } = await sb.from('imprevus').select('texte, chantier_id, membres(prenom)').eq('id', b.id).single()
