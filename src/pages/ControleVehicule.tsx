@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import DocumentsCamion from '../components/DocumentsCamion'
 import { useNavigate } from 'react-router-dom'
 import { supabase, erreurLisible } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
@@ -132,6 +133,7 @@ function Formulaire({ v, ctrls, membreId, onRetour, onFini }: { v: Vehicule; ctr
       <button className="retour" onClick={onRetour}><IcoRetour /> Camions</button>
       <h1>{v.nom}</h1>
       {v.immatriculation && <p className="sous">{v.immatriculation}</p>}
+      <DocumentsCamion vid={v.id} />
       <form className="pile" onSubmit={valider}>
         <section className="carte">
           <label>Kilométrage au compteur<input inputMode="numeric" value={km} onChange={(x) => setKm(x.target.value.replace(/\D/g, ''))} placeholder={v.km ? `dernier relevé : ${v.km.toLocaleString('fr-FR')}` : 'ex. 48 200'} /></label>

@@ -4,6 +4,7 @@ import { supabase, erreurLisible } from '../../lib/supabase'
 import { dateCourte, isoJour } from '../../lib/format'
 import { IcoRetour } from '../../components/Icones'
 import { POINTS_ENTRETIEN, etatVehicule, ilYaJours, type ControleV } from '../../lib/vehicules'
+import DocumentsCamion, { TYPES_DOCS, etatDoc, type DocCamion } from '../../components/DocumentsCamion'
 
 export interface Vehicule { id: string; nom: string; immatriculation: string | null; km: number | null; prochain_entretien_km: number | null; prochaine_revision: string | null; controle_technique: string | null; notes: string | null; actif: boolean }
 
@@ -13,13 +14,16 @@ type Edition = typeof VIDE & { id?: string }
 export default function Vehicules() {
   const [liste, setListe] = useState<Vehicule[]>([])
   const [ctrls, setCtrls] = useState<ControleV[]>([])
+  const [docs, setDocs] = useState<DocCamion[]>([])
   const [edit, setEdit] = useState<Edition | null>(null)
   const [erreur, setErreur] = useState('')
 
   const charger = () => Promise.all([
     supabase.from('vehicules').select('*').eq('actif', true).order('nom'),
-    supabase.from('controles_vehicules').select('id, type, jour, km, points, anomalie, anomalie_traitee, vehicule_id, membres(prenom)').gte('jour', ilYaJours(365)).order('jour', { ascending: false }).order('created_at', { ascending: false }).limit(1000)
-  ]).then(([v, c]) => {
+    supabase.from('controles_vehicules').select('id, type, jour, km, points, anomalie, anomalie_traitee, vehicule_id, membres(prenom)').gte('jour', ilYaJours(365)).order('jour', { ascending: false }).order('created_at', { ascending: false }).limit(1000),
+    supabase.from('vehicule_documents').select('*')
+  ]).then(([v, c, d]) => {
+    setDocs((d.data ?? []) as DocCamion[])
     setListe((v.data ?? []) as Vehicule[])
     setCtrls((c.data ?? []) as unknown as ControleV[])
   })
@@ -42,6 +46,7 @@ export default function Vehicules() {
       <VehiculesVue
         liste={liste}
         ctrls={ctrls}
+        docs={docs}
         onAjouter={() => { setErreur(''); setEdit({ ...VIDE }) }}
         onModifier={(v) => { setErreur(''); setEdit(versEdition(v)) }}
         onTraite={async (id) => { await supabase.from('controles_vehicules').update({ anomalie_traitee: true }).eq('id', id); charger() }}
@@ -94,7 +99,7 @@ type Niveau = 'ok' | 'attention' | 'alerte'
 interface Statut { niveau: Niveau; titre: string; detail: string; actions: { txt: string; niveau: Niveau }[] }
 
 /** Un seul feu par camion : ce qu'il faut retenir, et la liste de ce qu'il y a à faire. */
-function statutCamion(v: Vehicule, e: ReturnType<typeof etatVehicule>, anomalies: ControleV[]): Statut {
+function statutCamion(v: Vehicule, e: ReturnType<typeof etatVehicule>, anomalies: ControleV[], docs: DocCamion[]): Statut {
   const actions: Statut['actions'] = []
   for (const a of anomalies) actions.push({ txt: `Signalé par ${a.membres?.prenom ?? '—'} : ${a.anomalie}`, niveau: 'alerte' })
   if (e.aReprendre.length) actions.push({ txt: `À reprendre : ${e.aReprendre.join(', ')}`, niveau: 'alerte' })
@@ -107,6 +112,13 @@ function statutCamion(v: Vehicule, e: ReturnType<typeof etatVehicule>, anomalies
   else if (rev != null && rev <= 30) actions.push({ txt: `Révision dans ${rev} j`, niveau: 'attention' })
   if (resteKm != null && resteKm <= 0) actions.push({ txt: `Entretien dépassé de ${(-resteKm).toLocaleString('fr-FR')} km`, niveau: 'alerte' })
   else if (resteKm != null && resteKm <= 1500) actions.push({ txt: `Entretien dans ${resteKm.toLocaleString('fr-FR')} km`, niveau: 'attention' })
+  for (const t of TYPES_DOCS) {
+    const d = docs.find((x) => x.type === t.type)
+    const st = etatDoc(d)
+    if (st === 'expire') actions.push({ txt: `${t.type} expiré(e) : à remplacer`, niveau: 'alerte' })
+    else if (st === 'bientot') actions.push({ txt: `${t.type} expire le ${dateCourte(d!.expire_le)}`, niveau: 'attention' })
+    else if (st === 'manque' && t.obligatoire) actions.push({ txt: `${t.type} à déposer dans l'appli`, niveau: 'attention' })
+  }
   if (e.aSurveiller.length) actions.push({ txt: `À surveiller : ${e.aSurveiller.join(', ')}`, niveau: 'attention' })
   if (!e.entretienAJour && !e.aReprendre.length) actions.push({ txt: `Niveaux et usure à vérifier (${e.aVerifier.length} point${e.aVerifier.length > 1 ? 's' : ''})`, niveau: 'attention' })
   if (!e.vendrediFait && new Date().getDay() >= 5) actions.push({ txt: 'Nettoyage du vendredi pas fait', niveau: 'attention' })
@@ -121,10 +133,10 @@ function statutCamion(v: Vehicule, e: ReturnType<typeof etatVehicule>, anomalies
 }
 
 /** Partie affichage, séparée pour pouvoir la prévisualiser. */
-export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: { liste: Vehicule[]; ctrls: ControleV[]; onAjouter: () => void; onModifier: (v: Vehicule) => void; onTraite: (id: string) => void }) {
+export function VehiculesVue({ liste, ctrls, docs = [], onAjouter, onModifier, onTraite }: { liste: Vehicule[]; ctrls: ControleV[]; docs?: DocCamion[]; onAjouter: () => void; onModifier: (v: Vehicule) => void; onTraite: (id: string) => void }) {
   const [choisi, setChoisi] = useState<string | null>(null)
   const anomaliesDe = (id: string) => ctrls.filter((c) => c.vehicule_id === id && c.anomalie && !c.anomalie_traitee)
-  const etats = liste.map((v) => { const e = etatVehicule(v.id, ctrls); return { v, e, st: statutCamion(v, e, anomaliesDe(v.id)) } })
+  const etats = liste.map((v) => { const e = etatVehicule(v.id, ctrls); return { v, e, st: statutCamion(v, e, anomaliesDe(v.id), docs.filter((d) => d.vehicule_id === v.id)) } })
   const ordre: Record<Niveau, number> = { alerte: 0, attention: 1, ok: 2 }
   etats.sort((a, b) => ordre[a.st.niveau] - ordre[b.st.niveau] || a.v.nom.localeCompare(b.v.nom))
   const nettoyes = etats.filter((x) => x.e.vendrediFait).length
@@ -168,6 +180,8 @@ export function VehiculesVue({ liste, ctrls, onAjouter, onModifier, onTraite }: 
             <div><span>Compteur</span><b>{v.km != null ? `${v.km.toLocaleString('fr-FR')} km` : '—'}</b><small>dernier relevé</small></div>
           </div>
         </section>
+
+        <DocumentsCamion vid={v.id} gerer />
 
         <section className="carte">
           <h2>Contrôles de l'équipe</h2>

@@ -901,3 +901,16 @@ label.fait .chrono { text-decoration: none; }
 .vg-points i, .vg-ligne-net i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--feu); }
 .vg-points span, .vg-ligne-net span { display: flex; flex-direction: column; }
 .vg-points small, .vg-ligne-net small { color: var(--muted); font-size: 12.5px; }
+
+/* Documents à bord */
+.docs-camion { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.dc-ligne { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 0; font: inherit; color: var(--ink); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+.dc-ico { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--surface); font-size: 18px; }
+.dc-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dc-txt em { font-style: normal; font-size: 11px; font-weight: 900; color: var(--accent-ink); margin-left: 6px; text-transform: uppercase; }
+.dc-txt small { color: var(--muted); font-size: 12.5px; }
+.dc-manque .dc-ligne { background: transparent; border: 1.5px dashed #c9d3dc; }
+.dc-manque .dc-ico { color: var(--muted); background: transparent; }
+.dc-expire .dc-ligne { background: var(--danger-bg); } .dc-expire small { color: var(--danger); font-weight: 700; }
+.dc-bientot .dc-ligne { background: var(--warn-bg); } .dc-bientot small { color: var(--warn); font-weight: 700; }
+.depot-doc { cursor: pointer; }
