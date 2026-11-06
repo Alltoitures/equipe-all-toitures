@@ -10,3 +10,5 @@ select cron.schedule('notif-heures-a-valider-lundi', '0 6,7 * * 1', $$ select pr
 
 -- Commentaire sous les photos de visite.
 alter table public.photos_visite add column if not exists commentaire text;
+
+-- Temps passé par ligne du bordereau (temps moyens par ouvrage) : voir migration « temps_taches » appliquée le 06/11/2026.

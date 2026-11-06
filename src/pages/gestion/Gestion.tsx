@@ -85,6 +85,12 @@ export default function Gestion() {
             <strong>Heures par chantier</strong>
           </Link>
         )}
+        {estGerant(membre) && (
+          <Link to="/gestion/temps" className="tuile">
+            <span className="lb">Chiffrage</span>
+            <strong>Temps moyens par ouvrage</strong>
+          </Link>
+        )}
       </div>
 
       <section className="carte">

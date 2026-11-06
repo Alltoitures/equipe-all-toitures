@@ -13,6 +13,9 @@ import RealisationCarte from '../components/RealisationCarte'
 import AvisGoogle from '../components/AvisGoogle'
 
 type Onglet = 'fiche' | 'travaux' | 'photos' | 'materiel' | 'documents'
+interface Temps { tache_id: string; personnes: number; heures: number }
+const DUREES: [string, number][] = [['1 h', 1], ['2 h', 2], ['½ jour', 4], ['1 jour', 8], ['1,5 j', 12], ['2 jours', 16], ['3 jours', 24]]
+const hTxt = (h: number) => `${String(Math.round(h * 10) / 10).replace('.', ',')} h`
 
 const PHASES: { id: Phase; nom: string }[] = [
   { id: 'avant', nom: 'Avant' },
@@ -45,6 +48,10 @@ export default function Chantier() {
   const [c, setC] = useState<TChantier | null>(null)
   const [taches, setTaches] = useState<Tache[]>([])
   const [contact, setContact] = useState<{ client_telephone: string | null } | null>(null)
+  const [temps, setTemps] = useState<Record<string, Temps>>({})
+  const [aChronometrer, setAChronometrer] = useState<Tache | null>(null)
+  const [equipe, setEquipe] = useState<{ prenom: string; nom: string | null }[]>([])
+  const [heuresPassees, setHeuresPassees] = useState<number | null>(null)
   const [compte, setCompte] = useState<Record<string, number>>({})
   const [onglet, setOnglet] = useState<Onglet>(() => (new URLSearchParams(location.search).get('onglet') as Onglet) || (sessionStorage.getItem(`at-onglet-${id}`) as Onglet) || 'fiche')
   const [imprevu, setImprevu] = useState(false)
@@ -63,12 +70,18 @@ export default function Chantier() {
   })
 
   async function charger() {
-    const [ch, ta, co, ph] = await Promise.all([
+    const [ch, ta, co, ph, tt, af, jc] = await Promise.all([
       supabase.from('chantiers').select('*').eq('id', id).maybeSingle(),
       supabase.from('taches').select('*').eq('chantier_id', id).order('categorie', { ascending: false }).order('ordre'),
       supabase.from('chantier_contacts').select('client_telephone').eq('chantier_id', id).maybeSingle(),
-      supabase.from('photos').select('phase').eq('chantier_id', id)
+      supabase.from('photos').select('phase').eq('chantier_id', id),
+      supabase.from('temps_taches').select('tache_id, personnes, heures').eq('chantier_id', id),
+      supabase.from('affectations').select('membres(prenom, nom)').eq('chantier_id', id),
+      supabase.from('journee_chantiers').select('heures').eq('chantier_id', id)
     ])
+    setTemps(Object.fromEntries(((tt.data ?? []) as Temps[]).map((x) => [x.tache_id, x])))
+    setEquipe(((af.data ?? []) as unknown as { membres: { prenom: string; nom: string | null } | null }[]).map((x) => x.membres!).filter(Boolean))
+    setHeuresPassees(jc.data ? (jc.data as { heures: number }[]).reduce((s2, x) => s2 + Number(x.heures), 0) : null)
     if (ch.data) {
       setC(ch.data as TChantier)
       try {
@@ -107,7 +120,16 @@ export default function Chantier() {
     if (error) {
       setTaches((l) => l.map((x) => (x.id === t.id ? { ...x, fait: !fait } : x)))
       setErreur(erreurLisible(error))
-    }
+    } else if (fait && !temps[t.id]) setAChronometrer(t)
+  }
+
+  async function enregistrerTemps(t: Tache, personnes: number, heures: number) {
+    if (!membre) return
+    const ligne = { tache_id: t.id, chantier_id: t.chantier_id, membre_id: membre.id, personnes, heures }
+    const { error } = await supabase.from('temps_taches').upsert(ligne)
+    if (error) return setErreur(erreurLisible(error))
+    setTemps((x) => ({ ...x, [t.id]: { tache_id: t.id, personnes, heures } }))
+    setAChronometrer(null)
   }
 
   function basculerCharge(i: number) {
@@ -167,8 +189,23 @@ export default function Chantier() {
           {[c.reference, b.devis ? `Devis ${b.devis}` : null].filter(Boolean).join(' · ')}
           <span className={`pastille ${c.statut}`}>{STATUTS[c.statut]}</span>
         </div>
-        <h1>{c.client_nom}</h1>
-        {(b.objet || c.ville) && <p>{[b.objet, c.ville].filter(Boolean).join(' · ')}</p>}
+        <div className="tete-ligne">
+          <div>
+            <h1>{c.client_nom}</h1>
+            {(b.objet || c.ville) && <p>{[b.objet, c.ville].filter(Boolean).join(' · ')}</p>}
+          </div>
+          {aCocher.length > 0 && (
+            <div className="anneau" style={{ ['--p' as string]: `${Math.round((faites / aCocher.length) * 100)}` }} aria-label={`${faites} sur ${aCocher.length} faits`}>
+              <span>{Math.round((faites / aCocher.length) * 100)}<small>%</small></span>
+            </div>
+          )}
+        </div>
+        {estGerant(membre) && c.heures_prevues ? (
+          <div className="jauge-heures">
+            <div className="jauge"><i style={{ width: `${Math.min(100, Math.round(((heuresPassees ?? 0) / c.heures_prevues) * 100))}%` }} className={(heuresPassees ?? 0) > c.heures_prevues ? 'depasse' : ''} /></div>
+            <span>{hTxt(heuresPassees ?? 0)} passées / {hTxt(c.heures_prevues)} prévues</span>
+          </div>
+        ) : null}
       </header>
 
       <div className="bandeau-fiche">
@@ -207,6 +244,15 @@ export default function Chantier() {
               </div>
             )}
           </section>
+
+          {equipe.length > 0 && (
+            <section className="carte">
+              <h2>Équipe sur ce chantier</h2>
+              <div className="equipe-ch">
+                {equipe.map((m, i) => <span key={i} className="membre-ch"><b>{m.prenom[0]}{m.nom?.[0] ?? ''}</b>{m.prenom}</span>)}
+              </div>
+            </section>
+          )}
 
           <section className="carte">
             <h2>Client et accès</h2>
@@ -256,7 +302,7 @@ export default function Chantier() {
                   <li key={t.id}>
                     <label className={t.fait ? 'fait' : ''}>
                       <input type="checkbox" checked={t.fait} onChange={() => cocher(t)} />
-                      <span>{t.libelle}</span>
+                      <span>{t.libelle}{t.fait && <Chrono t={t} temps={temps[t.id]} ouvrir={() => setAChronometrer(t)} />}</span>
                     </label>
                   </li>
                 ))}
@@ -276,7 +322,7 @@ export default function Chantier() {
                     <label className={t.fait ? 'fait' : ''}>
                       <input type="checkbox" checked={t.fait} onChange={() => cocher(t)} />
                       <span className="n">{t.numero}</span>
-                      <span className="d">{t.libelle}</span>
+                      <span className="d">{t.libelle}{t.fait && <Chrono t={t} temps={temps[t.id]} ouvrir={() => setAChronometrer(t)} />}</span>
                       <span className="q">{t.quantite != null ? String(t.quantite).replace('.', ',') : ''} {t.unite ?? ''}</span>
                     </label>
                   </li>
@@ -287,6 +333,11 @@ export default function Chantier() {
               <p className="aide">Les quantités sont celles du devis. Tout écart constaté sur place (quantité, état du support, travaux supplémentaires) doit être signalé à Aurélien avant d'être réalisé.</p>
             )}
           </section>
+
+          {Object.keys(temps).length > 0 && (
+            <p className="aide">⏱ Temps passés : {hTxt(Object.values(temps).reduce((s2, x) => s2 + x.personnes * x.heures, 0))} au total (personnes × durée), sur {Object.keys(temps).length} ligne{Object.keys(temps).length > 1 ? 's' : ''}.</p>
+          )}
+          {aChronometrer && <SaisieTemps t={aChronometrer} actuel={temps[aChronometrer.id]} nbEquipe={equipe.length || c.nb_intervenants || 2} fermer={() => setAChronometrer(null)} valider={(p, h) => enregistrerTemps(aChronometrer, p, h)} />}
 
           <Reception chantier={c} taches={taches} />
           {estGerant(membre) && <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />}
@@ -413,6 +464,40 @@ function Imprevu({ chantierId, membreId, fermer }: { chantierId: string; membreI
           <button className="btn pri" disabled={occupe}>Envoyer</button>
         </div>
       </form>
+    </div>
+  )
+}
+
+function Chrono({ temps, ouvrir }: { t: Tache; temps?: Temps; ouvrir: () => void }) {
+  return (
+    <button type="button" className={`chrono${temps ? '' : ' vide'}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); ouvrir() }}>
+      ⏱ {temps ? `${temps.personnes} × ${hTxt(temps.heures)}` : 'Temps ?'}
+    </button>
+  )
+}
+
+/** Après avoir coché une ligne : combien de personnes, combien de temps. Sert aux temps moyens par ouvrage. */
+function SaisieTemps({ t, actuel, nbEquipe, fermer, valider }: { t: Tache; actuel?: Temps; nbEquipe: number; fermer: () => void; valider: (personnes: number, heures: number) => void }) {
+  const [personnes, setPersonnes] = useState(actuel?.personnes ?? Math.min(4, Math.max(1, nbEquipe)))
+  const [heures, setHeures] = useState<number | null>(actuel?.heures ?? null)
+  const [libre, setLibre] = useState(actuel && !DUREES.some(([, h]) => h === actuel.heures) ? String(actuel.heures).replace('.', ',') : '')
+  const h = libre ? parseFloat(libre.replace(',', '.')) || null : heures
+  return (
+    <div className="fond-modal" onClick={fermer}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Temps passé</h2>
+        <p className="sous">{t.numero ? `${t.numero} · ` : ''}{t.libelle}{t.quantite != null ? ` · ${String(t.quantite).replace('.', ',')} ${t.unite ?? ''}` : ''}</p>
+        <span className="q-label">Nombre de personnes</span>
+        <div className="segments">{[1, 2, 3, 4, 5].map((n) => <button type="button" key={n} aria-pressed={personnes === n} onClick={() => setPersonnes(n)}>{n}</button>)}</div>
+        <span className="q-label">Durée</span>
+        <div className="choix">{DUREES.map(([l, v]) => <button type="button" key={l} aria-pressed={!libre && heures === v} onClick={() => { setLibre(''); setHeures(v) }}>{l}</button>)}</div>
+        <label>Ou en heures<input inputMode="decimal" placeholder="ex. 5,5" value={libre} onChange={(e) => setLibre(e.target.value)} /></label>
+        {h ? <div className="total-jour"><span className="sous">{personnes} pers. × {hTxt(h)}</span><strong>{hTxt(personnes * h)}</strong></div> : null}
+        <div className="deux">
+          <button type="button" className="btn" onClick={fermer}>Plus tard</button>
+          <button type="button" className="btn pri" disabled={!h} onClick={() => h && valider(personnes, h)}>Enregistrer</button>
+        </div>
+      </div>
     </div>
   )
 }
