@@ -86,6 +86,12 @@ export default function Gestion() {
           </Link>
         )}
         {estGerant(membre) && (
+          <Link to="/gestion/boite" className="tuile">
+            <span className="lb">Finances</span>
+            <strong>Ma boîte en chiffres</strong>
+          </Link>
+        )}
+        {estGerant(membre) && (
           <Link to="/gestion/temps" className="tuile">
             <span className="lb">Chiffrage</span>
             <strong>Temps moyens par ouvrage</strong>

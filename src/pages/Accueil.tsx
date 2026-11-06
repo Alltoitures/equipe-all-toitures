@@ -7,6 +7,8 @@ import { RappelNotifications } from '../components/Notifications'
 import { Barres, Classement, Repartition } from '../components/Graphiques'
 import { STATUTS_RDV } from '../lib/visite'
 import { heureAffichee, minutesHeure } from './Visites'
+import { HeroBoite } from './gestion/MaBoite'
+import { calculer, chargerFinances, type Piece } from '../lib/finances'
 
 interface TB {
   mois: string
@@ -70,12 +72,16 @@ export default function Accueil() {
   const [erreur, setErreur] = useState('')
   const [st, setSt] = useState<Stats | null>(null)
   const [relances, setRelances] = useState<{ chantier_id: string; chantiers: { client_nom: string } | null }[]>([])
+  const [fin, setFin] = useState<{ pieces: Piece[]; objectif: number | null } | null>(null)
   const [reals, setReals] = useState<{ id: string; statut: string; chantiers: { client_nom: string } | null }[]>([])
   useEffect(() => {
     if (!estGerant(membre)) return
     supabase.from('realisations').select('id, statut, chantiers(client_nom)').in('statut', ['brouillon', 'erreur']).then(({ data }) => setReals((data ?? []) as any))
     supabase.from('avis_demandes').select('chantier_id, chantiers(client_nom)').eq('recu', false).is('relance_le', null).lt('demande_le', new Date(Date.now() - 7 * 864e5).toISOString()).then(({ data }) => setRelances((data ?? []) as any))
   }, [membre])
+  useEffect(() => {
+    if (estGerant(membre)) chargerFinances().then(setFin)
+  }, [membre?.id])
   useEffect(() => {
     supabase.rpc('stats_dashboard', { d: isoJour() }).then(({ data }) => setSt(data as Stats))
   }, [])
@@ -225,7 +231,9 @@ export default function Accueil() {
         </section>
       )}
 
-      {/* 5. Le mois en chiffres */}
+      {/* 5. La boîte en chiffres (gérant), sinon le mois de l'équipe */}
+      {gerant && fin && fin.pieces.length > 0 && <HeroBoite k={calculer(fin.pieces, fin.objectif)} lien />}
+
       <div className="nav-jour acc-mois">
         <button className="btn mini" onClick={() => setJour(moisDecale(jour, -1))} aria-label="Mois précédent">‹</button>
         <h2>{moisAnnee(tb.mois)}</h2>

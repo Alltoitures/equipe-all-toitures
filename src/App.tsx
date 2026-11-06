@@ -22,6 +22,7 @@ import Conges from './pages/gestion/Conges'
 import VehiculesGestion from './pages/gestion/Vehicules'
 import Rentabilite from './pages/gestion/Rentabilite'
 import TempsMoyens from './pages/gestion/TempsMoyens'
+import MaBoite from './pages/gestion/MaBoite'
 import ControleVehicule from './pages/ControleVehicule'
 import Aide from './pages/Aide'
 import RealisationPage from './pages/gestion/Realisation'
@@ -71,6 +72,7 @@ function Routeur() {
             <Route path="gestion/vehicules" element={<VehiculesGestion />} />
             {estGerant(membre) && <Route path="gestion/rentabilite" element={<Rentabilite />} />}
             {estGerant(membre) && <Route path="gestion/temps" element={<TempsMoyens />} />}
+            {estGerant(membre) && <Route path="gestion/boite" element={<MaBoite />} />}
             {estGerant(membre) && <Route path="gestion/equipe" element={<Equipe />} />}
             {estGerant(membre) && <Route path="gestion/realisations/:id" element={<RealisationPage />} />}
           </>
