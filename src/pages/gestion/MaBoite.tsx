@@ -13,7 +13,8 @@ export function HeroBoite({ k, lien }: { k: ReturnType<typeof calculer>; lien?: 
     <>
       <div>
         <small>Chiffre d'affaires {k.an} (HT)</small>
-        <div className="gros-chiffre">{eur(k.caAnnee)}<em>facturé</em></div>
+        <div className="gros-chiffre">{eur(k.caAnnee)}<em>{k.premier && k.premier > `${k.an}-01` ? `depuis ${new Date(k.premier + '-01T12:00').toLocaleDateString('fr-FR', { month: 'long' })}` : 'facturé'}</em></div>
+        {k.premier && k.premier > `${k.an}-01` && <span className="avert-hist">⚠ Factures d'avant {new Date(k.premier + '-01T12:00').toLocaleDateString('fr-FR', { month: 'long' })} dans Batigest : pas encore reprises</span>}
         {k.evolution != null && <span className={`evol ${k.evolution < 0 ? 'baisse' : ''}`}>{k.evolution >= 0 ? '▲' : '▼'} {k.evolution >= 0 ? '+' : ''}{Math.round(k.evolution * 100)} % vs {Number(k.an) - 1} à la même date</span>}
       </div>
       {k.objectif ? (
@@ -45,7 +46,7 @@ export default function MaBoite() {
   const aEnc = k.aEncaisser.reduce((t, x) => t + x.reste, 0)
   const enRetard = k.retard.reduce((t, x) => t + x.reste, 0)
   const attenteEur = k.attente.reduce((t, x) => t + Number(x.total_ht), 0)
-  const largeur = (n: number) => `${Math.max(28, Math.min(100, (n / Math.max(1, k.carnet, attenteEur)) * 100))}%`
+  const largeur = (n: number) => `${Math.max(3, Math.min(100, (n / Math.max(1, k.carnet, attenteEur)) * 100))}%`
 
   return (
     <div className="page">
@@ -103,15 +104,13 @@ export default function MaBoite() {
       <section className="carte">
         <h2>Devant nous <span className="sous">HT</span></h2>
         <div className="pipe">
-          <div className="etape"><span className="b" style={{ background: '#2e9e5b', width: largeur(k.carnet) }}>Carnet de commandes · {eur(k.carnet)}</span></div>
-          <small>Devis signés pas encore facturés{k.semaines ? ` · ≈ ${Math.round(k.semaines)} semaine${Math.round(k.semaines) > 1 ? 's' : ''} de travail` : ''}</small>
-          <div className="etape"><span className="b" style={{ background: '#01a9e1', width: largeur(attenteEur) }}>Devis en attente · {eur(attenteEur)}</span></div>
-          <small>{k.attente.length} devis envoyé{k.attente.length > 1 ? 's' : ''}{k.attenteVieux.length ? ` · ${k.attenteVieux.length} de plus de 30 jours à relancer` : ''}</small>
+          <div className="etape"><div className="et-l"><span>Carnet de commandes</span><strong>{eur(k.carnet)}</strong></div><div className="et-b"><i style={{ background: '#2e9e5b', width: largeur(k.carnet) }} /></div>
+            <small>Devis signés pas encore facturés{k.semaines && k.moisHistorique >= 3 ? ` · ≈ ${Math.round(k.semaines)} semaine${Math.round(k.semaines) > 1 ? 's' : ''} de travail` : ''}</small></div>
+          <div className="etape"><div className="et-l"><span>Devis en attente</span><strong>{eur(attenteEur)}</strong></div><div className="et-b"><i style={{ background: '#01a9e1', width: largeur(attenteEur) }} /></div>
+            <small>{k.attente.length} devis envoyé{k.attente.length > 1 ? 's' : ''}{k.attenteVieux.length ? ` · ${k.attenteVieux.length} de plus de 30 jours à relancer` : ''}{k.plusGrosAttente && k.plusGrosAttente.total_ht > attenteEur * 0.4 ? ` · dont ${k.plusGrosAttente.num} : ${eur(Number(k.plusGrosAttente.total_ht))}` : ''}</small></div>
           {k.brouillons.length > 0 && (
-            <>
-              <div className="etape"><span className="b" style={{ background: '#6b7a88', width: '30%' }}>Devis en cours · {k.brouillons.length}</span></div>
-              <small>devis commencés, pas encore envoyés</small>
-            </>
+            <div className="etape"><div className="et-l"><span>Devis en cours de rédaction</span><strong>{k.brouillons.length}</strong></div>
+              <small>commencés, pas encore envoyés · {eur(k.brouillons.reduce((t, x) => t + Number(x.total_ht), 0))}</small></div>
           )}
         </div>
       </section>
@@ -122,7 +121,7 @@ export default function MaBoite() {
           <div><small>En montant</small><strong>{pct(k.tauxEur)}</strong><span>des € devisés</span></div>
           <div><small>En nombre</small><strong>{pct(k.tauxNb)}</strong><span>{k.nbTranches} devis tranchés</span></div>
         </div>
-        {k.tauxEur != null && k.tauxNb != null && k.tauxEur < k.tauxNb - 0.1 && <p className="aide">Tu signes plus souvent les petits chantiers que les gros.</p>}
+        {k.tauxEur != null && k.tauxNb != null && k.tauxEur < k.tauxNb - 0.15 && <p className="aide">Tu signes plus souvent les petits chantiers que les gros.</p>}
       </section>
 
       <section className="carte attenue">

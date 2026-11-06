@@ -987,3 +987,10 @@ label.fait .chrono { text-decoration: none; }
 .imp li small { color: var(--muted); }
 .imp b { color: var(--danger); white-space: nowrap; }
 .carte.attenue { opacity: 0.75; }
+.avert-hist { display: block; margin-top: 4px; font-size: 12px; color: #ffc46b; font-weight: 700; }
+.pipe .etape { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.et-l { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 14px; }
+.et-l strong { font-size: 18px; font-weight: 900; }
+.et-b { height: 10px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.et-b i { display: block; height: 100%; border-radius: 6px; }
+.pipe .etape small { color: var(--muted); font-size: 12.5px; }

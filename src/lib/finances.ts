@@ -40,7 +40,9 @@ export function calculer(pieces: Piece[], objectif: number | null, auj = isoJour
   const an = auj.slice(0, 4)
   const mois = auj.slice(0, 7)
   const factures = pieces.filter(factureValide)
-  const devis = pieces.filter((p) => p.genre === 'devis')
+  // Un devis remplacé par sa version « -B » ne compte plus (sauf s'il a été signé) ; les modèles sont ignorés.
+  const remplaces = new Set(pieces.filter((p) => p.genre === 'devis' && /-[B-Z]$/i.test(p.num ?? '')).map((p) => p.num!.replace(/-[B-Z]$/i, '')))
+  const devis = pieces.filter((p) => p.genre === 'devis' && !/^mod[eè]le$/i.test((p.client ?? '').trim()) && !(remplaces.has(p.num ?? '') && !estSigne(p)))
 
   const caAnnee = factures.filter((f) => f.date?.startsWith(an)).reduce((t, f) => t + Number(f.total_ht), 0)
   const memeDateN1 = `${Number(an) - 1}${auj.slice(4)}`
@@ -72,7 +74,10 @@ export function calculer(pieces: Piece[], objectif: number | null, auj = isoJour
   // Devant nous : signé pas encore facturé, devis en attente.
   const factureParDossier = new Map<string, number>()
   for (const f of factures) if (f.dossier_id) factureParDossier.set(f.dossier_id, (factureParDossier.get(f.dossier_id) ?? 0) + Number(f.total_ht))
-  const carnet = devis.filter(estSigne).reduce((t, d) => t + Math.max(0, Number(d.total_ht) - (d.dossier_id ? factureParDossier.get(d.dossier_id) ?? 0 : 0)), 0)
+  // Par dossier : signé − déjà facturé (un dossier peut avoir plusieurs devis signés).
+  const signeParDossier = new Map<string, number>()
+  for (const d of devis.filter(estSigne)) { const k = d.dossier_id ?? d.id; signeParDossier.set(k, (signeParDossier.get(k) ?? 0) + Number(d.total_ht)) }
+  const carnet = [...signeParDossier].reduce((t, [k, v]) => t + Math.max(0, v - (factureParDossier.get(k) ?? 0)), 0)
   const semaines = moyMois > 0 ? carnet / (moyMois / 4.33) : null
   const attente = devis.filter(estEnvoye)
   const attenteVieux = attente.filter((d) => d.date && jours(d.date, auj) > 30)
@@ -96,7 +101,8 @@ export function calculer(pieces: Piece[], objectif: number | null, auj = isoJour
     barres, retard, aEncaisser, encaisseMois, nbPaiementsMois: factures.filter((f) => f.paye_le?.startsWith(mois)).length,
     carnet, semaines, attente, attenteVieux, brouillons,
     tauxEur, tauxNb, nbTranches: tranches.length,
-    objectif, avancement, rythme, semainesRestantes, premier,
+    objectif, avancement, rythme, semainesRestantes, premier, moisHistorique: nbMois,
+    plusGrosAttente: [...attente].sort((a, b) => Number(b.total_ht) - Number(a.total_ht))[0] ?? null,
     derniereSynchro: pieces.map((p) => p.synchro_le).sort().pop() ?? null
   }
 }
