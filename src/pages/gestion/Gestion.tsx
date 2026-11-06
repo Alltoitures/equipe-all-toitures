@@ -18,6 +18,7 @@ export default function Gestion() {
   const [imprevus, setImprevus] = useState<ImprevuLigne[]>([])
   const [aValider, setAValider] = useState(0)
   const [photosAttente, setPhotosAttente] = useState(0)
+  const [nb, setNb] = useState({ demandes: 0, urgentes: 0, conges: 0, chantiersSansEquipe: 0 })
 
   async function charger() {
     const [imp, jr, ph] = await Promise.all([
@@ -25,6 +26,13 @@ export default function Gestion() {
       supabase.from('journees').select('id', { count: 'exact', head: true }).eq('valide', false).lt('jour', lundi()),
       supabase.from('photos').select('id', { count: 'exact', head: true }).neq('onedrive_statut', 'envoye')
     ])
+    const [dm, dmu, cg, ch] = await Promise.all([
+      supabase.from('demandes_materiel').select('id', { count: 'exact', head: true }).eq('statut', 'ouverte'),
+      supabase.from('demandes_materiel').select('id', { count: 'exact', head: true }).eq('statut', 'ouverte').eq('urgent', true),
+      supabase.from('conges').select('id', { count: 'exact', head: true }).eq('statut', 'demande'),
+      supabase.from('chantiers').select('id, affectations(membre_id)').neq('statut', 'termine')
+    ])
+    setNb({ demandes: dm.count ?? 0, urgentes: dmu.count ?? 0, conges: cg.count ?? 0, chantiersSansEquipe: ((ch.data ?? []) as { affectations: unknown[] }[]).filter((c) => !c.affectations.length).length })
     setImprevus((imp.data ?? []) as unknown as ImprevuLigne[])
     setAValider(jr.count ?? 0)
     setPhotosAttente(ph.count ?? 0)
@@ -43,65 +51,45 @@ export default function Gestion() {
     <div className="page">
       <h1>Gestion</h1>
 
+      {/* À traiter : seulement ce qui attend une décision, avec le nombre. */}
+      <section className="carte">
+        <h2>À traiter</h2>
+        <div className="a-traiter">
+          {([
+            ['/gestion/heures', '⏱', 'Heures à valider', aValider, aValider ? `${aValider} journée${aValider > 1 ? 's' : ''} des semaines passées` : 'Tout est validé'],
+            ['/gestion/demandes', '📦', 'Demandes de matériel', nb.demandes, nb.urgentes ? `dont ${nb.urgentes} urgente${nb.urgentes > 1 ? 's' : ''}` : nb.demandes ? 'à commander' : 'Aucune en attente'],
+            ['/gestion/conges', '🌴', 'Congés à répondre', nb.conges, nb.conges ? 'la personne attend ta réponse' : 'Aucune demande'],
+            ['/gestion/chantiers', '👷', 'Chantiers sans équipe', nb.chantiersSansEquipe, nb.chantiersSansEquipe ? 'personne n\'est affecté' : 'Tous ont une équipe']
+          ] as [string, string, string, number, string][]).map(([to, ico, titre, n, sous]) => (
+            <Link key={to} to={to} className={`at-ligne${n ? ' actif' : ''}${to === '/gestion/demandes' && nb.urgentes ? ' urgent' : ''}`}>
+              <span className="at-ico">{ico}</span>
+              <span className="at-txt"><strong>{titre}</strong><small>{sous}</small></span>
+              <b className="at-nb">{n || '✓'}</b>
+            </Link>
+          ))}
+        </div>
+        {photosAttente > 0 && <p className="aide">{photosAttente} photo{photosAttente > 1 ? 's' : ''} en cours d'envoi vers OneDrive.</p>}
+      </section>
+
+      <h3>Équipe et chantiers</h3>
       <div className="tuiles">
-        <Link to="/gestion/heures" className="tuile">
-          <span className="lb">Heures</span>
-          <strong>Valider la semaine</strong>
-          {aValider > 0 && <span className="badge">{aValider} jour{aValider > 1 ? 's' : ''} en retard</span>}
-        </Link>
-        <Link to="/gestion/chantiers" className="tuile">
-          <span className="lb">Chantiers</span>
-          <strong>Dossiers et affectations</strong>
-        </Link>
-        {estGerant(membre) && (
-          <Link to="/gestion/equipe" className="tuile">
-            <span className="lb">Équipe</span>
-            <strong>Comptes et accès</strong>
-          </Link>
-        )}
-        <Link to="/gestion/export" className="tuile">
-          <span className="lb">Paie</span>
-          <strong>Export mensuel</strong>
-        </Link>
-        <Link to="/gestion/planning" className="tuile">
-          <span className="lb">Planning</span>
-          <strong>Qui est où cette semaine</strong>
-        </Link>
-        <Link to="/gestion/demandes" className="tuile">
-          <span className="lb">Matériel</span>
-          <strong>Demandes des équipes</strong>
-        </Link>
-        <Link to="/gestion/conges" className="tuile">
-          <span className="lb">Congés</span>
-          <strong>Demandes et absences</strong>
-        </Link>
-        <Link to="/gestion/vehicules" className="tuile">
-          <span className="lb">Véhicules</span>
-          <strong>Contrôles et entretiens</strong>
-        </Link>
-        {estGerant(membre) && (
-          <Link to="/gestion/rentabilite" className="tuile">
-            <span className="lb">Rentabilité</span>
-            <strong>Heures par chantier</strong>
-          </Link>
-        )}
-        {estGerant(membre) && (
-          <Link to="/gestion/boite" className="tuile">
-            <span className="lb">Finances</span>
-            <strong>Ma boîte en chiffres</strong>
-          </Link>
-        )}
-        {estGerant(membre) && (
-          <Link to="/gestion/temps" className="tuile">
-            <span className="lb">Chiffrage</span>
-            <strong>Temps moyens par ouvrage</strong>
-          </Link>
-        )}
+        <Link to="/gestion/planning" className="tuile"><span className="t-ico">📅</span><strong>Planning</strong><span className="sous">Qui est où cette semaine</span></Link>
+        <Link to="/gestion/chantiers" className="tuile"><span className="t-ico">🏠</span><strong>Chantiers</strong><span className="sous">Dossiers et affectations</span></Link>
+        <Link to="/gestion/vehicules" className="tuile"><span className="t-ico">🚐</span><strong>Camions</strong><span className="sous">Contrôles, échéances, documents</span></Link>
+        {estGerant(membre) && <Link to="/gestion/equipe" className="tuile"><span className="t-ico">👥</span><strong>Équipe</strong><span className="sous">Comptes et accès</span></Link>}
+      </div>
+
+      <h3>Chiffres</h3>
+      <div className="tuiles">
+        {estGerant(membre) && <Link to="/gestion/boite" className="tuile"><span className="t-ico">💶</span><strong>Ma boîte</strong><span className="sous">CA, trésorerie, carnet</span></Link>}
+        {estGerant(membre) && <Link to="/gestion/rentabilite" className="tuile"><span className="t-ico">📊</span><strong>Heures par chantier</strong><span className="sous">Prévu / réalisé</span></Link>}
+        {estGerant(membre) && <Link to="/gestion/temps" className="tuile"><span className="t-ico">⏱</span><strong>Temps moyens</strong><span className="sous">Par ouvrage, pour chiffrer</span></Link>}
+        <Link to="/gestion/export" className="tuile"><span className="t-ico">🧾</span><strong>Export paie</strong><span className="sous">Fichier du mois</span></Link>
       </div>
 
       <section className="carte">
-        <h2>Imprévus ouverts ({imprevus.length})</h2>
-        {imprevus.length === 0 && <p className="sous">Aucun imprévu en attente.</p>}
+        <h2>Imprévus ouverts <span className="sous">{imprevus.length}</span></h2>
+        {imprevus.length === 0 && <p className="sous">Aucun imprévu en attente. ✓</p>}
         {imprevus.map((i) => (
           <div key={i.id} className="imprevu">
             <div>

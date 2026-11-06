@@ -4,14 +4,14 @@ import { supabase, STATUTS, type Chantier, type Statut } from '../../lib/supabas
 import { dateCourte } from '../../lib/format'
 
 export default function ChantiersGestion() {
-  const [liste, setListe] = useState<(Chantier & { affectations: { membre_id: string }[] })[]>([])
-  const [filtre, setFiltre] = useState<Statut | 'tous'>('a_venir')
+  const [liste, setListe] = useState<(Chantier & { affectations: { membre_id: string; membres: { prenom: string } | null }[]; taches: { fait: boolean; est_groupe: boolean }[] })[]>([])
+  const [filtre, setFiltre] = useState<Statut | 'tous'>('en_cours')
   const [cherche, setCherche] = useState('')
 
   useEffect(() => {
     supabase
       .from('chantiers')
-      .select('*, affectations(membre_id)')
+      .select('*, affectations(membre_id, membres(prenom)), taches(fait, est_groupe)')
       .order('date_debut', { ascending: false, nullsFirst: true })
       .then(({ data }) => setListe((data ?? []) as never))
   }, [])
@@ -35,20 +35,25 @@ export default function ChantiersGestion() {
       </div>
       <input className="recherche" placeholder="Rechercher un client, une ville…" value={cherche} onChange={(e) => setCherche(e.target.value)} />
       {visibles.length === 0 && <div className="vide">Aucun chantier.</div>}
-      {visibles.map((c) => (
-        <Link key={c.id} to={`/gestion/chantiers/${c.id}`} className="ligne-chantier">
-          <div>
-            <strong>{c.client_nom}</strong>
-            <span className="sous">{[c.ville, c.reference].filter(Boolean).join(' · ')}</span>
-          </div>
-          <div className="droite">
-            <span className="sous">{dateCourte(c.date_debut)}</span>
-            <span className={c.affectations.length ? 'sous' : 'sous alerte-txt'}>
-              {c.affectations.length ? `${c.affectations.length} pers.` : 'Aucune affectation'}
-            </span>
-          </div>
-        </Link>
-      ))}
+      {visibles.map((c) => {
+        const t = c.taches.filter((x) => !x.est_groupe)
+        const p = t.length ? Math.round((t.filter((x) => x.fait).length / t.length) * 100) : null
+        return (
+          <Link key={c.id} to={`/gestion/chantiers/${c.id}`} className="carte-ch">
+            <div className="titre-ligne">
+              <strong>{c.client_nom}</strong>
+              <span className={`pastille ${c.statut}`}>{STATUTS[c.statut]}</span>
+            </div>
+            <span className="sous">{[c.ville, c.reference, c.date_debut ? `${dateCourte(c.date_debut)}${c.date_fin && c.date_fin !== c.date_debut ? ` → ${dateCourte(c.date_fin)}` : ''}` : 'dates à fixer'].filter(Boolean).join(' · ')}</span>
+            <div className="ch-bas">
+              <div className="equipe-ch">
+                {c.affectations.length ? c.affectations.map((a) => <span key={a.membre_id} className="membre-ch petit"><b>{a.membres?.prenom?.[0] ?? '?'}</b>{a.membres?.prenom}</span>) : <span className="alerte-txt">Aucune équipe affectée</span>}
+              </div>
+              {p != null && <span className="ch-pct"><i style={{ width: `${p}%` }} /><em>{p} %</em></span>}
+            </div>
+          </Link>
+        )
+      })}
     </div>
   )
 }
