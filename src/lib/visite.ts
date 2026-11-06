@@ -27,7 +27,10 @@ export interface Visite {
 }
 
 export interface Mesure { ouvrage: string; qte: string; unite: string; remarque: string }
-export type Fiche = Record<string, string | string[] | Mesure[] | undefined> & { mesures?: Mesure[] }
+/** Relevé sur la vue aérienne : longueur (ml) ou surface (m², pente comprise). */
+export interface Trace { id: string; type: 'longueur' | 'surface'; points: [number, number][]; libelle: string; pente: number; valeur: number }
+export interface Aerien { centre?: [number, number]; zoom?: number; traces: Trace[] }
+export type Fiche = Record<string, string | string[] | Mesure[] | Aerien | undefined> & { mesures?: Mesure[]; aerien?: Aerien }
 
 export type Question =
   | { id: string; type: 'choix'; label: string; options: string[] }

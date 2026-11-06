@@ -25,6 +25,7 @@ export interface PhotoVisiteEnAttente {
   id: string
   visite_id: string
   legende?: string
+  commentaire?: string
   prise_le: string
   blob: Blob
 }
@@ -71,7 +72,7 @@ export async function compresser(fichier: File): Promise<Blob> {
   }
 }
 
-export async function ajouterPhotoVisite(p: { visite_id: string; legende?: string; blob: Blob }): Promise<string> {
+export async function ajouterPhotoVisite(p: { visite_id: string; legende?: string; commentaire?: string; blob: Blob }): Promise<string> {
   const id = crypto.randomUUID()
   await set(id, { ...p, type: 'visite', id, prise_le: new Date().toISOString() }, store)
   await notifier()
@@ -87,6 +88,7 @@ async function envoyerVisite(p: PhotoVisiteEnAttente) {
     id: p.id,
     visite_id: p.visite_id,
     legende: p.legende || null,
+    commentaire: p.commentaire || null,
     storage_path: chemin,
     nom_fichier: `${p.prise_le.slice(0, 10)}_visite`,
     taille: p.blob.size,

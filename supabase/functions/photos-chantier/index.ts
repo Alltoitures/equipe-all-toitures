@@ -3,6 +3,7 @@
 //  - { chantier, action: 'pv', reception }    -> fabrique le PV de réception PDF (photos en annexe),
 //                                                le range dans « F - Suivi chantier » et le renvoie (base64)
 //  - { chantier, action: 'pv-apercu' }      -> même PV, non signé (« PROJET - À SIGNER »), lu par le client avant signature
+//  - { visite, action: 'visite-photos' }    -> photos d'une visite (miniatures, légende, commentaire)
 //  - { chantier, action: 'pv-lien' }          -> lien de téléchargement du PV déjà rangé dans OneDrive
 // Droits : la personne connectée doit voir le chantier (règles de la base).
 import { createClient } from 'npm:@supabase/supabase-js@2'
@@ -440,8 +441,31 @@ function base64(u: Uint8Array): string {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   try {
-    const { chantier, action = 'liste', reception } = await req.json()
+    const { chantier, visite, action = 'liste', reception } = await req.json()
     const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } })
+
+    // Photos d'une visite (pour les revoir dans l'appli, avec légende et commentaire).
+    if (action === 'visite-photos') {
+      const { data: v } = await sb.from('visites').select('id').eq('id', visite).maybeSingle()
+      if (!v) return rep({ erreur: 'Visite inaccessible' }, 403)
+      const { data } = await admin.from('photos_visite').select('id, legende, commentaire, prise_le, onedrive_id, storage_path').eq('visite_id', v.id).order('prise_le')
+      const lignes = (data ?? []) as { id: string; legende: string | null; commentaire: string | null; prise_le: string; onedrive_id: string | null; storage_path: string | null }[]
+      const tv = SECRET ? await jeton() : null
+      const ids = lignes.filter((l) => l.onedrive_id).map((l) => l.onedrive_id!)
+      const th = tv && ids.length ? await miniatures(tv, ids) : new Map()
+      const photos = []
+      for (const l of lignes) {
+        let m: string | null = null, g: string | null = null
+        if (l.onedrive_id && th.has(l.onedrive_id)) ({ m, g } = th.get(l.onedrive_id))
+        if (!m && l.storage_path) {
+          const u = await admin.storage.from('photos').createSignedUrl(l.storage_path, 3600)
+          m = g = u.data?.signedUrl ?? null
+        }
+        photos.push({ id: l.id, legende: l.legende, commentaire: l.commentaire, prise_le: l.prise_le, miniature: m, grande: g })
+      }
+      return rep({ photos })
+    }
+
     const { data: c } = await sb.from('chantiers').select('id, reference, client_nom, adresse, code_postal, ville, date_debut, bon, onedrive_item_id').eq('id', chantier).maybeSingle()
     if (!c) return rep({ erreur: 'Chantier inaccessible' }, 403)
     const t = SECRET ? await jeton() : null
