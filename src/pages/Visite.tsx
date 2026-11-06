@@ -7,6 +7,11 @@ import { dateLongue, normaliserTel, telAffiche } from '../lib/format'
 import { IcoCroquis, IcoPhoto, IcoRetour, IcoRoute, IcoTel } from '../components/Icones'
 import Meteo from '../components/Meteo'
 import Croquis from '../components/Croquis'
+import VueAerienne from '../components/VueAerienne'
+import GaleriePhotos, { usePhotosVisite, type PhotoV } from '../components/PhotosVisite'
+
+type Onglet = 'resume' | 'mesures' | 'photos' | 'croquis' | 'aerien'
+const estCroquis = (p: PhotoV) => (p.legende ?? '').startsWith('Croquis')
 
 type Infos = Pick<TVisite, 'client_nom' | 'telephone' | 'email' | 'adresse' | 'code_postal' | 'ville' | 'type_travaux'>
 
@@ -21,7 +26,10 @@ export default function Visite() {
   const [etat, setEtat] = useState<'' | 'attente' | 'ok' | 'hors'>('')
   const [message, setMessage] = useState('')
   const [erreur, setErreur] = useState('')
-  const [aLegender, setALegender] = useState<{ blob: Blob; url: string; ouvrage: string; precision: string }[]>([])
+  const [aLegender, setALegender] = useState<{ blob: Blob; url: string; ouvrage: string; precision: string; commentaire: string }[]>([])
+  const [onglet, setOnglet] = useState<Onglet>('resume')
+  const [recentes, setRecentes] = useState<PhotoV[]>([])
+  const galerie = usePhotosVisite(id!, recentes)
   const [croquis, setCroquis] = useState(false)
   const minuteur = useRef<number | undefined>(undefined)
   const cle = `at-visite-${id}`
@@ -109,27 +117,30 @@ export default function Visite() {
   /** Les photos prises passent d'abord par l'écran de légende, puis partent dans la file d'envoi. */
   async function photos(fichiers: FileList | null) {
     if (!fichiers?.length || !v) return
-    const nouvelles: { blob: Blob; url: string; ouvrage: string; precision: string }[] = []
+    const nouvelles: { blob: Blob; url: string; ouvrage: string; precision: string; commentaire: string }[] = []
     for (const f of Array.from(fichiers)) {
       const blob = await compresser(f)
-      nouvelles.push({ blob, url: URL.createObjectURL(blob), ouvrage: '', precision: '' })
+      nouvelles.push({ blob, url: URL.createObjectURL(blob), ouvrage: '', precision: '', commentaire: '' })
     }
     setALegender((x) => [...x, ...nouvelles])
   }
 
-  function majLegende(i: number, k: 'ouvrage' | 'precision', val: string) {
+  function majLegende(i: number, k: 'ouvrage' | 'precision' | 'commentaire', val: string) {
     setALegender((x) => x.map((p, j) => (j === i ? { ...p, [k]: val } : p)))
   }
 
   async function enregistrerPhotos() {
     if (!v) return
     const liste = aLegender
+    const ajoutees: PhotoV[] = []
     for (const p of liste) {
       const legende = [p.ouvrage, p.precision.trim()].filter(Boolean).join(' – ')
-      await ajouterPhotoVisite({ visite_id: v.id, legende: legende || undefined, blob: p.blob })
-      URL.revokeObjectURL(p.url)
+      const pid = await ajouterPhotoVisite({ visite_id: v.id, legende: legende || undefined, commentaire: p.commentaire.trim() || undefined, blob: p.blob })
+      ajoutees.push({ id: pid, legende: legende || null, commentaire: p.commentaire.trim() || null, prise_le: new Date().toISOString(), miniature: p.url, grande: p.url, locale: true })
     }
+    setRecentes((x) => [...x, ...ajoutees])
     setALegender([])
+    window.setTimeout(() => galerie.recharger(), 8000)
     setNbPhotos((x) => x + liste.length)
     setMessage(`${liste.length} photo${liste.length > 1 ? 's' : ''} enregistrée${liste.length > 1 ? 's' : ''}. Rangement automatique dans OneDrive.`)
   }
@@ -187,7 +198,14 @@ export default function Visite() {
         </section>
       )}
 
+      <nav className="onglets-fiche onglets-visite" role="tablist">
+        {([['resume', 'Résumé'], ['photos', `Photos${nbPhotos ? ` ${galerie.photos ? galerie.photos.filter((p) => !estCroquis(p)).length : nbPhotos}` : ''}`], ['croquis', 'Croquis'], ['aerien', 'Vue aérienne'], ['mesures', `Mesures${mesures.length ? ` ${mesures.length}` : ''}`]] as [Onglet, string][]).map(([k, l]) => (
+          <button key={k} role="tab" aria-selected={onglet === k} onClick={() => setOnglet(k)}>{l}</button>
+        ))}
+      </nav>
+
       <fieldset disabled={termine} className="champs">
+        {onglet === 'resume' && (<>
         <section className="carte">
           <div className="titre-ligne">
             <h2>Client</h2>
@@ -226,7 +244,7 @@ export default function Visite() {
 
         {SECTIONS.map((s) => (
           <section className="carte" key={s.titre}>
-            <h2>{s.titre}</h2>
+            <h2>{s.titre} <span className="sous">{s.questions.filter((q) => { const x = fiche[q.id]; return Array.isArray(x) ? x.length > 0 : !!x }).length} / {s.questions.length}</span></h2>
             {s.questions.map((q) => (
               <div className="question" key={q.id}>
                 <span className="q-label">{q.label}{q.type === 'multi' && <small> · plusieurs choix</small>}</span>
@@ -246,6 +264,9 @@ export default function Visite() {
           </section>
         ))}
 
+        </>)}
+
+        {onglet === 'mesures' && (
         <section className="carte">
           <h2>Mesures et quantités</h2>
           <p className="aide">Ce qu'il faut pour chiffrer. Laissez la quantité vide si c'est à mesurer.</p>
@@ -274,13 +295,35 @@ export default function Visite() {
             </div>
           ))}
           <button type="button" className="btn" onClick={() => majMesures([...mesures, { ouvrage: '', qte: '', unite: 'm²', remarque: '' }])}>+ Autre mesure</button>
+          <button type="button" className="lien" onClick={() => setOnglet('aerien')}>Mesurer sur la vue aérienne →</button>
         </section>
+        )}
 
-        <section className="carte">
-          <h2>Photos <span className="sous">{nbPhotos}</span></h2>
-          <p className="aide">Après chaque photo, choisissez ce qu'elle montre : la légende sert au rapport client. Le bouton « Croquis » permet de dessiner un plan ou d'annoter une photo.</p>
-          <p className="aide">Rangées dans OneDrive : Visite - AO › {v.date_rdv?.slice(0, 4) ?? 'année'} › dossier du client › Photos visite. Rien dans la galerie du téléphone.</p>
-        </section>
+        {onglet === 'photos' && (
+          <>
+            <GaleriePhotos photos={galerie.photos} erreur={galerie.erreur} filtre={(p) => !estCroquis(p)} maj={galerie.maj} lecture={termine}
+              vide="Aucune photo pour l'instant. Utilisez le bouton « Photo » en bas." />
+            <p className="aide">Touchez une photo pour l'agrandir, changer la légende ou écrire un commentaire. Rangées dans OneDrive : Visite - AO › {v.date_rdv?.slice(0, 4) ?? 'année'} › dossier du client › Photos visite.</p>
+          </>
+        )}
+
+        {onglet === 'croquis' && (
+          <>
+            {!termine && <button type="button" className="btn pri large" onClick={() => setCroquis(true)}>✏️ Nouveau croquis</button>}
+            <GaleriePhotos photos={galerie.photos} erreur={galerie.erreur} filtre={estCroquis} maj={galerie.maj} lecture={termine}
+              vide="Aucun croquis. Dessinez un plan, un détail d'ouvrage ou annotez une photo." />
+          </>
+        )}
+
+        {onglet === 'aerien' && (
+          <VueAerienne
+            adresse={adresse}
+            aerien={fiche.aerien}
+            lecture={termine}
+            changer={(a) => { const f = { ...fiche, aerien: a }; setFiche(f); planifier(f, infos) }}
+            versMesures={(m) => { majMesures([...mesures, m]); setMessage(`${m.ouvrage} (${m.qte} ${m.unite}) ajouté aux mesures.`) }}
+          />
+        )}
 
         {!termine && <button type="button" className="btn go large" onClick={terminer}>Visite terminée</button>}
       </fieldset>
@@ -288,7 +331,7 @@ export default function Visite() {
       {croquis && (
         <Croquis fermer={(b) => {
           setCroquis(false)
-          if (b) setALegender((x) => [...x, { blob: b, url: URL.createObjectURL(b), ouvrage: 'Croquis', precision: '' }])
+          if (b) setALegender((x) => [...x, { blob: b, url: URL.createObjectURL(b), ouvrage: 'Croquis', precision: '', commentaire: '' }])
         }} />
       )}
 
@@ -305,6 +348,7 @@ export default function Visite() {
                   ))}
                 </div>
                 <input value={p.precision} onChange={(e) => majLegende(i, 'precision', e.target.value)} placeholder="Précision : fendue, versant nord, tuile cassée…" />
+                <textarea rows={2} value={p.commentaire} onChange={(e) => majLegende(i, 'commentaire', e.target.value)} placeholder="Commentaire (facultatif, repris dans le rapport)" />
               </div>
             ))}
             <button type="button" className="btn go large" onClick={enregistrerPhotos}>Enregistrer {aLegender.length > 1 ? `les ${aLegender.length} photos` : 'la photo'}</button>

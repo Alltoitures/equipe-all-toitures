@@ -28,6 +28,7 @@ export default function Compte() {
         <h2>Raccourcis</h2>
         <div className="boutons">
           <Link className="btn" to="/vehicules">Camions : contrôles</Link>
+          <Link className="btn" to="/outils">🛠 Outillage</Link>
           <Link className="btn" to="/aide">Mode d'emploi</Link>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { dateCourte, isoJour } from '../lib/format'
 import { useAuth } from '../lib/auth'
 import { IcoPhoto } from './Icones'
 import { NOMS_PHASE, Visionneuse, photosAnnexe, usePhotosChantier } from './Photos'
+import { pagesPdf } from '../lib/lecteurPdf'
 
 // ---------------------------------------------------------------- Sécurité du jour
 export const POINTS_SECURITE = [
@@ -232,7 +233,14 @@ function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier;
   const [reserves, setReserves] = useState('')
   const [signe, setSigne] = useState(false)
   const [erreur, setErreur] = useState('')
-  const [etape, setEtape] = useState<'lecture' | 'envoi' | 'fini'>('lecture')
+  const [etape, setEtape] = useState<'lecture' | 'decision' | 'signature' | 'envoi' | 'fini'>('lecture')
+  // Le vrai PV (PDF « à signer ») que le client lit avant de signer.
+  const [apercu, setApercu] = useState<{ pages: string[]; fichier: File } | null | 'echec'>(null)
+  const [lu, setLu] = useState(false)
+  const [finLecture, setFinLecture] = useState(false)
+  const basLecture = useRef<HTMLDivElement>(null)
+  // Ne pas réinitialiser la toile en passant de « signature » à « envoi » : la signature serait effacée.
+  const avecToile = etape === 'signature' || etape === 'envoi'
   const [resultat, setResultat] = useState<{ rec: Rec; pv: PvPret | null } | null>(null)
   const [vue, setVue] = useState<number | null>(null)
 
@@ -242,8 +250,31 @@ function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier;
   const adresse = [chantier.adresse, [chantier.code_postal, chantier.ville].filter(Boolean).join(' ')].filter(Boolean).join(', ')
 
   useEffect(() => {
+    let annule = false
+    supabase.functions.invoke('photos-chantier', { body: { chantier: chantier.id, action: 'pv-apercu' } })
+      .then(async ({ data }) => {
+        if (!data?.pdf) throw new Error('aperçu')
+        const fichier = pdfDepuisBase64(data.pdf, data.nom)
+        const pages = await pagesPdf(new Uint8Array(await fichier.arrayBuffer()), Math.min(window.innerWidth, 720))
+        if (!annule) setApercu({ pages, fichier })
+      })
+      .catch(() => { if (!annule) setApercu('echec') })
+    return () => { annule = true }
+  }, [chantier.id])
+
+  // La case « J'ai lu » ne s'active qu'une fois arrivé en bas du document.
+  useEffect(() => {
+    const el = basLecture.current
+    if (!el || etape !== 'lecture') return
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) setFinLecture(true) })
+    o.observe(el)
+    return () => o.disconnect()
+  }, [etape, apercu])
+
+  useEffect(() => {
     const cv = toile.current
     if (!cv) return
+    setSigne(false)
     const r = cv.getBoundingClientRect()
     cv.width = r.width * 2
     cv.height = r.height * 2
@@ -261,7 +292,7 @@ function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier;
     cv.addEventListener('pointermove', bouge)
     cv.addEventListener('pointerup', haut)
     return () => { cv.removeEventListener('pointerdown', bas); cv.removeEventListener('pointermove', bouge); cv.removeEventListener('pointerup', haut) }
-  }, [etape])
+  }, [avecToile])
 
   function effacer() {
     const cv = toile.current!
@@ -307,7 +338,7 @@ function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier;
       setResultat({ rec, pv })
       setEtape('fini')
     } catch (e) {
-      setEtape('lecture')
+      setEtape('signature')
       setErreur(navigator.onLine ? erreurLisible(e) : 'Pas de réseau : la signature doit être enregistrée avec une connexion.')
     }
   }
@@ -335,65 +366,122 @@ function Signature({ chantier, taches, membreId, fermer }: { chantier: Chantier;
     )
   }
 
+  const etapes = ['Lecture', 'Décision', 'Signature']
+  const num = etape === 'lecture' ? 0 : etape === 'decision' ? 1 : 2
+  const htmlSecours = (
+    <article className="pv-doc">
+      <header>
+        <img src="/logo-couleur.png" alt="ALL TOITURES" />
+        <h3>Procès-verbal de réception des travaux</h3>
+        <small>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}{chantier.reference ? ` · ${chantier.reference}` : ''}</small>
+      </header>
+      <dl>
+        <dt>Entreprise</dt><dd>ALL TOITURES</dd>
+        <dt>Maître d'ouvrage</dt><dd>{chantier.client_nom}</dd>
+        {adresse && <><dt>Chantier</dt><dd>{adresse}</dd></>}
+        {chantier.bon?.objet && <><dt>Objet</dt><dd>{chantier.bon.objet}</dd></>}
+      </dl>
+      {travaux.length > 0 && (
+        <>
+          <h4>Travaux réalisés</h4>
+          <ul className="pv-travaux">
+            {travaux.map((t) => t.est_groupe ? <li key={t.id} className="g">{t.libelle}</li> : (
+              <li key={t.id}>{t.libelle}{t.quantite != null && <small> · {String(t.quantite).replace('.', ',')} {t.unite ?? ''}</small>}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p className="pv-mention">La toiture n'étant pas accessible au maître d'ouvrage, la réception est prononcée au vu des photos jointes en annexe.</p>
+      <h4>Annexe : photos des travaux {annexe.length > 0 && <small>({annexe.length})</small>}</h4>
+      {annexe.length > 0 && (
+        <div className="pv-photos">
+          {annexe.map((p, i) => (
+            <button key={p.id} onClick={() => setVue(i)}>
+              <img src={p.miniature ?? p.grande ?? ''} alt="" loading="lazy" />
+              <span>{NOMS_PHASE[p.phase]}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <p className="pv-mention">La réception est prononcée contradictoirement à la date du jour (art. 1792-6 du Code civil). Elle fait courir la garantie de parfait achèvement (1 an), de bon fonctionnement (2 ans) et décennale (10 ans).</p>
+    </article>
+  )
+
   return (
-    <div className="fond-modal">
-      <div className="modal pv-modal">
-        <div className="titre-ligne">
-          <h2>PV de réception</h2>
-          <button className="lien" onClick={() => fermer(null)} disabled={etape === 'envoi'}>Annuler</button>
+    <div className="fond-modal plein">
+      <div className="modal pv-modal plein">
+        <div className="pv-haut">
+          <div className="titre-ligne">
+            <h2>PV de réception</h2>
+            <button className="lien" onClick={() => fermer(null)} disabled={etape === 'envoi'}>Annuler</button>
+          </div>
+          <ol className="pv-etapes">
+            {etapes.map((e, i) => <li key={e} className={i < num ? 'fait' : i === num ? 'en-cours' : ''}><b>{i + 1}</b>{e}</li>)}
+          </ol>
         </div>
-        <p className="aide">Faites lire le procès-verbal au client, avec les photos des travaux, avant qu'il signe en bas.</p>
 
-        <article className="pv-doc">
-          <header>
-            <img src="/logo-couleur.png" alt="ALL TOITURES" />
-            <h3>Procès-verbal de réception des travaux</h3>
-            <small>{new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}{chantier.reference ? ` · ${chantier.reference}` : ''}</small>
-          </header>
-          <dl>
-            <dt>Entreprise</dt><dd>ALL TOITURES</dd>
-            <dt>Maître d'ouvrage</dt><dd>{chantier.client_nom}</dd>
-            {adresse && <><dt>Chantier</dt><dd>{adresse}</dd></>}
-            {chantier.bon?.objet && <><dt>Objet</dt><dd>{chantier.bon.objet}</dd></>}
-          </dl>
-          {travaux.length > 0 && (
-            <>
-              <h4>Travaux réalisés</h4>
-              <ul className="pv-travaux">
-                {travaux.map((t) => t.est_groupe ? <li key={t.id} className="g">{t.libelle}</li> : (
-                  <li key={t.id}>{t.libelle}{t.quantite != null && <small> · {String(t.quantite).replace('.', ',')} {t.unite ?? ''}</small>}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          <h4>Annexe : photos des travaux {annexe.length > 0 && <small>({annexe.length})</small>}</h4>
-          {!photos && <p className="sous">Chargement des photos…</p>}
-          {photos && annexe.length === 0 && <p className="sous">Aucune photo avant / après pour ce chantier. Pensez à prendre les photos « Après » avant la réception.</p>}
-          {annexe.length > 0 && (
-            <div className="pv-photos">
-              {annexe.map((p, i) => (
-                <button key={p.id} onClick={() => setVue(i)}>
-                  <img src={p.miniature ?? p.grande ?? ''} alt="" loading="lazy" />
-                  <span>{NOMS_PHASE[p.phase]}</span>
-                </button>
-              ))}
+        {etape === 'lecture' && (
+          <>
+            <p className="aide">Donnez le téléphone au client : il lit le procès-verbal et les photos jusqu'en bas.</p>
+            {apercu === null && <div className="pv-charge"><span className="roue" />Préparation du PV…</div>}
+            {apercu && apercu !== 'echec' && (
+              <div className="pv-pages">
+                {apercu.pages.map((src, i) => <img key={i} src={src} alt={`Page ${i + 1}`} />)}
+              </div>
+            )}
+            {apercu === 'echec' && (
+              <>
+                <p className="sous">Version simplifiée (réseau faible). Le PDF complet sera créé à la signature.</p>
+                {htmlSecours}
+              </>
+            )}
+            <div ref={basLecture} />
+            <label className={`case pv-lu${finLecture || apercu === 'echec' ? '' : ' grise'}`}>
+              <input type="checkbox" checked={lu} disabled={!finLecture && apercu !== 'echec'} onChange={(e) => setLu(e.target.checked)} />
+              <span>J'ai lu le procès-verbal et ses photos en annexe</span>
+            </label>
+            {!finLecture && apercu !== 'echec' && <p className="aide">Descendez jusqu'en bas du document pour continuer.</p>}
+            <button type="button" className="btn pri large" disabled={!lu} onClick={() => setEtape('decision')}>Continuer</button>
+          </>
+        )}
+
+        {etape === 'decision' && (
+          <>
+            <span className="q-label">Le client accepte les travaux :</span>
+            <div className="choix pv-choix">
+              <button type="button" aria-pressed={sansReserve} onClick={() => setSansReserve(true)}>Sans réserve</button>
+              <button type="button" aria-pressed={!sansReserve} onClick={() => setSansReserve(false)}>Avec réserves</button>
             </div>
-          )}
-          <p className="pv-mention">La réception est prononcée contradictoirement à la date du jour. Elle fait courir la garantie de parfait achèvement (1 an), de bon fonctionnement (2 ans) et décennale (10 ans).</p>
-        </article>
+            {!sansReserve && <textarea rows={4} value={reserves} onChange={(e) => setReserves(e.target.value)} placeholder="Ce qui reste à reprendre, précisément (ex. : solin côté nord à reprendre)" />}
+            <label>Nom du signataire<input value={nom} onChange={(e) => setNom(e.target.value)} /></label>
+            {erreur && <p className="erreur">{erreur}</p>}
+            <div className="deux">
+              <button type="button" className="btn large" onClick={() => setEtape('lecture')}>Relire</button>
+              <button type="button" className="btn pri large" onClick={() => {
+                if (!nom.trim()) return setErreur('Indiquez le nom du signataire.')
+                if (!sansReserve && !reserves.trim()) return setErreur('Indiquez les réserves.')
+                setErreur(''); setEtape('signature')
+              }}>Signer</button>
+            </div>
+          </>
+        )}
 
-        <span className="q-label">Décision du client</span>
-        <div className="choix pv-choix">
-          <button type="button" aria-pressed={sansReserve} onClick={() => setSansReserve(true)}>Sans réserve</button>
-          <button type="button" aria-pressed={!sansReserve} onClick={() => setSansReserve(false)}>Avec réserves</button>
-        </div>
-        {!sansReserve && <textarea rows={3} value={reserves} onChange={(e) => setReserves(e.target.value)} placeholder="Réserves du client (ce qui reste à reprendre)" />}
-        <label>Nom du signataire<input value={nom} onChange={(e) => setNom(e.target.value)} /></label>
-        <span className="q-label">Signature du client <small>(« Lu et approuvé »)</small></span>
-        <canvas ref={toile} className="toile-signature" />
-        <button type="button" className="lien" onClick={effacer}>Effacer la signature</button>
-        {erreur && <p className="erreur">{erreur}</p>}
-        <button type="button" className="btn go large" disabled={etape === 'envoi'} onClick={enregistrer}>{etape === 'envoi' ? 'Création du PV…' : 'Valider la réception'}</button>
+        {(etape === 'signature' || etape === 'envoi') && (
+          <>
+            <div className="pv-resume">
+              <strong>{nom}</strong>
+              <span>{sansReserve ? 'Réception sans réserve' : `Avec réserves : ${reserves}`}</span>
+            </div>
+            <span className="q-label">Signature du client <small>« Lu et approuvé, bon pour réception »</small></span>
+            <canvas ref={toile} className="toile-signature grande" />
+            <button type="button" className="lien" onClick={effacer}>Effacer la signature</button>
+            {erreur && <p className="erreur">{erreur}</p>}
+            <div className="deux">
+              <button type="button" className="btn large" disabled={etape === 'envoi'} onClick={() => setEtape('decision')}>Retour</button>
+              <button type="button" className="btn go large" disabled={etape === 'envoi' || !signe} onClick={enregistrer}>{etape === 'envoi' ? 'Création du PV…' : 'Valider'}</button>
+            </div>
+          </>
+        )}
       </div>
       {vue !== null && <Visionneuse photos={annexe} index={vue} changer={setVue} fermer={() => setVue(null)} />}
     </div>

@@ -21,7 +21,10 @@ import Demandes from './pages/gestion/Demandes'
 import Conges from './pages/gestion/Conges'
 import VehiculesGestion from './pages/gestion/Vehicules'
 import Rentabilite from './pages/gestion/Rentabilite'
+import TempsMoyens from './pages/gestion/TempsMoyens'
+import MaBoite from './pages/gestion/MaBoite'
 import ControleVehicule from './pages/ControleVehicule'
+import Outillage, { OutilPage } from './pages/Outillage'
 import Aide from './pages/Aide'
 import RealisationPage from './pages/gestion/Realisation'
 
@@ -56,6 +59,8 @@ function Routeur() {
         <Route path="heures" element={<Heures />} />
         <Route path="compte" element={<Compte />} />
         <Route path="vehicules" element={<ControleVehicule />} />
+        <Route path="outils" element={<Outillage />} />
+        <Route path="outil/:id" element={<OutilPage />} />
         <Route path="aide" element={<Aide />} />
         {staff && (
           <>
@@ -69,6 +74,8 @@ function Routeur() {
             <Route path="gestion/conges" element={<Conges />} />
             <Route path="gestion/vehicules" element={<VehiculesGestion />} />
             {estGerant(membre) && <Route path="gestion/rentabilite" element={<Rentabilite />} />}
+            {estGerant(membre) && <Route path="gestion/temps" element={<TempsMoyens />} />}
+            {estGerant(membre) && <Route path="gestion/boite" element={<MaBoite />} />}
             {estGerant(membre) && <Route path="gestion/equipe" element={<Equipe />} />}
             {estGerant(membre) && <Route path="gestion/realisations/:id" element={<RealisationPage />} />}
           </>
