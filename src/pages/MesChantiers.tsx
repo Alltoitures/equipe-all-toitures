@@ -211,12 +211,12 @@ function Carte({ c, e, auj, montant, staff, terminer }: { c: Ch; e: Etat; auj: s
           {duree ? <span><b>{duree === 0.5 ? '½ journée' : `${String(duree).replace('.', ',')} j`}</b></span> : e === 'venir' ? <span><b>durée ?</b></span> : null}
           {staff && c.heures_prevues ? <span>{c.heures_prevues} h prévues</span> : null}
         </div>
-        <div className="l3">
+        {(equipe.length > 0 || staff || montant != null) && <div className="l3">
           <div className="eq">
             {equipe.length ? equipe.slice(0, 5).map((m, i) => <b key={i} title={m.prenom}>{m.prenom[0]}{m.nom?.[0] ?? ''}</b>) : staff ? <em>⚠ Équipe à affecter</em> : null}
           </div>
           {montant != null && <span className="mt">{eur(montant)}</span>}
-        </div>
+        </div>}
       </Link>
       {staff && e === 'cloturer' && (
         <div className="act">
