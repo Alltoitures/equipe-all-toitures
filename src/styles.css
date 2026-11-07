@@ -144,6 +144,24 @@ fieldset.champs { border: 0; padding: 0; margin: 0; display: flex; flex-directio
 .pastille.a_venir { background: #e6f1fb; color: #0c447c; }
 .pastille.en_cours { background: var(--accent); color: #fff; }
 .pastille.termine { background: var(--ok); color: #fff; }
+.pastille.retard { background: var(--warn-bg); color: var(--warn); }
+.pastille.jour { background: var(--accent-soft); color: var(--accent-ink); }
+
+/* Carte d'un chantier en cours : avancement, heures, équipe, retard */
+.carte-encours {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--accent);
+  border-radius: var(--rayon); padding: 14px 16px; text-decoration: none; color: var(--ink);
+}
+.carte-encours.retard { border-left-color: #e09a1a; }
+.carte-encours .ce-tete { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.carte-encours .ce-tete > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.carte-encours .ce-avance { display: flex; flex-direction: column; gap: 4px; }
+.carte-encours .ce-barre { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.carte-encours .ce-barre span { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.carte-encours .ce-infos { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); }
+.carte-encours .ce-alerte { font-style: normal; color: var(--warn); font-weight: 600; }
+.carte-encours .ce-retard { background: var(--warn-bg); color: var(--warn); font-size: 13px; font-weight: 600; padding: 8px 10px; border-radius: 8px; }
 
 .entete-chantier { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 
