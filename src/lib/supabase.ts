@@ -110,6 +110,8 @@ export interface Journee {
   panier_manuel: boolean
   commentaire: string | null
   valide: boolean
+  matin?: 'chantier' | 'depot' | 'intemperies' | null
+  apres_midi?: 'chantier' | 'depot' | 'intemperies' | null
   journee_chantiers?: { chantier_id: string; heures: number; periode?: 'matin' | 'apres_midi' | 'journee' | null; chantiers?: { client_nom: string; ville?: string | null } | null }[]
 }
 

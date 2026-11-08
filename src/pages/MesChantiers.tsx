@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { couleurChantier } from '../lib/heures'
 import { Link } from 'react-router-dom'
 import { supabase, erreurLisible, type Chantier } from '../lib/supabase'
 import { ajouterJours, dateCourte, isoJour, lundi } from '../lib/format'
@@ -203,7 +204,7 @@ function Carte({ c, e, auj, montant, staff, terminer }: { c: Ch; e: Etat; auj: s
   return (
     <div className={`cc ${ETATS[e].cls}`}>
       <Link to={`/chantier/${c.id}`} className="cc-lien">
-        <div className="l1"><strong>{nomCourt(c.client_nom)}</strong><span className="st">{st}</span></div>
+        <div className="l1"><strong><i className="pastille-ch" style={{ background: couleurChantier(c.id) }} aria-hidden />{nomCourt(c.client_nom)}</strong><span className="st">{st}</span></div>
         <div className="l2">
           <span>{[c.ville, c.reference].filter(Boolean).join(' · ')}</span>
           {moe && <span>MOE : {moe}</span>}

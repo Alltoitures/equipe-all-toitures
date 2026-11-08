@@ -15,6 +15,13 @@ const nomCh = (r?: Ligne) => (r?.chantiers ? `${r.chantiers.client_nom}${r.chant
 // Matin / après-midi d'une journée, y compris les anciennes saisies sans demi-journée.
 function demiJournees(j: Journee): { matin: string; aprem: string } {
   const l = j.journee_chantiers ?? []
+  // Demi-journée au dépôt ou en intempéries (saisie par demi-journée depuis le 08/11/2026).
+  const hors = (col?: string | null) => (col === 'depot' ? 'Dépôt' : col === 'intemperies' ? 'Intempéries' : '')
+  if (j.matin || j.apres_midi) {
+    const m = l.find((r) => r.periode === 'matin' || r.periode === 'journee')
+    const a = l.find((r) => r.periode === 'apres_midi' || r.periode === 'journee')
+    return { matin: m ? nomCh(m) : hors(j.matin), aprem: a ? nomCh(a) : hors(j.apres_midi) }
+  }
   if (!l.length) return { matin: COURT[j.motif], aprem: COURT[j.motif] }
   const m = l.find((r) => r.periode === 'matin' || r.periode === 'journee') ?? l[0]
   const a = l.find((r) => r.periode === 'apres_midi' || r.periode === 'journee') ?? l[1] ?? m

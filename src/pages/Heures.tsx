@@ -3,6 +3,7 @@ import { supabase, erreurLisible, MOTIFS, MOTIF_PAYE, type Chantier, type Journe
 import { ajouterJours, dateLongue, heureMaintenant, heuresJournee, hFormat, hhmm, isoJour, jourCourt, lundi, moisAnnee } from '../lib/format'
 import { useAuth } from '../lib/auth'
 import MesConges from '../components/MesConges'
+import { DEPOT, INTEMPERIES, colonnesLieux, couleurLieu, estChantier, lieuxJournee, motifDesLieux, type Lieu } from '../lib/heures'
 
 type ChPointage = Pick<Chantier, 'id' | 'client_nom' | 'ville' | 'statut' | 'date_debut' | 'date_fin'> & { affecte: boolean }
 
@@ -27,6 +28,8 @@ export default function Heures() {
   const [pause, setPause] = useState(60)
   const [matin, setMatin] = useState('')
   const [aprem, setAprem] = useState('')
+  const [meme, setMeme] = useState(true)
+  const [ouvert, setOuvert] = useState<'matin' | 'aprem' | null>(null)
   const [commentaire, setCommentaire] = useState('')
   const [valide, setValide] = useState(false)
   const [msg, setMsg] = useState('')
@@ -83,11 +86,11 @@ export default function Heures() {
       setPause(j.pause_min)
       setCommentaire(j.commentaire ?? '')
       setValide(j.valide)
-      const lignes = j.journee_chantiers ?? []
-      const m = lignes.find((r) => r.periode === 'matin' || r.periode === 'journee') ?? lignes[0]
-      const a = lignes.find((r) => r.periode === 'apres_midi' || r.periode === 'journee') ?? lignes[1] ?? m
-      setMatin(m?.chantier_id ?? '')
-      setAprem(a?.chantier_id ?? '')
+      const l = lieuxJournee(j)
+      setMatin(l.matin)
+      setAprem(l.aprem)
+      setMeme(!!l.matin && l.matin === l.aprem)
+      setOuvert(null)
     } else {
       setMotif('chantier')
       setDepart('')
@@ -99,6 +102,8 @@ export default function Heures() {
       const defaut = duJour.length === 1 ? duJour[0].id : ''
       setMatin(defaut)
       setAprem(defaut)
+      setMeme(true)
+      setOuvert(defaut ? null : 'matin')
     }
   }, [jour, semaine, chantiers])
 
@@ -106,8 +111,20 @@ export default function Heures() {
   // Matin = départ du dépôt → 12 h ; après-midi = le reste (pause déduite).
   const hMatin = depart ? Math.min(total, Math.max(0, 12 - hDecimal(depart))) : total / 2
   const hAprem = Math.max(0, total - hMatin)
-  const deuxChantiers = !!matin && !!aprem && matin !== aprem
-  const avecHoraires = MOTIF_PAYE[motif] && motif !== 'ecole' && motif !== 'intemperies_annulee'
+  const deuxLieux = !!matin && !!aprem && matin !== aprem
+  // Journée travaillée (chantier, dépôt, intempéries commencées) : lieu choisi par demi-journée.
+  const travaille = motif === 'chantier' || motif === 'depot' || motif === 'intemperies_commencee'
+  const avecHoraires = travaille || (MOTIF_PAYE[motif] && motif !== 'ecole' && motif !== 'intemperies_annulee')
+  const duJour = (id: string) => {
+    const c = chantiers.find((x) => x.id === id)
+    return !!c && c.affecte && !!c.date_debut && c.date_debut <= jour && (c.date_fin ?? c.date_debut) >= jour
+  }
+
+  function choisir(quand: 'matin' | 'aprem', l: Lieu) {
+    if (meme) { setMatin(l); setAprem(l) } else if (quand === 'matin') setMatin(l)
+    else setAprem(l)
+    setOuvert(!meme && quand === 'matin' && !aprem ? 'aprem' : null)
+  }
 
   async function enregistrer(e: React.FormEvent) {
     e.preventDefault()
@@ -115,33 +132,33 @@ export default function Heures() {
     setErreur('')
     setMsg('')
     if (avecHoraires && (!depart || !retour)) return setErreur('Indiquez l\'heure de départ et de retour au dépôt.')
-    if (motif === 'chantier' && !matin && !aprem) return setErreur('Indiquez sur quel chantier vous étiez le matin et l\'après-midi.')
+    if (travaille && !matin && !aprem) return setErreur('Indiquez où vous étiez le matin et l\'après-midi.')
+    const motifFinal: Motif = travaille ? motifDesLieux(matin, aprem) : motif
     setOccupe(true)
     try {
-      const { data, error } = await supabase
-        .from('journees')
-        .upsert(
-          {
-            membre_id: membre.id,
-            jour,
-            motif,
-            depart: avecHoraires ? depart : null,
-            retour: avecHoraires ? retour : null,
-            pause_min: avecHoraires ? pause : 0,
-            commentaire: commentaire || null
-          },
-          { onConflict: 'membre_id,jour' }
-        )
-        .select()
-        .single()
-      if (error) throw error
+      const base = {
+        membre_id: membre.id,
+        jour,
+        motif: motifFinal,
+        depart: avecHoraires ? depart : null,
+        retour: avecHoraires ? retour : null,
+        pause_min: avecHoraires ? pause : 0,
+        commentaire: commentaire || null
+      }
+      const lieux = travaille ? colonnesLieux(matin, aprem) : { matin: null, apres_midi: null }
+      const ecrire = (ligne: object) => supabase.from('journees').upsert(ligne, { onConflict: 'membre_id,jour' }).select().single()
+      let { data, error } = await ecrire({ ...base, ...lieux })
+      // Base pas encore migrée (colonnes matin / apres_midi absentes) : on enregistre sans, les heures restent justes.
+      if (error && /matin|apres_midi/.test(error.message ?? '')) ({ data, error } = await ecrire(base))
+      if (error || !data) throw error
       await supabase.from('journee_chantiers').delete().eq('journee_id', data.id)
       const arrondi = (n: number) => Math.round(n * 100) / 100
-      const lignes = !avecHoraires ? [] : matin && matin === aprem
-        ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(total), periode: 'journee' }]
+      // Seules les demi-journées sur chantier comptent dans les heures du chantier (le dépôt n'en a pas).
+      const lignes = !travaille ? [] : matin === aprem
+        ? (estChantier(matin) ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(total), periode: 'journee' }] : [])
         : [
-            ...(matin ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(aprem ? hMatin : total), periode: 'matin' }] : []),
-            ...(aprem ? [{ journee_id: data.id, chantier_id: aprem, heures: arrondi(matin ? hAprem : total), periode: 'apres_midi' }] : [])
+            ...(estChantier(matin) ? [{ journee_id: data.id, chantier_id: matin, heures: arrondi(aprem ? hMatin : total), periode: 'matin' }] : []),
+            ...(estChantier(aprem) ? [{ journee_id: data.id, chantier_id: aprem, heures: arrondi(matin ? hAprem : total), periode: 'apres_midi' }] : [])
           ].filter((l) => l.heures > 0)
       if (lignes.length) {
         const r2 = await supabase.from('journee_chantiers').insert(lignes)
@@ -161,6 +178,8 @@ export default function Heures() {
   const totalSemaine = semaine.reduce((s, j) => s + heuresJournee(j.depart, j.retour, j.pause_min), 0)
   const paniers = semaine.filter((j) => j.panier).length
   const nomChantier = (id: string) => chantiers.find((c) => c.id === id)?.client_nom ?? 'Chantier'
+  const nomLieu = (l: Lieu) => (l === DEPOT ? 'Dépôt / atelier' : l === INTEMPERIES ? 'Intempéries' : nomChantier(l))
+  const villeLieu = (l: Lieu) => chantiers.find((c) => c.id === l)?.ville ?? ''
 
   return (
     <div className="page">
@@ -175,14 +194,16 @@ export default function Heures() {
       <form className="carte" onSubmit={enregistrer}>
         {valide && <p className="ok">Journée validée par le gérant. Elle n'est plus modifiable.</p>}
         <fieldset disabled={valide} className="champs">
-          <label>
-            Type de journée
-            <select value={motif} onChange={(e) => setMotif(e.target.value as Motif)}>
-              {(Object.keys(MOTIFS) as Motif[])
-                .filter((m) => m !== 'ecole' || membre?.role === 'apprenti')
-                .map((m) => <option key={m} value={m}>{MOTIFS[m]}</option>)}
-            </select>
-          </label>
+          {!travaille && (
+            <label>
+              Pas travaillé
+              <select value={motif} onChange={(e) => setMotif(e.target.value as Motif)}>
+                {(['absence', 'intemperies_annulee', 'ecole'] as Motif[])
+                  .filter((m) => m !== 'ecole' || membre?.role === 'apprenti')
+                  .map((m) => <option key={m} value={m}>{MOTIFS[m]}</option>)}
+              </select>
+            </label>
+          )}
 
           {avecHoraires && (
             <>
@@ -207,16 +228,34 @@ export default function Heures() {
               <div className="total-jour"><span className="sous">Total de la journée</span><strong>{hFormat(total)}</strong></div>
 
               <h3>Où étiez-vous ?</h3>
-              <div className="demi">
-                <span className="lb">Matin{deuxChantiers && <small>{hFormat(hMatin)}</small>}</span>
-                <ChoixChantier valeur={matin} chantiers={chantiers} nom={nomChantier} changer={(v) => { if (!aprem || aprem === matin) setAprem(v); setMatin(v) }} />
-              </div>
-              <div className="demi">
-                <span className="lb">Après-midi{deuxChantiers && <small>{hFormat(hAprem)}</small>}</span>
-                <ChoixChantier valeur={aprem} chantiers={chantiers} nom={nomChantier} changer={setAprem} />
-              </div>
-              {matin && matin === aprem && <p className="sous">Toute la journée sur {nomChantier(matin)}.</p>}
-              <p className="aide">Chantier absent de la liste (dépannage, petit SAV) : choisissez le type « Dépôt » et précisez le lieu dans le commentaire.</p>
+              <label className="case">
+                <input type="checkbox" checked={meme} onChange={(e) => { setMeme(e.target.checked); if (e.target.checked) setAprem(matin) }} />
+                Même chose toute la journée
+              </label>
+              {(meme ? (['matin'] as const) : (['matin', 'aprem'] as const)).map((q) => {
+                const l = q === 'matin' ? matin : aprem
+                const h = meme ? total : q === 'matin' ? (aprem ? hMatin : total) : (matin ? hAprem : total)
+                return (
+                  <div key={q}>
+                    <button type="button" className={`lieu-demi${ouvert === q ? ' ouvert' : ''}`} onClick={() => setOuvert(ouvert === q ? null : q)} aria-expanded={ouvert === q}>
+                      <span className="quand"><b>{meme ? 'Journée' : q === 'matin' ? 'Matin' : 'Après-midi'}</b>{total > 0 && hFormat(h)}</span>
+                      {l
+                        ? <span className="choix"><i style={{ background: couleurLieu(l) }} />{nomLieu(l)}{estChantier(l) && villeLieu(l) && <small>{villeLieu(l)}</small>}</span>
+                        : <span className="choix vide">Choisir…</span>}
+                      <span className="chevron" aria-hidden>{ouvert === q ? '▴' : '▾'}</span>
+                    </button>
+                    {ouvert === q && <GrilleLieux valeur={l} chantiers={chantiers} duJour={duJour} choisir={(v) => choisir(q, v)} />}
+                  </div>
+                )
+              })}
+              {matin && aprem && total > 0 && (
+                <div className="frise-jour" aria-label="Répartition de la journée">
+                  {deuxLieux
+                    ? <><div style={{ flex: hMatin || 1, background: couleurLieu(matin) }}>{nomLieu(matin)} · {hFormat(hMatin)}</div><div style={{ flex: hAprem || 1, background: couleurLieu(aprem) }}>{nomLieu(aprem)} · {hFormat(hAprem)}</div></>
+                    : <div style={{ flex: 1, background: couleurLieu(matin) }}>{nomLieu(matin)} · {hFormat(total)}</div>}
+                </div>
+              )}
+              <p className="aide">Chantier absent de la liste (dépannage, petit SAV) : choisissez « Dépôt / atelier » et précisez le lieu dans le commentaire.</p>
             </>
           )}
 
@@ -228,6 +267,9 @@ export default function Heures() {
         {erreur && <p className="erreur">{erreur}</p>}
         {msg && <p className="ok">{msg}</p>}
         {!valide && <button className="btn pri large" disabled={occupe}>{occupe ? 'Enregistrement…' : 'Enregistrer la journée'}</button>}
+        {!valide && (travaille
+          ? <button type="button" className="lien" onClick={() => setMotif('absence')}>Pas travaillé aujourd'hui (absence, congé, école, intempéries annulées)</button>
+          : <button type="button" className="lien" onClick={() => setMotif('chantier')}>‹ J'ai travaillé aujourd'hui</button>)}
       </form>
 
       <nav className="onglets-fiche" role="tablist">
@@ -243,14 +285,14 @@ export default function Heures() {
             <button className="btn" onClick={() => { const n = ajouterJours(debut, 7); setJour(n > isoJour() ? isoJour() : n) }} disabled={ajouterJours(debut, 7) > isoJour()} aria-label="Semaine suivante">›</button>
           </div>
           <table className="tableau">
-            <thead><tr><th>Jour</th><th>Type</th><th className="d">Heures</th><th>Panier</th><th></th></tr></thead>
+            <thead><tr><th>Jour</th><th>Où</th><th className="d">Heures</th><th>Panier</th><th></th></tr></thead>
             <tbody>
               {jours.map((d) => {
                 const j = semaine.find((x) => x.jour === d)
                 return (
                   <tr key={d} className={d === jour ? 'actif' : ''} onClick={() => d <= isoJour() && setJour(d)}>
                     <td>{jourCourt(d)}</td>
-                    <td>{j ? MOTIFS[j.motif].split(' (')[0] : <span className="sous">—</span>}</td>
+                    <td>{j ? <MiniJour j={j} /> : <span className="sous">—</span>}</td>
                     <td className="d">{j ? hFormat(heuresJournee(j.depart, j.retour, j.pause_min)) : ''}</td>
                     <td>{j?.panier ? 'Oui' : ''}</td>
                     <td>{j?.valide ? '✓' : ''}</td>
@@ -278,22 +320,39 @@ function hDecimal(t: string) {
   return h + (m || 0) / 60
 }
 
-function ChoixChantier({ valeur, chantiers, nom, changer }: { valeur: string; chantiers: ChPointage[]; nom: (id: string) => string; changer: (v: string) => void }) {
-  const mes = chantiers.filter((c) => c.affecte)
-  const autres = chantiers.filter((c) => !c.affecte)
+/** Tuiles de couleur : chantiers prévus aujourd'hui, dépôt et intempéries, puis les autres chantiers ouverts. */
+function GrilleLieux({ valeur, chantiers, duJour, choisir }: { valeur: Lieu; chantiers: ChPointage[]; duJour: (id: string) => boolean; choisir: (l: Lieu) => void }) {
+  const prevus = chantiers.filter((c) => duJour(c.id))
+  const mes = chantiers.filter((c) => c.affecte && !duJour(c.id))
+  const autres = chantiers.filter((c) => !c.affecte && !duJour(c.id))
+  const tuile = (id: Lieu, nom: string, sous: string, badge?: string) => (
+    <button type="button" key={id} className={`lieu-tuile${valeur === id ? ' sel' : ''}`} style={{ background: couleurLieu(id) }} onClick={() => choisir(id)} aria-pressed={valeur === id}>
+      {badge && <em>{badge}</em>}
+      <b>{nom}</b>
+      {sous && <small>{sous}</small>}
+    </button>
+  )
+  const ch = (c: ChPointage) => tuile(c.id, c.client_nom, c.ville ?? '', duJour(c.id) ? 'Prévu aujourd\'hui' : undefined)
   return (
-    <select value={valeur} onChange={(e) => changer(e.target.value)}>
-      <option value="">Choisir le chantier…</option>
-      {mes.length > 0 && (
-        <optgroup label="Mes chantiers">
-          {mes.map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
-        </optgroup>
-      )}
-      <optgroup label={mes.length ? 'Autres chantiers' : 'Chantiers'}>
-        {autres.map((c) => <option key={c.id} value={c.id}>{c.client_nom}{c.ville ? ` (${c.ville})` : ''}</option>)}
-      </optgroup>
-      {valeur && !chantiers.some((c) => c.id === valeur) && <option value={valeur}>{nom(valeur)}</option>}
-    </select>
+    <div className="lieu-grille">
+      {prevus.length > 0 && <><p className="lieu-groupe">Mes chantiers du jour</p>{prevus.map(ch)}</>}
+      <p className="lieu-groupe">Dépôt et intempéries</p>
+      {tuile(DEPOT, 'Dépôt / atelier', 'Chargement, entretien')}
+      {tuile(INTEMPERIES, 'Intempéries', 'Journée commencée')}
+      {mes.length > 0 && <><p className="lieu-groupe">Mes autres chantiers</p>{mes.map(ch)}</>}
+      {autres.length > 0 && <><p className="lieu-groupe">{prevus.length || mes.length ? 'Autres chantiers ouverts' : 'Chantiers ouverts'}</p>{autres.map(ch)}</>}
+    </div>
+  )
+}
+
+/** Deux carrés matin / après-midi aux couleurs des lieux (ou le type de journée si non travaillé). */
+function MiniJour({ j }: { j: Journee }) {
+  if (!['chantier', 'depot', 'intemperies_commencee'].includes(j.motif)) return <>{MOTIFS[j.motif].split(' (')[0]}</>
+  const l = lieuxJournee(j)
+  return (
+    <span className="mini-jour" aria-label="Matin, après-midi">
+      <i style={{ background: couleurLieu(l.matin) }} /><i style={{ background: couleurLieu(l.aprem) }} />
+    </span>
   )
 }
 
