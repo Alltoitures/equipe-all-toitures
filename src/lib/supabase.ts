@@ -62,6 +62,8 @@ export interface Bon {
   client_nom?: string
   acces?: string
   objet?: string
+  /** Créé tout seul quand le devis passe signé dans le Pilotage. */
+  auto?: boolean
   materiaux?: { nom: string; qte?: string; source?: string; etat?: EtatMateriau | string }[]
   materiaux_note?: string
   materiel?: string[]

@@ -7,7 +7,7 @@ import { eur } from '../lib/finances'
 import { RappelNotifications } from '../components/Notifications'
 import { RappelCamions } from '../components/RappelCamions'
 
-type Ch = Chantier & { affectations?: { membres: { prenom: string; nom: string | null } | null }[] }
+type Ch = Chantier & { pilotage_id?: string | null; affectations?: { membre_id: string; membres: { prenom: string; nom: string | null } | null }[] }
 type Etat = 'cloturer' | 'cours' | 'venir' | 'planifier'
 const ETATS: Record<Etat, { lib: string; cls: string }> = {
   cloturer: { lib: 'À clôturer', cls: 'c-clo' },
@@ -49,11 +49,12 @@ export default function MesChantiers() {
   const [vue, setVue] = useState<'liste' | 'planning'>(() => {
     try { return (localStorage.getItem('at-vue-chantiers') as 'liste' | 'planning') || 'liste' } catch { return 'liste' }
   })
-  const [montants, setMontants] = useState<{ client: string | null; objet: string | null; num: string | null; total_ht: number; statut: string | null }[]>([])
+  const [montants, setMontants] = useState<{ client: string | null; objet: string | null; num: string | null; total_ht: number; statut: string | null; dossier_id: string | null }[]>([])
   const [erreur, setErreur] = useState('')
+  const [aPlanifier, setAPlanifier] = useState<Ch | null>(null)
 
   async function charger() {
-    const { data } = await supabase.from('chantiers').select('*, affectations(membres(prenom, nom))').order('date_debut', { ascending: true, nullsFirst: false })
+    const { data } = await supabase.from('chantiers').select('*, affectations(membre_id, membres(prenom, nom))').order('date_debut', { ascending: true, nullsFirst: false })
     setCharge(true)
     if (data) {
       const l = (data as Ch[]).filter((c) => !c.client_nom.startsWith('[TEST]'))
@@ -63,7 +64,7 @@ export default function MesChantiers() {
   }
   useEffect(() => { charger() }, [])
   useEffect(() => {
-    if (gerant) supabase.from('finances_pieces').select('client, objet, num, total_ht, statut').eq('genre', 'devis').then(({ data }) => setMontants((data ?? []) as never))
+    if (gerant) supabase.from('finances_pieces').select('client, objet, num, total_ht, statut, dossier_id').eq('genre', 'devis').then(({ data }) => setMontants((data ?? []) as never))
   }, [gerant])
   useEffect(() => { try { localStorage.setItem('at-vue-chantiers', vue) } catch { /* rien */ } }, [vue])
 
@@ -71,7 +72,8 @@ export default function MesChantiers() {
   const montant = (c: Ch): number | null => {
     if (!gerant || !montants.length) return null
     const signes = montants.filter((m) => /sign|accept/i.test(m.statut ?? ''))
-    const parNum = c.bon?.devis ? signes.filter((m) => m.num === c.bon!.devis) : []
+    const parDossier = c.pilotage_id ? signes.filter((m) => m.dossier_id === c.pilotage_id) : []
+    const parNum = parDossier.length ? parDossier : c.bon?.devis ? signes.filter((m) => m.num === c.bon!.devis) : []
     const p = patronyme(c.client_nom)
     const l = parNum.length ? parNum : p ? signes.filter((m) => `${m.client ?? ''} ${m.objet ?? ''}`.toUpperCase().includes(p)) : []
     return l.length ? l.reduce((t, m) => t + Number(m.total_ht), 0) : null
@@ -104,7 +106,7 @@ export default function MesChantiers() {
     return res
   }, [liste])
 
-  const carte = (c: Ch, e: Etat) => <Carte key={c.id} c={c} e={e} auj={auj} montant={montant(c)} staff={staff} terminer={() => terminer(c)} />
+  const carte = (c: Ch, e: Etat) => <Carte key={c.id} c={c} e={e} auj={auj} montant={montant(c)} staff={staff} terminer={() => terminer(c)} planifier={() => setAPlanifier(c)} />
 
   return (
     <div className="page">
@@ -135,7 +137,8 @@ export default function MesChantiers() {
         </>
       )}
 
-      {vue === 'planning' && actifs.length > 0 && <Planning items={avecEtat} auj={auj} />}
+      {vue === 'planning' && actifs.length > 0 && <Planning items={avecEtat} auj={auj} planifier={staff ? setAPlanifier : undefined} />}
+      {aPlanifier && <Planifier c={aPlanifier} fermer={() => setAPlanifier(null)} fait={() => { setAPlanifier(null); charger() }} />}
 
       {vue === 'liste' && (
         <>
@@ -192,7 +195,7 @@ function Bloc({ cls, titre, sous, pts, n, ouvert, children }: { cls: string; tit
   )
 }
 
-function Carte({ c, e, auj, montant, staff, terminer }: { c: Ch; e: Etat; auj: string; montant: number | null; staff: boolean; terminer: () => void }) {
+function Carte({ c, e, auj, montant, staff, terminer, planifier }: { c: Ch; e: Etat; auj: string; montant: number | null; staff: boolean; terminer: () => void; planifier: () => void }) {
   const fin = c.date_fin ?? c.date_debut
   // Durée prévue (jours de travail) ; sinon jours ouvrés entre les deux dates.
   const duree = c.duree_jours ?? (c.date_debut && c.date_fin ? joursOuvres(c.date_debut, c.date_fin) : null)
@@ -221,15 +224,24 @@ function Carte({ c, e, auj, montant, staff, terminer }: { c: Ch; e: Etat; auj: s
       {staff && e === 'cloturer' && (
         <div className="act">
           <button onClick={terminer}>✓ Marquer terminé</button>
-          <Link to={`/gestion/chantiers/${c.id}`}>Prolonger</Link>
+          <button onClick={planifier}>Prolonger</button>
         </div>
+      )}
+      {staff && e === 'planifier' && (
+        <div className="act">
+          <button className="pri" onClick={planifier}>📅 Planifier</button>
+          {c.bon?.auto && <span className="auto">Créé depuis le devis {c.bon.devis}</span>}
+        </div>
+      )}
+      {staff && (e === 'venir' || e === 'cours') && !equipe.length && (
+        <div className="act"><button onClick={planifier}>👷 Affecter l'équipe</button></div>
       )}
     </div>
   )
 }
 
 /** Frise sur 3 mois : une barre par chantier, la ligne d'aujourd'hui, et la charge de l'équipe par semaine. */
-function Planning({ items, auj }: { items: { c: Ch; e: Etat }[]; auj: string }) {
+function Planning({ items, auj, planifier }: { items: { c: Ch; e: Etat }[]; auj: string; planifier?: (c: Ch) => void }) {
   const debut = `${auj.slice(0, 7)}-01`
   const d0 = new Date(debut + 'T12:00')
   const finP = new Date(d0.getFullYear(), d0.getMonth() + 3, 0)
@@ -278,7 +290,12 @@ function Planning({ items, auj }: { items: { c: Ch; e: Etat }[]; auj: string }) 
             </Link>
           )
         })}
-        {sansDate.map(({ c }) => (
+        {sansDate.map(({ c }) => planifier ? (
+          <button key={c.id} className="pl-l" onClick={() => planifier(c)}>
+            <span className="n">{patronyme(c.client_nom) ?? nomCourt(c.client_nom)}<small>à planifier</small></span>
+            <span className="pl-t pl-sans">📅 Planifier ›</span>
+          </button>
+        ) : (
           <Link key={c.id} to={`/chantier/${c.id}`} className="pl-l">
             <span className="n">{patronyme(c.client_nom) ?? nomCourt(c.client_nom)}<small>à planifier</small></span>
             <span className="pl-t pl-sans">⚪ sans date</span>
@@ -305,5 +322,78 @@ function Planning({ items, auj }: { items: { c: Ch; e: Etat }[]; auj: string }) 
         </section>
       )}
     </>
+  )
+}
+
+/** Ajoute n jours ouvrés (lundi → vendredi) : le 1er jour compte. */
+function finOuvree(debut: string, n: number) {
+  let d = debut, reste = Math.max(1, Math.ceil(n)) - 1
+  while (reste > 0) { d = ajouterJours(d, 1); const j = new Date(d + 'T12:00').getDay(); if (j !== 0 && j !== 6) reste-- }
+  return d
+}
+
+/** Planifier sans quitter la liste : dates + équipe. Les gars ajoutés reçoivent la notif habituelle. */
+function Planifier({ c, fermer, fait }: { c: Ch; fermer: () => void; fait: () => void }) {
+  const [membres, setMembres] = useState<{ id: string; prenom: string; nom: string | null; role: string }[]>([])
+  const avant = useMemo(() => new Set((c.affectations ?? []).map((a) => a.membre_id)), [c])
+  const [equipe, setEquipe] = useState<Set<string>>(() => new Set(avant))
+  const [debut, setDebut] = useState(c.date_debut ?? '')
+  const [duree, setDuree] = useState(c.duree_jours ? String(c.duree_jours).replace('.', ',') : '')
+  const [fin, setFin] = useState(c.date_fin ?? '')
+  const [enCours, setEnCours] = useState(false)
+  const [err, setErr] = useState('')
+  useEffect(() => {
+    supabase.from('membres').select('id, prenom, nom, role').eq('actif', true).in('role', ['chef', 'ouvrier', 'apprenti']).order('prenom').then(({ data }) => setMembres((data ?? []) as never))
+  }, [])
+  const d = Number(duree.replace(',', '.')) || 0
+  // La durée calcule la fin ; on peut aussi taper la fin directement.
+  useEffect(() => { if (debut && d > 0) setFin(finOuvree(debut, d)) }, [debut, duree])
+
+  async function valider() {
+    setEnCours(true); setErr('')
+    try {
+      const r = await supabase.from('chantiers').update({ date_debut: debut || null, date_fin: fin || debut || null, duree_jours: d || null }).eq('id', c.id)
+      if (r.error) throw r.error
+      const retires = [...avant].filter((m) => !equipe.has(m))
+      const ajoutes = [...equipe].filter((m) => !avant.has(m))
+      if (retires.length) { const x = await supabase.from('affectations').delete().eq('chantier_id', c.id).in('membre_id', retires); if (x.error) throw x.error }
+      if (ajoutes.length) { const x = await supabase.from('affectations').insert(ajoutes.map((m) => ({ chantier_id: c.id, membre_id: m }))); if (x.error) throw x.error }
+      fait()
+    } catch (e) { setErr(erreurLisible(e as never)); setEnCours(false) }
+  }
+
+  const lundiProchain = ajouterJours(lundi(isoJour()), 7)
+  return (
+    <div className="fond-modal" onClick={fermer}>
+      <div className="modal planif" onClick={(e) => e.stopPropagation()}>
+        <h2>📅 {nomCourt(c.client_nom)}</h2>
+        <p className="sous">{[c.reference, c.bon?.devis, c.bon?.objet].filter(Boolean).join(' · ')}</p>
+        <div className="pf-raccourcis">
+          <button type="button" className={debut === lundiProchain ? 'on' : ''} onClick={() => setDebut(lundiProchain)}>Lundi prochain</button>
+          <button type="button" className={debut === ajouterJours(lundiProchain, 7) ? 'on' : ''} onClick={() => setDebut(ajouterJours(lundiProchain, 7))}>Dans 2 semaines</button>
+        </div>
+        <div className="pf-dates">
+          <label>Début<input type="date" value={debut} onChange={(e) => setDebut(e.target.value)} /></label>
+          <label>Durée (jours)<input inputMode="decimal" value={duree} placeholder="ex. 3" onChange={(e) => setDuree(e.target.value.replace(/[^\d,.]/g, ''))} /></label>
+          <label>Fin<input type="date" value={fin} min={debut || undefined} onChange={(e) => setFin(e.target.value)} /></label>
+        </div>
+        {debut && fin && <p className="aide">{jourCourt(debut)} → {jourCourt(fin)} · {joursOuvres(debut, fin)} jour{joursOuvres(debut, fin) > 1 ? 's' : ''} ouvré{joursOuvres(debut, fin) > 1 ? 's' : ''} (week-ends exclus)</p>}
+        <h3>Équipe</h3>
+        <div className="pf-equipe">
+          {membres.map((m) => (
+            <button type="button" key={m.id} className={equipe.has(m.id) ? 'on' : ''} onClick={() => { const s = new Set(equipe); if (s.has(m.id)) s.delete(m.id); else s.add(m.id); setEquipe(s) }}>
+              <b>{m.prenom[0]}{m.nom?.[0] ?? ''}</b>{m.prenom}
+            </button>
+          ))}
+        </div>
+        {[...equipe].some((m) => !avant.has(m)) && <p className="aide">Les gars ajoutés reçoivent une notification.</p>}
+        {err && <p className="erreur">{err}</p>}
+        <div className="boutons">
+          <button className="btn" onClick={fermer}>Annuler</button>
+          <button className="btn pri" disabled={enCours || !debut} onClick={valider}>{enCours ? '…' : 'Planifier'}</button>
+        </div>
+        <Link className="lien-fiche" to={`/gestion/chantiers/${c.id}`}>Fiche complète (bordereau, accès, consignes) ›</Link>
+      </div>
+    </div>
   )
 }

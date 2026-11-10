@@ -1126,3 +1126,23 @@ label.fait .chrono { text-decoration: none; }
 .chg i.zero { background: #f5c9c9; opacity: 1; }
 .leg-ch { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; color: var(--muted); }
 .leg-ch i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+/* ===== Planifier depuis la liste ===== */
+.cc.c-pla .act button, .cc.c-ven .act button, .cc.c-cours .act button { background: #eef1f4; color: #33424f; }
+.cc .act button.pri { background: var(--accent-ink, #00729a); color: #fff; }
+.cc .act .auto { align-self: center; font-size: 11.5px; color: #6b7a88; }
+button.pl-l { width: 100%; border: 0; background: none; font: inherit; text-align: left; padding: 0; cursor: pointer; color: inherit; }
+.modal.planif h2 { margin-bottom: 2px; }
+.modal.planif h3 { font-size: 14px; margin: 14px 0 8px; }
+.pf-raccourcis { display: flex; gap: 6px; margin: 12px 0 8px; }
+.pf-raccourcis button, .pf-equipe button { border: 1.5px solid #dde3e9; background: #fff; border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 13px; font-weight: 700; color: #33424f; cursor: pointer; }
+.pf-raccourcis button.on, .pf-equipe button.on { border-color: var(--accent-ink, #00729a); background: #e6f4fa; color: #00577a; }
+.pf-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pf-dates label:first-child { grid-column: 1 / -1; }
+.pf-dates label { font-size: 12px; font-weight: 700; color: #6b7a88; }
+.pf-dates input { margin-top: 4px; width: 100%; min-width: 0; }
+.pf-equipe { display: flex; flex-wrap: wrap; gap: 6px; }
+.pf-equipe button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 5px; }
+.pf-equipe b { width: 24px; height: 24px; border-radius: 50%; background: #eef1f4; display: grid; place-items: center; font-size: 10.5px; }
+.pf-equipe button.on b { background: var(--accent-ink, #00729a); color: #fff; }
+.lien-fiche { display: block; text-align: center; margin-top: 12px; font-size: 13px; font-weight: 700; color: #00729a; text-decoration: none; }
