@@ -8,6 +8,9 @@ declare
   signe numeric; facture numeric; prochain int; ref text;
 begin
   if new.genre <> 'devis' or new.statut not ilike 'sign%' or new.dossier_id is null then return new; end if;
+  -- Seulement au moment où le devis PASSE signé (pas les statuts déjà signés qui se resynchronisent).
+  if tg_op = 'UPDATE' and old.statut ilike 'sign%' then return new; end if;
+  if tg_op = 'INSERT' and new.date < current_date - 14 then return new; end if;
   if exists (select 1 from chantiers where pilotage_id = new.dossier_id) then return new; end if;
   select coalesce(sum(total_ht),0) into signe from finances_pieces where genre='devis' and statut ilike 'sign%' and dossier_id = new.dossier_id;
   select coalesce(sum(total_ht),0) into facture from finances_pieces where genre='facture' and dossier_id = new.dossier_id;
