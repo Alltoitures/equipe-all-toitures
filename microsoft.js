@@ -7,7 +7,7 @@
   var SCOPES = ["User.Read", "Mail.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"];
   var G = "https://graph.microsoft.com/v1.0";
   var configured = MS_CLIENT.indexOf("__") !== 0;
-  var pca = null, ready = null;
+  var pca = null, ready = null, stale = false;
 
   function err(code, message) { var e = new Error(message); e.code = code; return e; }
 
@@ -32,10 +32,11 @@
     if (!pca) throw err("unavailable", "Microsoft 365 n'est pas encore relié à l'application.");
     var acc = account();
     if (acc) {
-      try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account: acc })).accessToken; } catch (e) { if (!interactive) console.warn(e); }
+      try { var tk = (await pca.acquireTokenSilent({ scopes: SCOPES, account: acc })).accessToken; if (stale) { stale = false; paint(); } return tk; } catch (e) { if (!interactive) console.warn(e); }
     }
-    try { var r = await pca.acquireTokenPopup({ scopes: SCOPES, account: acc || undefined, prompt: acc ? undefined : "select_account" }); paint(); return r.accessToken; }
-    catch (e) { paint(); throw err("consent", "Connectez Microsoft 365 (bouton en bas de l'écran) pour utiliser Outlook et OneDrive."); }
+    if (interactive) { await pca.acquireTokenRedirect({ scopes: SCOPES, account: acc || undefined, prompt: acc ? undefined : "select_account", redirectStartPage: location.href.split("#")[0] }); return new Promise(function () {}); }
+    stale = true; paint();
+    throw err("consent", "Connectez Microsoft 365 (bouton en bas à gauche) pour utiliser Outlook et OneDrive.");
   }
 
   async function g(path, opt) {
@@ -114,15 +115,17 @@
     if (!configured) return;
     if (!pill) {
       pill = document.createElement("button"); pill.type = "button"; pill.className = "sx-ms";
-      pill.onclick = async function () { if (account()) return; try { await token(true); } catch (e) { alert(e.message); } };
+      pill.onclick = async function () { if (account() && !stale) return; pill.textContent = "Ouverture de la connexion Microsoft…"; try { await token(true); } catch (e) { console.error(e); pill.textContent = "Connexion impossible : " + (e.message || e); } };
       var st = document.createElement("style");
       st.textContent = ".sx-ms{position:fixed;left:12px;bottom:22px;z-index:90;background:none;border:0;padding:2px 8px;font-size:11px;cursor:pointer;color:#8fa3b0}.sx-ms.off{color:#f5b041;font-weight:700}@media(max-width:900px){.sx-ms{left:auto;right:8px;bottom:30px;background:rgba(255,255,255,.9);border-radius:999px;color:#4b5b66}}";
       document.head.appendChild(st); document.body.appendChild(pill);
     }
     var a = account();
-    pill.className = "sx-ms" + (a ? "" : " off");
-    pill.textContent = a ? "Microsoft 365 connecté" : "Connecter Microsoft 365 (Outlook, OneDrive)";
+    pill.className = "sx-ms" + (a && !stale ? "" : " off");
+    pill.textContent = a ? (stale ? "Reconnecter Microsoft 365" : "Microsoft 365 connecté") : "Connecter Microsoft 365 (Outlook, OneDrive)";
     pill.title = a ? a.username : "Nécessaire pour les brouillons Outlook et le rangement dans OneDrive";
   }
   window.__msPaint = function () { init().then(paint); };
+  /* Retour de la page de connexion Microsoft : traité dès le chargement */
+  init().catch(function (e) { console.error(e); });
 })();
