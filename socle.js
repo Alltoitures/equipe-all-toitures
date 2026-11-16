@@ -97,11 +97,33 @@
     doc: function (path) { var p = path.split("/"); return docRef(p[0], p.slice(1).join("/")); }
   };
 
+  /* Connecteurs : Microsoft 365 (microsoft.js) et base de l'application équipes (pont sécurisé) */
+  var EQ_KEY = "sb_publishable_pbvGqlBRgxJj5Or6ePehkg_t-igOJZ7", pontEq = null;
+  async function equipesSql(query) {
+    if (!pontEq) {
+      var r = await sb.from("ponts").select("config").eq("entreprise_id", ENT).eq("nom", "equipes").limit(1);
+      if (r.error || !r.data.length) { var e0 = new Error("Application équipes non reliée."); e0.code = "unavailable"; throw e0; }
+      pontEq = r.data[0].config;
+    }
+    var res = await fetch(pontEq.url + "/rest/v1/rpc/pilotage_requete", { method: "POST", headers: { apikey: EQ_KEY, Authorization: "Bearer " + EQ_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ jeton: pontEq.jeton, requete: query }) });
+    var j = null; try { j = await res.json(); } catch (_) {}
+    if (!res.ok) { var e = new Error((j && j.message) || "Application équipes indisponible"); e.code = "equipes_" + res.status; throw e; }
+    var txt = JSON.stringify(j || []);
+    return { payload: { result: txt }, content: [{ type: "text", text: txt }] };
+  }
+  var mcp = {
+    callTool: async function (server, tool, args) {
+      if (server === "Supabase" && tool === "execute_sql" && args && args.project_id === "mvuwaujybchrwhocxtlk") return equipesSql(args.query);
+      if (server === "Microsoft 365" && window.__ms && window.__ms.configured) return window.__ms.callTool(server, tool, args);
+      var e = new Error("Fonction pas encore disponible dans l'application : " + server + " / " + tool); e.code = "unavailable"; throw e;
+    }
+  };
+
   /* Fonctions pas encore branchées hors de Claude : la page affiche alors son message « non accessible » */
   window.claude = {
     use: async function (cap) {
       if (cap === "db") { await ready; listen(); return db; }
-      if (cap === "mcp") { await ready; return window.__ms && window.__ms.configured ? window.__ms : null; }
+      if (cap === "mcp") { await ready; return mcp; }
       return null;
     }
   };
