@@ -101,6 +101,7 @@
   window.claude = {
     use: async function (cap) {
       if (cap === "db") { await ready; listen(); return db; }
+      if (cap === "mcp") { await ready; return window.__ms && window.__ms.configured ? window.__ms : null; }
       return null;
     }
   };
@@ -208,10 +209,14 @@
     out.textContent = "Déconnexion · " + USER.email;
     out.onclick = async function () { await sb.auth.signOut(); location.reload(); };
     document.body.appendChild(out);
+    if (window.__msPaint) window.__msPaint();
     readyRes();
   }
   sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") newPassword(); });
-  function go() { start().catch(function (e) { console.error(e); loginScreen("Connexion au serveur impossible. Vérifiez votre réseau puis réessayez."); }); }
+  /* Fenêtre de connexion Microsoft : ne pas lancer l'application dedans */
+  var MS_POPUP = !!window.opener && /[#&?](code|error)=/.test(location.hash + location.search);
+  function go() {
+    if (MS_POPUP) { document.documentElement.innerHTML = "<body style='font-family:sans-serif;padding:24px'>Connexion Microsoft en cours…</body>"; return; } start().catch(function (e) { console.error(e); loginScreen("Connexion au serveur impossible. Vérifiez votre réseau puis réessayez."); }); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
 
   /* ---------------- Installation sur l'ordinateur / le téléphone ---------------- */
