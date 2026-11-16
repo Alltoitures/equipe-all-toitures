@@ -117,8 +117,8 @@
       pill = document.createElement("button"); pill.type = "button"; pill.className = "sx-ms";
       pill.onclick = async function () { if (account() && !stale) return; pill.textContent = "Ouverture de la connexion Microsoft…"; try { await token(true); } catch (e) { console.error(e); pill.textContent = "Connexion impossible : " + (e.message || e); } };
       var st = document.createElement("style");
-      st.textContent = ".sx-ms{position:fixed;left:12px;bottom:22px;z-index:90;background:none;border:0;padding:2px 8px;font-size:11px;cursor:pointer;color:#8fa3b0}.sx-ms.off{color:#f5b041;font-weight:700}@media(max-width:900px){.sx-ms{left:auto;right:8px;bottom:30px;background:rgba(255,255,255,.9);border-radius:999px;color:#4b5b66}}";
-      document.head.appendChild(st); document.body.appendChild(pill);
+      st.textContent = ".sx-ms{display:block;width:100%;text-align:left;margin-top:6px;background:none;border:0;padding:4px 10px;font-size:11px;cursor:pointer;color:#7E95A6;white-space:normal}.sx-ms:hover{color:#fff}.sx-ms.off{color:#f5b041;font-weight:700}";
+      document.head.appendChild(st); var foot = document.querySelector(".side-foot"); (foot || document.body).appendChild(pill);
     }
     var a = account();
     pill.className = "sx-ms" + (a && !stale ? "" : " off");

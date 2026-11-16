@@ -135,7 +135,7 @@
     ".sx-bx h1{font-size:22px;margin:0}.sx-bx p{margin:0;font-size:14px;color:#4b5b66;line-height:1.5}.sx-bx label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700}" +
     ".sx-bx input{padding:11px 12px;border:1px solid #c9d3da;border-radius:9px;font-size:15px}.sx-bx button{padding:12px;border:0;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;background:#0c6ea8;color:#fff}" +
     ".sx-bx button.sx-l{background:none;color:#0c6ea8;padding:4px;font-weight:600;font-size:13px}.sx-err{color:#b42318;font-size:13px;min-height:1em}.sx-logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em}" +
-    ".sx-out{position:fixed;left:12px;bottom:4px;z-index:90;background:none;border:0;padding:2px 8px;font-size:11px;color:#8fa3b0;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sx-out:hover{color:#fff}@media(max-width:900px){.sx-out{left:auto;right:8px;bottom:6px;color:#4b5b66;background:rgba(255,255,255,.9);border-radius:999px}}" +
+    ".sx-out{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 10px;font-size:11px;color:#7E95A6;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sx-out:hover{color:#fff}" +
     ".sx-imp{position:fixed;inset:0;z-index:400;background:rgba(11,25,33,.55);display:grid;place-items:center;padding:16px}";
   document.head.appendChild(css);
 
@@ -230,7 +230,7 @@
     var out = document.createElement("button"); out.className = "sx-out"; out.type = "button"; out.title = "Se déconnecter";
     out.textContent = "Déconnexion · " + USER.email;
     out.onclick = async function () { await sb.auth.signOut(); location.reload(); };
-    document.body.appendChild(out);
+    var foot = document.querySelector(".side-foot"); (foot || document.body).appendChild(out);
     if (window.__msPaint) window.__msPaint();
     readyRes();
   }
