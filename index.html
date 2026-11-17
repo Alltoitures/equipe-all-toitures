@@ -550,6 +550,80 @@
 .chx-ob{font-weight:600;color:var(--ink-2);font-size:19px}
 
 /*@@/chx*/
+/*@@et3*/
+.et3-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:16px;position:sticky;top:8px;z-index:30;box-shadow:0 4px 18px rgba(15,36,51,.06)}
+.et3-bk{all:unset;cursor:pointer;font-size:20px;padding:4px 8px;border-radius:8px}.et3-bk:hover{background:rgba(12,110,168,.08)}
+.et3-t{flex:1;min-width:200px}.et3-t b{display:block;font-size:15px}.et3-t small{font-size:12.5px;color:var(--muted)}
+.et3-st{display:flex;gap:4px;background:rgba(15,36,51,.05);border-radius:10px;padding:4px}
+.et3-st button{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);padding:6px 12px;border-radius:7px}.et3-st button.ok{color:#1E7B34}.et3-st button.on{background:#0F2433;color:#fff}
+.et3-a{display:flex;gap:8px;align-items:center}
+.et.et3{grid-template-columns:minmax(0,1.9fr) minmax(300px,1fr)!important}
+.et3-bat{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:14px;margin-bottom:14px}
+.et.et3-bat{grid-template-columns:1fr!important}.et.et3-bat>#et-out{display:none}
+.et3-map{position:relative;height:440px;border-radius:14px;overflow:hidden;background:#6E7F5B}
+.et3-srch{position:absolute;z-index:500;left:12px;right:12px;top:12px;display:flex;gap:8px}.et3-srch input{flex:1;border:0;border-radius:9px;padding:10px 12px;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.et3-w{width:100%;margin-top:10px;text-align:center;justify-content:center}
+.et3-toit{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.et3-cv{position:relative;border-radius:14px;overflow:hidden;background:#6E7F5B}.et3-cv.sm{background:transparent}
+.et3-svg{display:block;width:100%;height:auto}.et3-svg [data-et3pan]{cursor:pointer}
+.et3-vw{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;background:#fff;border-radius:10px;padding:3px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.et3-vw button{all:unset;cursor:pointer;font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;color:#14232d}.et3-vw button[aria-pressed=true]{background:#0F2433;color:#fff}
+.et3-pt{width:100%;border-collapse:collapse;font-size:14px}.et3-pt th{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-align:left;padding:6px 4px;text-transform:uppercase}
+.et3-pt td{padding:6px 4px;border-top:1px solid var(--line)}.et3-pt .r{text-align:right}.et3-pt tfoot td{font-weight:800;color:#0c6ea8}
+.et3-pt i,.et3-sel h3 i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;color:#fff;font-style:normal;font-weight:800;font-size:12px;margin-right:3px}
+.et3-pt input{border:1px solid transparent;background:transparent;font-size:14px;padding:3px 6px;border-radius:6px;color:var(--ink);width:100%}.et3-pt input:hover,.et3-pt input:focus{border-color:var(--line);background:var(--surface)}
+.et3-big{font-size:30px;font-weight:800;color:#0c6ea8;margin:2px 0}
+.et3-ln{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:8px}
+.et3-app{color:#1E7B34;font-weight:700;font-size:12px}
+.et3-lb{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:14px 0 6px}
+.et3-trav{margin-bottom:14px}.et3-tg{display:grid;grid-template-columns:240px minmax(0,1fr) 270px;gap:14px;align-items:start}
+.et.et3-trav{grid-template-columns:1fr!important}.et.et3-trav>#et-out{position:static}
+.et3-ty button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:30px 1fr;gap:0 8px;width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-top:8px}
+.et3-ty button span{grid-row:1/3;display:grid;place-items:center;background:rgba(15,36,51,.05);border-radius:8px;font-size:15px}.et3-ty button b{font-size:13.5px}.et3-ty button small{font-size:12px;color:var(--muted)}
+.et3-ty button[aria-pressed=true]{border:2px solid #0c6ea8;background:rgba(12,110,168,.05)}.et3-ty button[aria-pressed=true] span{background:#0c6ea8;color:#fff}
+.et3-hint{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:#0F2433;color:#fff;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:999px;margin:0;white-space:nowrap}
+.et3-ch{display:flex;flex-wrap:wrap;gap:6px}.et3-ch button{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.et3-ch button[aria-pressed=true]{background:#0c6ea8;color:#fff;border-color:#0c6ea8}
+.et3-bar{position:sticky;bottom:10px;z-index:25;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:14px;box-shadow:0 8px 24px rgba(15,36,51,.12)}
+.et3-bar>span:not(.sp):not(.et3-est){display:flex;flex-direction:column;background:rgba(15,36,51,.04);border-radius:10px;padding:6px 10px;position:relative;padding-left:22px}
+.et3-bar>span i{position:absolute;left:8px;top:11px;width:8px;height:8px;border-radius:2px}.et3-bar>span b{font-size:13px}.et3-bar>span small{font-size:11.5px;color:var(--muted)}
+.et3-bar .sp{flex:1}.et3-est{text-align:right}.et3-est small{display:block;font-size:11.5px;color:var(--muted)}.et3-est b{font-size:20px}
+.et3-sub{font-size:14px;font-weight:600;color:var(--muted);margin-left:8px}
+.et3-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.et3-card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.et3-card:hover{border-color:#9cc7e2;box-shadow:0 6px 18px rgba(15,36,51,.08)}
+.et3-th{background:#6E7F5B}.et3-cb{padding:12px 14px;display:flex;flex-direction:column;gap:3px}.et3-cb b{font-size:14.5px}.et3-cb small{font-size:12.5px;color:var(--muted)}
+.et3-cf{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;color:var(--ink-2)}.et3-cf em{font-style:normal;font-size:11.5px}
+.et3-dvb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#E6F3FB;border:1px solid #b9dcf0;border-radius:12px;padding:10px 14px;font-size:13.5px;color:#0c4a70}.et3-dvb>span{flex:1;min-width:240px}
+.et3-dvth{background:#6E7F5B;border-radius:10px;overflow:hidden;margin-bottom:10px}
+#dv-form.dvx .dv-row input.et3-lk{background-image:linear-gradient(transparent,transparent)!important;box-shadow:inset 0 -2px 0 #29B6F6}
+[data-theme="dark"] .et3-dvb{background:rgba(12,110,168,.15);border-color:rgba(12,110,168,.35);color:#9fd2f1}
+@media (max-width:1100px){.et3-tg,.et3-bat{grid-template-columns:1fr}}
+.et3-cv.sm .et3-svg{margin-bottom:30px}
+.et3 .dvx-sec h3,.et3-trav .dvx-sec h3{text-transform:none!important;letter-spacing:0!important;color:var(--ink)!important;font-size:16px!important}.et3-3d{max-height:520px}
+
+/*@@/et3*/
+/*@@ao3*/
+.ao3-md{margin-right:6px}
+.ao3-kb{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:14px;align-items:start;overflow-x:auto}
+.ao3-c{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ao3-c:hover{border-color:#9cc7e2}
+.ao3-ci{cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.ao3-ci>b{font-size:14.5px}.ao3-ci>small{font-size:12.5px;color:var(--muted)}
+.ao3-m{display:flex;justify-content:space-between;width:100%;font-size:13px}.ao3-m small{color:var(--muted)}
+.ao3-ci em{font-style:normal;font-size:11.5px}
+.ao3-gb{display:flex;gap:6px}
+.ao3-cal{padding:16px 18px;margin-bottom:16px}.ao3-cal h3{margin:0}
+.ao3-g{display:grid;grid-template-columns:150px repeat(var(--n),minmax(0,1fr));gap:8px 0;align-items:center;margin-top:10px}
+.ao3-d{text-align:center;font-size:11.5px;color:var(--muted)}.ao3-d.on{color:#0c6ea8;font-weight:800}
+.ao3-gn{grid-column:1;font-weight:700;font-size:13.5px;cursor:pointer;padding:4px 0}
+.ao3-gb2{border-radius:6px;color:#fff;font-size:11.5px;font-weight:700;padding:5px 8px;white-space:nowrap;overflow:hidden;cursor:pointer}.ao3-gb2.mu{background:transparent;color:var(--muted);font-weight:600}
+.ao3-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ao3-ch{display:flex;align-items:flex-end;gap:4px;height:70px;margin:8px 0}.ao3-ch i{flex:1;border-radius:3px 3px 0 0;min-height:4px}
+.ao3-ko{color:#C62828!important}.ao3-cp{font-size:13.5px;color:var(--ink-2);margin:6px 0}
+@media (max-width:900px){.ao3-2{grid-template-columns:1fr}}
+
+/*@@/ao3*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -8151,6 +8225,230 @@ document.addEventListener("drop",async e=>{const c=e.target.closest&&e.target.cl
   await affSave(id,o=>{o.chantier=o.chantier||{};o.chantier.dateDebut=day;if(eq)o.chantier.equipe=eq;if(o.chantier.statut==="À planifier")o.chantier.statut="Planifié"},`Démarrage fixé au ${fd(day)}${eq?" · équipe "+eq:""}`,true);render()},true);
 
 /*@@/chx*/
+/*@@et3*/
+const et3R=()=>{render.force=true;render();render.force=false};
+/* ===== Études v2 — maquettes 15 à 31 (bâtiment, toiture, visite, travaux, tuile, 3D, liste, PDF, devis préparé) ===== */
+const ET3_C=["#29B6F6","#F2A33A","#7E57C2","#1f9e89","#E53935","#4CAF50","#0c6ea8","#ef6c00"];
+const ET3_L=i=>String.fromCharCode(65+i);
+function et3Geo(e){let G=null,R=null,M=null;try{R=etCalc(e);G=R.G;M=etMes(e)}catch(_){}return{G,R,M}}
+function et3Pans(e){const{G}=et3Geo(e);if(!G)return[];const deg=G.p?Math.round(Math.atan(G.p)*180/Math.PI):null;const OR=e.forme==="2p"?["Sud","Nord"]:e.forme==="4p"?["Sud","Nord","Ouest","Est"]:[];
+  return G.pans.map((q,i)=>({k:ET3_L(i),nm:q.nm,or:(e.orient&&e.orient[i])||OR[i]||q.nm,deg,s:q.s!=null?q.s:(q.fo==="triangle"?q.b*q.h/2:q.fo==="trapèze"?(q.b+(q.top||0))*q.h/2:q.b*q.h),q}))}
+/* plan vu de dessus, en SVG */
+function et3Plan(e,o){o=o||{};const{G}=et3Geo(e),P=et3Pans(e),sel=new Set(e.pansSel||[]);if(!G||!P.length)return`<svg viewBox="0 0 400 240" class="et3-svg"><text x="200" y="125" text-anchor="middle" fill="#8a99a4" font-size="14">Saisissez les cotes de la toiture</text></svg>`;
+  const W=o.w||560,H=o.h||330,pad=o.cotes===false?14:64,lab=o.cotes!==false;let shapes=[],cotes=[];
+  const main=P.slice(0,e.forme==="4p"?4:e.forme==="2p"?2:e.forme==="pp"?P.length:1),ext=P.slice(main.length);
+  let Lo=num(G.Lo)||main[0].q.b,Wo=num(G.Wo)||main[0].q.h*(e.forme==="2p"?2:1);
+  if(e.forme==="pp"){Lo=Math.max(...main.map(p=>p.q.b));Wo=main.reduce((a,p)=>a+p.q.h,0)}
+  const extW=ext.reduce((a,p)=>Math.max(a,p.q.b>p.q.h?p.q.h:p.q.b),0),totW=Lo+(ext.length?extW+0.6:0),totH=Math.max(Wo,ext.reduce((a,p)=>a+(p.q.b>p.q.h?p.q.b:p.q.h),0));
+  const sc=Math.min((W-2*pad)/totW,(H-2*pad)/totH),x0=pad+(W-2*pad-totW*sc)/2,y0=pad+(H-2*pad-totH*sc)/2,X=v=>x0+v*sc,Y=v=>y0+v*sc;
+  const poly=(pts,i,p)=>{const on=!sel.size||sel.has(p.k);shapes.push(`<polygon points="${pts.map(([a,b])=>X(a)+","+Y(b)).join(" ")}" fill="${on?"#B5603E":"#9aa3a8"}" fill-opacity="${on?.75:.45}" stroke="#fff" stroke-width="1.5" data-et3pan="${p.k}"/>`);
+    const cx=pts.reduce((a,q)=>a+q[0],0)/pts.length,cy=pts.reduce((a,q)=>a+q[1],0)/pts.length;shapes.push(`<g data-et3pan="${p.k}" style="cursor:pointer"><circle cx="${X(cx)}" cy="${Y(cy)}" r="${o.cotes===false?9:15}" fill="${ET3_C[i%8]}" stroke="#fff" stroke-width="2"/><text x="${X(cx)}" y="${Y(cy)+(o.cotes===false?3.5:5)}" text-anchor="middle" fill="#fff" font-weight="800" font-size="${o.cotes===false?10:14}">${p.k}</text></g>`)};
+  const cote=(a,b,txt,dx,dy,col)=>{if(!lab)return;const mx=(X(a[0])+X(b[0]))/2+(dx||0),my=(Y(a[1])+Y(b[1]))/2+(dy||0);const tw=Math.max(56,txt.length*7.6+16);cotes.push(`<g><rect x="${mx-tw/2}" y="${my-12}" width="${tw}" height="24" rx="12" fill="#fff" stroke="${col||"#2E7D32"}" stroke-width="2"/><text x="${mx}" y="${my+5}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#0F2433">${txt}</text></g>`)};
+  const line=(a,b,c,dash)=>shapes.push(`<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="${c}" stroke-width="3"${dash?' stroke-dasharray="6 4"':""}/>`);
+  const f=m=>nf(m,2).replace(/,00$/,"")+" m";
+  if(e.forme==="2p"){const h=Wo/2;poly([[0,h],[Lo,h],[Lo,Wo],[0,Wo]],0,main[0]);poly([[0,0],[Lo,0],[Lo,h],[0,h]],1,main[1]);line([0,h],[Lo,h],"#E53935");line([0,Wo],[Lo,Wo],"#2E7D32");line([0,0],[Lo,0],"#2E7D32");line([0,0],[0,Wo],"#F2A33A");line([Lo,0],[Lo,Wo],"#F2A33A");
+    cote([0,Wo],[Lo,Wo],f(Lo),0,22);cote([0,h],[Lo,h],"Faîtage "+f(G.faitage||Lo).replace(" m",""),0,-16,"#E53935");cote([0,0],[0,Wo],f(Wo),-46,0,"#F2A33A")}
+  else if(e.forme==="4p"){const fa=num(G.fa),a=(Lo-fa)/2,h=Wo/2;poly([[0,Wo],[Lo,Wo],[a+fa,h],[a,h]],0,main[0]);poly([[0,0],[Lo,0],[a+fa,h],[a,h]],1,main[1]);poly([[0,0],[a,h],[0,Wo]],2,main[2]);poly([[Lo,0],[a+fa,h],[Lo,Wo]],3,main[3]);
+    line([a,h],[a+fa,h],"#E53935");[[0,0],[0,Wo]].forEach(p=>line(p,[a,h],"#F2A33A"));[[Lo,0],[Lo,Wo]].forEach(p=>line(p,[a+fa,h],"#F2A33A"));line([0,Wo],[Lo,Wo],"#2E7D32");line([0,0],[Lo,0],"#2E7D32");line([0,0],[0,Wo],"#2E7D32");line([Lo,0],[Lo,Wo],"#2E7D32");
+    cote([0,Wo],[Lo,Wo],f(Lo),0,22);cote([0,0],[Lo,0],f(Lo),0,-22);cote([0,0],[0,Wo],f(Wo),-40,0);if(fa>0)cote([a,h],[a+fa,h],f(fa),0,-18,"#E53935")}
+  else if(e.forme==="pp"){let y=0;main.forEach((p,i)=>{const q=p.q,t=q.fo==="triangle"?0:q.fo==="trapèze"?num(q.top):q.b,off=(Lo-q.b)/2,ot=(Lo-t)/2;poly([[off,y+q.h],[off+q.b,y+q.h],[ot+t,y],[ot,y]],i,p);cote([off,y+q.h],[off+q.b,y+q.h],f(q.b),0,0);y+=q.h})}
+  else{poly([[0,0],[Lo,0],[Lo,Wo],[0,Wo]],0,main[0]);line([0,Wo],[Lo,Wo],"#2E7D32");line([0,0],[Lo,0],"#7E57C2");cote([0,Wo],[Lo,Wo],f(Lo),0,22);cote([0,0],[0,Wo],f(Wo),-40,0,"#F2A33A")}
+  let ey=0;ext.forEach((p,j)=>{const q=p.q,w=Math.min(q.b,q.h),hh=Math.max(q.b,q.h),x=Lo+0.6;poly([[x,ey],[x+w,ey],[x+w,ey+hh],[x,ey+hh]],main.length+j,p);cote([x,ey+hh],[x+w,ey+hh],f(q.b),0,16);ey+=hh});
+  return`<svg viewBox="0 0 ${W} ${H}" class="et3-svg" role="img" aria-label="Plan des pans de la toiture">${o.photo!==false?`<rect width="${W}" height="${H}" fill="#6E7F5B"/><rect y="${H-36}" width="${W}" height="22" fill="#8C8F8A"/>`:""}${shapes.join("")}${cotes.join("")}</svg>`}
+/* vue 3D axonométrique */
+function et3Iso(e){const{G}=et3Geo(e);if(!G)return"";const Lo=num(G.Lo)||10,Wo=num(G.Wo)||8,p=G.p||0.7,he=num((e.zg||{}).haut)||5.9,hf=e.forme==="ap"?Wo*p:Wo/2*p;
+  const s=20,c=Math.cos(Math.PI/6),sn=0.5,ox=0,oy=0,BX=[1e9,1e9,-1e9,-1e9],pr=(x,y,z)=>{const r=[ox+(x-y)*c*s,oy+(x+y)*sn*s-z*s];BX[0]=Math.min(BX[0],r[0]);BX[1]=Math.min(BX[1],r[1]);BX[2]=Math.max(BX[2],r[0]);BX[3]=Math.max(BX[3],r[1]);return r},pt=a=>a.map(q=>pr(...q).map(v=>v.toFixed(1)).join(",")).join(" ");
+  const fa=e.forme==="4p"?num(G.fa):Lo,a=(Lo-fa)/2,F=[];
+  F.push(`<polygon points="${pt([[0,Wo,0],[Lo,Wo,0],[Lo,Wo,he],[0,Wo,he]])}" fill="#F3E9D8" stroke="#8a7d6b"/>`);F.push(`<polygon points="${pt([[Lo,0,0],[Lo,Wo,0],[Lo,Wo,he],[Lo,0,he]])}" fill="#E4D6BF" stroke="#8a7d6b"/>`);
+  for(let i=1;i<Lo/2.4;i++){const x=i*2.4;F.push(`<polygon points="${pt([[x-0.5,Wo,he*0.45],[x+0.5,Wo,he*0.45],[x+0.5,Wo,he*0.8],[x-0.5,Wo,he*0.8]])}" fill="#5B6A78"/>`)}
+  if(e.forme==="ap")F.push(`<polygon points="${pt([[0,0,he+hf],[Lo,0,he+hf],[Lo,Wo,he],[0,Wo,he]])}" fill="#8E5A4A" stroke="#fff"/>`);
+  else{F.push(`<polygon points="${pt([[a,Wo/2,he+hf],[a+fa,Wo/2,he+hf],[Lo,Wo,he],[0,Wo,he]])}" fill="#8E5A4A" stroke="#fff"/>`);F.push(`<polygon points="${pt([[a+fa,Wo/2,he+hf],[Lo,0,he],[Lo,Wo,he]])}" fill="${e.forme==="4p"?"#7A4A3C":"#E4D6BF"}" stroke="${e.forme==="4p"?"#fff":"#8a7d6b"}"/>`);F.push(`<polygon points="${pt([[a,Wo/2,he+hf],[a+fa,Wo/2,he+hf],[Lo,0,he],[0,0,he]])}" fill="#C0703F" stroke="#fff" opacity=".9"/>`)}
+  const lb=(q,t,c2)=>{const[x,y]=pr(...q);return`<g><rect x="${x-70}" y="${y-13}" width="140" height="26" rx="6" fill="${c2||"#0F2433"}"/><text x="${x}" y="${y+5}" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="700">${t}</text></g>`};
+  const LB=lb([Lo/2,Wo,he],`Égout ${nf(Lo,2)} m · +${nf(he,2)} m`)+(e.forme!=="ap"?lb([Lo/2,Wo/2,he+hf+0.6],`Faîtage ${nf(fa,2)} m · +${nf(he+hf,2)} m`):"");const m=40,vx=BX[0]-m-70,vy=BX[1]-m,vw=BX[2]-BX[0]+2*m+140,vh=BX[3]-BX[1]+2*m;
+  return`<svg viewBox="${vx.toFixed(0)} ${vy.toFixed(0)} ${vw.toFixed(0)} ${vh.toFixed(0)}" class="et3-svg et3-3d"><rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#DCE7D2"/>${F.join("")}${LB}</svg>`}
+const ET3_TY=[["comp","Rénovation complète","Toute la toiture","▦"],["part","Rénovation partielle","Je choisis les pans","◩"],["zing","Zinguerie seule","Gouttières, descentes, solins","⌒"],["entr","Entretien","Démoussage, hydrofuge, révision","✧"],["rep","Réparation ponctuelle","Un point sur le toit","⊕"],["iso","Isolation · fenêtres de toit","Rampants, Velux, sarking","▤"]];
+const ET3_TR=["Réfection tuiles","Écran HPV","Isolation","Démoussage","Reprise charpente"],ET3_LT=["Faîtage ventilé","Arêtiers ventilés","Gouttières zinc","Solins"];
+function et3Defaults(e){if(!e.trav){const t=e.typeCh||"comp";e.trav=t==="zing"?[]:t==="entr"?["Démoussage"]:["Réfection tuiles","Écran HPV"];e.lignesT=t==="entr"?[]:t==="zing"?["Gouttières zinc"]:["Faîtage ventilé"].concat(e.forme==="4p"?["Arêtiers ventilés"]:[]).concat(["Gouttières zinc"])}}
+/* filtre de l'étude vers le devis selon les travaux et les pans choisis */
+const _etDvPlan3=etDvPlan;etDvPlan=function(e){const r=_etDvPlan3.apply(this,arguments);if(!e||!e.trav)return r;const T=new Set(e.trav),LT=new Set(e.lignesT||[]),N=bibNorm;
+  const P=et3Pans(e),tot=P.reduce((a,p)=>a+p.s,0),sel=(e.pansSel||[]).length?P.filter(p=>e.pansSel.includes(p.k)).reduce((a,p)=>a+p.s,0):tot,fr=tot>0?sel/tot:1;
+  const keep=x=>{const n=N(x.o.nom),m=x.o.met;
+    if(e.typeCh==="zing")return m==="Zinguerie"||m==="Mise en place chantier"||(m==="Dépose et évacuation"&&n.includes("gouttiere"));
+    if(n.includes("ecran"))return T.has("Écran HPV");
+    if(m==="Zinguerie"||(m==="Dépose et évacuation"&&n.includes("gouttiere")))return LT.has("Gouttières zinc");
+    if(/faita|faitiere/.test(n)&&!n.includes("depose"))return LT.has("Faîtage ventilé")||T.has("Réfection tuiles");
+    if(n.includes("aretier"))return LT.has("Arêtiers ventilés")||T.has("Réfection tuiles");
+    if(m==="Couverture"||(m==="Dépose et évacuation"&&/couverture|liteaux|faitage/.test(n)))return T.has("Réfection tuiles");return true};
+  r.list=r.list.filter(keep).map(x=>["S","lit","clit"].includes(x.qe)&&fr<0.999?Object.assign({},x,{q:Math.round(x.q*fr*100)/100}):x);return r};
+function et3Est(e){try{const{list}=etDvPlan(e);return list.reduce((a,x)=>{const k=ouvCalc(x.o);return a+(k.pv||0)*num(x.q)},0)}catch(_){return 0}}
+/* ---------- écran étude v2 ---------- */
+function et3Apply(){const e=S.et&&S.et.draft;if(!e)return;const bar=document.querySelector("main .et-bar"),wrap=document.querySelector("main .et"),form=document.getElementById("et-form"),out=document.getElementById("et-out");if(!bar||!wrap||!form)return;
+  const ok1=!!(e.client||e.adresse),ok2=!etReq(e).length;let st=S.etStep||(ok2?"trav":ok1?"toit":"bat");S.etStep=st;
+  const adr=[e.adresse&&e.adresse.trim(),e.ville&&titleCase(e.ville)].filter(Boolean).join(", ")||e.nom||"Nouvelle étude";
+  const h=document.createElement("div");h.className="et3-top";
+  h.innerHTML=`<button type="button" class="et3-bk" data-et3="back" aria-label="Retour aux études">←</button><div class="et3-t"><b>${esc(adr)}</b><small>${esc(e.client||"client à rattacher")} · étude du ${fd(e.date||TODAY)}</small></div>
+   <div class="et3-st">${[["bat","Bâtiment",ok1],["toit","Toiture",ok2],["trav","Travaux",false]].map(([k,l,ok],i)=>`<button type="button" data-et3st="${k}" class="${k===st?"on":ok?"ok":""}">${ok&&k!==st?"✓ ":(i+1)+" · "}${l}</button>`).join("")}</div>
+   <div class="et3-a"><span id="et3-dirty" class="dvx-dirty"></span><button type="button" class="btn" data-et3="pdf">Plan PDF</button><div class="dvx-mw"><button type="button" class="btn" data-et3="menu" aria-label="Autres actions">⋯</button><div class="dvx-menu et3-mn" hidden></div></div>
+   ${st==="trav"?`<button type="button" class="btn pri" data-et3="devis">Préparer le devis →</button>`:`<button type="button" class="btn pri" data-et3="next">Suivant →</button>`}</div>`;
+  bar.style.display="none";bar.parentNode.insertBefore(h,bar);const mn=h.querySelector(".et3-mn");bar.querySelectorAll(".acts>*").forEach(b=>{if(b.id==="et-dirty"){const up=()=>{const x=document.getElementById("et3-dirty");if(x)x.textContent=b.textContent};new MutationObserver(up).observe(b,{childList:true,subtree:true,characterData:true});up();return}mn.appendChild(b)});
+  const secs=[...form.querySelectorAll("details.et-sec")],sk=n=>secs.find(s=>s.dataset.etsec===String(n));
+  const nav=form.querySelector("#et-step"),gd=form.querySelector(".et-guide");if(nav)nav.style.display="none";if(gd)gd.style.display="none";
+  wrap.classList.add("et3","et3-"+st);const{G,M}=et3Geo(e),P=et3Pans(e);
+  const show=n=>{secs.forEach(s=>s.style.display=n.includes(+s.dataset.etsec)?"":"none")};
+  if(st==="bat"){show([1]);const s1=sk(1);if(s1)s1.open=true;
+    const box=document.createElement("div");box.className="et3-bat";box.innerHTML=`<div class="et3-map" id="et3-map"><div class="et3-srch"><input id="et3-adr" value="${esc([e.adresse,e.cp,e.ville].filter(x=>x&&String(x).trim()).join(" "))}" placeholder="📍 Adresse du bâtiment"><button type="button" class="btn pri" data-et3="geo">Rechercher</button></div></div>
+     <div class="et3-side"><section class="dvx-sec"><h3>Bâtiment trouvé</h3><div id="et3-bt"><p class="dvx-h2">Recherche du bâtiment…</p></div><button type="button" class="btn pri et3-w" data-etair>Mesurer la toiture sur la photo</button><button type="button" class="dvx-l et3-w" data-et3st="toit">ou faire un métré classique (longueur × largeur × pente)</button></section></div>`;
+    form.prepend(box);setTimeout(et3Map,30)}
+  else if(st==="toit"){show([2,3]);const v=S.et3V||"plan";
+    const box=document.createElement("div");box.className="et3-toit";
+    box.innerHTML=`<div class="et3-cv">${v==="3d"?et3Iso(e):et3Plan(e)}<div class="et3-vw">${[["photo","Photo"],["plan","Plan"],["3d","3D"]].map(([k,l])=>`<button type="button" data-et3v="${k}" aria-pressed="${k===v}">${l}</button>`).join("")}</div></div>
+     <section class="dvx-sec"><h3>Pans de la toiture</h3><table class="et3-pt"><thead><tr><th>Pan</th><th>Orientation</th><th class="r">Pente</th><th class="r">Surface</th></tr></thead><tbody>${P.map((p,i)=>`<tr><td><i style="background:${ET3_C[i%8]}">${p.k}</i></td><td><input data-et3or="${i}" value="${esc(p.or)}" aria-label="Orientation du pan ${p.k}"></td><td class="r">${p.deg!=null?p.deg+"°":"—"}</td><td class="r">${nf(p.s,1)} m²</td></tr>`).join("")}</tbody><tfoot><tr><td colspan="3">Surface de couverture</td><td class="r">${G?nf(G.S,1):"—"} m²</td></tr></tfoot></table>
+     <p class="dvx-h2">Cotes saisies ci-dessous ou mesurées sur la photo aérienne (bouton ⋯ › Mesurer sur photo aérienne). Chaque valeur se corrige à la main.</p></section>`;
+    form.prepend(box);
+    if(out){out.dataset.et3="1";out.innerHTML=et3Side(e,G,M,P)}}
+  else{show([4,5,6,7,8]);const s5=sk(5);if(s5)s5.open=true;et3Defaults(e);const ty=e.typeCh||"comp",sel=new Set(e.pansSel||[]);
+    const box=document.createElement("div");box.className="et3-trav";
+    box.innerHTML=`<div class="et3-tg"><section class="dvx-sec et3-ty"><h3>Quel type de chantier ?</h3><p class="dvx-h2">Le choix propose les bons ouvrages ; tout reste modifiable.</p>${ET3_TY.map(([k,l,s,i])=>`<button type="button" data-et3ty="${k}" aria-pressed="${k===ty}"><span>${i}</span><b>${l}</b><small>${s}</small></button>`).join("")}</section>
+     <div class="et3-cv sm">${et3Plan(e,{cotes:true})}<p class="et3-hint">Cliquez sur les pans concernés</p></div>
+     <section class="dvx-sec et3-sel"><h3>${sel.size?[...sel].map(k=>`<i style="background:${ET3_C[k.charCodeAt(0)-65]}">${k}</i>`).join(""):"Tous les pans"} <small>${sel.size||P.length} pan${(sel.size||P.length)>1?"s":""}</small></h3>
+      ${(()=>{const L=sel.size?P.filter(p=>sel.has(p.k)):P;const s=L.reduce((a,p)=>a+p.s,0);return`<div class="dvx-rl"><span>Surface</span><b>${nf(s,1)} m²</b></div>`})()}
+      ${M?`<div class="dvx-rl"><span>Faîtage</span><b>${nf(M.fait||0,2)} ml</b></div><div class="dvx-rl"><span>Égouts</span><b>${nf(M.egouts||0,2)} ml</b></div>${M.aret?`<div class="dvx-rl"><span>Arêtiers</span><b>${nf(M.aret,2)} ml</b></div>`:""}`:""}
+      <p class="et3-lb">Travaux sur ces pans</p><div class="et3-ch">${ET3_TR.map(x=>`<button type="button" data-et3tr="${esc(x)}" aria-pressed="${e.trav.includes(x)}">${x}</button>`).join("")}</div>
+      <p class="et3-lb">Lignes de toit</p><div class="et3-ch">${ET3_LT.map(x=>`<button type="button" data-et3lt="${esc(x)}" aria-pressed="${(e.lignesT||[]).includes(x)}">${x}</button>`).join("")}</div>
+      <p class="dvx-h2">Les ouvrages et prix viennent de votre bibliothèque.</p></section></div>`;
+    form.prepend(box);
+    const est=et3Est(e),items=e.trav.concat(e.lignesT||[]);const bb=document.createElement("div");bb.className="et3-bar";
+    bb.innerHTML=`<b>Au devis</b>${items.map((x,i)=>`<span><i style="background:${ET3_C[i%8]}"></i><b>${esc(x)}</b><small>${esc(/Gouttières/.test(x)&&M?nf(M.egouts||0,1)+" ml":/Faîtage/.test(x)&&M?nf(M.fait||0,1)+" ml":/Arêtiers/.test(x)&&M?nf(M.aret||0,1)+" ml":(sel.size?[...sel].join(" "):"A à "+ET3_L(Math.max(0,P.length-1)))+" · "+nf((sel.size?P.filter(p=>sel.has(p.k)):P).reduce((a,p)=>a+p.s,0),1)+" m²")}</small></span>`).join("")}<span class="sp"></span><span class="et3-est"><small>Estimation</small><b>≈ ${eur(Math.round(est))} HT</b></span>`;
+    wrap.after(bb)}
+  setTimeout(()=>{const b=document.querySelector(".et3-top [data-et3=next]");if(b)b.focus({preventScroll:true})},0)}
+function et3Side(e,G,M,P){const v=e.visite||{};const z=e.zg||{};
+  const opt=(k,L,cur)=>`<select data-et3vis="${k}">${L.map(x=>`<option${x===cur?" selected":""}>${esc(x)}</option>`).join("")}</select>`;
+  return`<section class="dvx-sec"><p class="dvx-cl">Surface de couverture</p><p class="et3-big">${G?nf(G.S,1):"—"} m²</p><p class="dvx-h2">${P.length} pan${P.length>1?"s":""}${G&&G.p?" · pente moyenne "+Math.round(Math.atan(G.p)*180/Math.PI)+"°":""}</p>
+   ${M?[["Faîtages",M.fait,"#E53935"],["Arêtiers",M.aret,"#F2A33A"],["Égouts",M.egouts,"#2E7D32"],["Rives",M.rives,"#ef6c00"],["Solins",M.solin,"#7E57C2"],["Noues",M.noues,"#0c6ea8"]].map(([l,q,c])=>`<div class="dvx-rl"><span><i class="et3-ln" style="background:${c}"></i>${l}</span><b>${nf(q||0,2)} ml</b></div>`).join(""):""}</section>
+  <section class="dvx-sec"><div class="dvx-sh"><h3>Visite sur place</h3><small class="et3-app">● depuis l'appli équipes</small></div><p class="dvx-h2" style="margin-top:-6px">Ce que la vue aérienne ne montre pas</p>
+   <div class="dvx-g2"><div class="f"><label>Couverture</label>${opt("couv",["Tuile mécanique","Tuile canal","Tuile plate","Ardoise","Bac acier","Fibre-ciment"],v.couv||"Tuile mécanique")}</div><div class="f"><label>Hauteur égout</label><div class="dvx-suf"><input type="number" step="0.1" data-et3haut value="${esc(z.haut==null?"":z.haut)}"><span>m</span></div></div>
+   <div class="f"><label>Accès</label>${opt("acces",["Échelle","Échafaudage","Nacelle 12 m","Nacelle 18 m","Grue"],v.acces||"Échafaudage")}</div><div class="f"><label>Support</label>${opt("support",["Liteaux sur chevrons","Volige","Panneaux","Pannes"],v.support||"Liteaux sur chevrons")}</div></div>
+   <p class="et3-lb">Constats</p><textarea class="cli3-nt" data-et3vis="constats" placeholder="Tuiles poreuses et déplacées pans A et B, faîtage scellé fissuré…">${esc(v.constats||"")}</textarea><p class="dvx-h2">Ces constats alimentent la page « Étude de votre toiture » jointe à l'offre.</p></section>`}
+async function et3Map(){const el=document.getElementById("et3-map");if(!el)return;try{await etLeaflet()}catch(_){return}if(!window.L||!document.getElementById("et3-map"))return;const e=S.et.draft;
+  const m=L.map(el,{zoomControl:true,attributionControl:false}).setView([45.66,4.77],17);L.tileLayer("https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",{maxZoom:21,maxNativeZoom:19}).addTo(m);S.et3M=m;
+  const q=[e.adresse,e.cp,e.ville].filter(x=>x&&String(x).trim()).join(" ");if(q)et3Geocode(q)}
+async function et3Geocode(q){const m=S.et3M;if(!m)return;try{const j=await (await fetch("https://data.geopf.fr/geocodage/search?limit=1&q="+encodeURIComponent(q))).json();const f=j.features&&j.features[0];if(!f)return;const[lo,la]=f.geometry.coordinates;m.setView([la,lo],19);
+  L.circleMarker([la,lo],{radius:7,color:"#fff",weight:2,fillColor:"#29B6F6",fillOpacity:1}).addTo(m);
+  const bb=[lo-0.0006,la-0.0004,lo+0.0006,la+0.0004].join(",");let html=`<div class="dvx-rl"><span>Adresse</span><b>${esc(f.properties.label||q)}</b></div>`;
+  try{const w=await (await fetch(`https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BDTOPO_V3:batiment&OUTPUTFORMAT=application/json&COUNT=20&BBOX=${bb},urn:ogc:def:crs:EPSG::4326`.replace(bb+",urn",[la-0.0004,lo-0.0006,la+0.0004,lo+0.0006].join(",")+",urn"))).json();
+    const F=(w.features||[]).map(x=>{const c=x.geometry.coordinates;const ring=(x.geometry.type==="MultiPolygon"?c[0][0]:c[0]);const inside=(()=>{let ins=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const[xi,yi]=ring[i],[xj,yj]=ring[j];if(((yi>la)!==(yj>la))&&(lo<(xj-xi)*(la-yi)/(yj-yi)+xi))ins=!ins}return ins})();return{x,ring,inside}});
+    const b=F.find(x=>x.inside)||F[0];if(b){const p=b.x.properties||{};L.polygon(b.ring.map(([a,c])=>[c,a]),{color:"#29B6F6",weight:3,fillOpacity:.08}).addTo(m);
+      const area=(()=>{const R=6378137,r=b.ring;let s=0;for(let i=0;i<r.length-1;i++){const[x1,y1]=r[i],[x2,y2]=r[i+1];s+=(x2-x1)*Math.PI/180*(2+Math.sin(y1*Math.PI/180)+Math.sin(y2*Math.PI/180))}return Math.abs(s*R*R/2)})();
+      html+=`<div class="dvx-rl"><span>Emprise au sol</span><b>${Math.round(area)} m²</b></div>${p.hauteur!=null?`<div class="dvx-rl"><span>Hauteur</span><b>${nf(p.hauteur,1)} m</b></div>`:""}${p.nombre_d_etages!=null?`<div class="dvx-rl"><span>Niveaux</span><b>${p.nombre_d_etages}</b></div>`:""}${p.usage_1?`<div class="dvx-rl"><span>Usage</span><b>${esc(p.usage_1)}</b></div>`:""}<div class="dvx-rl"><span>Photo aérienne</span><b>IGN</b></div>`}}catch(_){}
+  const bt=document.getElementById("et3-bt");if(bt)bt.innerHTML=html+`<p class="dvx-h2">Cliquez sur « Mesurer » pour suivre le contour du toit sur la photo.</p>`}catch(_){}}
+/* PDF « Étude de votre toiture » */
+function et3Pdf(){const e=S.et.draft,{G,M}=et3Geo(e),P=et3Pans(e),v=e.visite||{};const lg=(typeof dvLogoSvg==="function"?dvLogoSvg():"<b>ALL TOITURES</b>");
+  const w=window.open("","_blank");if(!w){toast("Autorisez les fenêtres pour ce site afin d'ouvrir le PDF.");return}
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Étude de votre toiture – ${esc(e.client||"")}</title><style>body{font-family:Inter,Segoe UI,Arial,sans-serif;color:#14232d;margin:0}.pg{width:186mm;margin:12mm auto}h1{font-size:22px;margin:18px 0 4px}.sub{color:#5c6b75;font-size:12px}.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0F2433;padding-bottom:10px}.hd small{color:#5c6b75;font-size:10.5px;text-align:right}.im{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin:14px 0}.im svg{width:100%;height:auto;border-radius:6px;border:1px solid #d5dde3}h2{font-size:11px;letter-spacing:.08em;color:#0c6ea8;text-transform:uppercase;margin:16px 0 6px}table{width:100%;border-collapse:collapse;font-size:11.5px}td,th{padding:5px 4px;border-bottom:1px solid #e3e8ec;text-align:left}th{color:#8a99a4;font-size:9.5px;text-transform:uppercase}.r{text-align:right}.k{display:inline-block;width:16px;height:16px;border-radius:4px;color:#fff;font-weight:800;font-size:10px;text-align:center;line-height:16px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ft{display:flex;justify-content:space-between;color:#8a99a4;font-size:9.5px;margin-top:24px;border-top:1px solid #e3e8ec;padding-top:6px}@media print{.np{display:none}}</style></head><body><div class="pg">
+  <div class="hd"><div style="height:34px">${lg}</div><small>Étude du ${fd(e.date||TODAY)}${e.dossierId&&dvOfDossier(e.dossierId)?"<br>jointe à l'offre "+esc(dvOfDossier(e.dossierId)[1].num||""):""}</small></div>
+  <h1>Étude de votre toiture</h1><p class="sub">${esc(e.ville?titleCase(e.ville):"")}${e.cp?" ("+esc(e.cp)+")":""} · relevé du ${fd(e.date||TODAY)}</p>
+  <div class="im">${et3Iso(e)}${et3Plan(e,{w:420,h:300})}</div>
+  <div class="g2"><div><h2>Les pans de toiture</h2><table><tr><th>Pan</th><th>Orientation</th><th class="r">Pente</th><th class="r">Surface</th></tr>${P.map((p,i)=>`<tr><td><span class="k" style="background:${ET3_C[i%8]}">${p.k}</span></td><td>${esc(p.or)}</td><td class="r">${p.deg!=null?p.deg+"°":"—"}</td><td class="r">${nf(p.s,1)} m²</td></tr>`).join("")}<tr><td colspan="3"><b>Surface totale de couverture</b></td><td class="r"><b>${G?nf(G.S,1):"—"} m²</b></td></tr></table></div>
+  <div><h2>Les linéaires</h2><table>${M?[["Faîtages",M.fait],["Arêtiers",M.aret],["Égouts",M.egouts],["Rives",M.rives],["Solins",M.solin],["Noues",M.noues]].filter(x=>x[1]>0).map(([l,q])=>`<tr><td>${l}</td><td class="r">${nf(q,2)} ml</td></tr>`).join(""):""}</table></div></div>
+  <h2>Ce que nous avons constaté</h2><p style="font-size:12px">${esc(v.constats||"—")}</p><p class="sub">Couverture existante : ${esc(v.couv||"—")} · accès : ${esc(v.acces||"—")} · support : ${esc(v.support||"—")}</p>
+  <div class="ft"><span>Mesures issues du relevé IGN et de la photo aérienne, vérifiées sur place.</span><span>Bâtir votre présent, protéger votre avenir.</span></div>
+  <p class="np" style="text-align:center;margin-top:20px"><button onclick="print()">Imprimer / enregistrer en PDF</button></p></div></body></html>`);w.document.close()}
+const _vEtude3=vEtude;vEtude=function(){_vEtude3.apply(this,arguments);try{et3Apply()}catch(err){console.warn("et3",err)}};
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest||S.view!=="etudes"||!S.et)return;const d=S.et.draft;const mn=document.querySelector(".et3-mn");
+  const b=t.closest("[data-et3]");if(mn&&!mn.hidden&&!(b&&b.dataset.et3==="menu")&&!t.closest(".et3-mn"))mn.hidden=true;
+  const st=t.closest("[data-et3st]");if(st){S.etStep=st.dataset.et3st;et3R();window.scrollTo(0,0);return}
+  const vv=t.closest("[data-et3v]");if(vv){S.et3V=vv.dataset.et3v==="photo"?"plan":vv.dataset.et3v;if(vv.dataset.et3v==="photo"){etAir();return}et3R();return}
+  const ty=t.closest("[data-et3ty]");if(ty){d.typeCh=ty.dataset.et3ty;d.trav=null;et3Defaults(d);if(d.typeCh==="comp")d.pansSel=[];S.et.dirty=true;et3R();return}
+  const pn=t.closest("[data-et3pan]");if(pn&&S.etStep==="trav"){const k=pn.dataset.et3pan,s=new Set(d.pansSel||[]);s.has(k)?s.delete(k):s.add(k);d.pansSel=[...s].sort();if(d.pansSel.length&&d.typeCh==="comp")d.typeCh="part";S.et.dirty=true;et3R();return}
+  const tr=t.closest("[data-et3tr],[data-et3lt]");if(tr){const k=tr.dataset.et3tr?"trav":"lignesT",v=tr.dataset.et3tr||tr.dataset.et3lt;d[k]=d[k]||[];const i=d[k].indexOf(v);i>=0?d[k].splice(i,1):d[k].push(v);S.et.dirty=true;et3R();return}
+  if(!b)return;const a=b.dataset.et3;
+  if(a==="menu"){if(mn)mn.hidden=!mn.hidden;return}
+  if(a==="back"){const x=document.getElementById("et-back");if(x)x.click();return}
+  if(a==="next"){S.etStep=S.etStep==="bat"?"toit":"trav";et3R();window.scrollTo(0,0);return}
+  if(a==="devis"){const x=document.getElementById("et-todv");if(x)x.click();return}
+  if(a==="pdf"){et3Pdf();return}
+  if(a==="geo"){const v=(document.getElementById("et3-adr")||{}).value||"";if(v.trim())et3Geocode(v.trim());return}},true);
+document.addEventListener("change",e=>{const t=e.target;if(!S.et||!t.dataset)return;const d=S.et.draft;
+  if(t.dataset.et3vis){d.visite=Object.assign({},d.visite,{[t.dataset.et3vis]:t.value});S.et.dirty=true;if(typeof etDirty==="function")etDirty();return}
+  if(t.dataset.et3haut!=null){d.zg=d.zg||{};d.zg.haut=t.value===""?null:parseFloat(t.value);S.et.dirty=true;if(typeof etDirty==="function")etDirty();return}
+  if(t.dataset.et3or!=null){d.orient=d.orient||[];d.orient[+t.dataset.et3or]=t.value;S.et.dirty=true;if(typeof etDirty==="function")etDirty()}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="et3-adr"){e.preventDefault();et3Geocode(e.target.value)}});
+/* ---------- liste des études (maquette 26) ---------- */
+const _vEtudes3=vEtudes;vEtudes=function(){if(S.et)return _vEtudes3.apply(this,arguments);const q=bibNorm(S.q||"").trim();
+  const L=[...S.etudes.entries()].map(([id,e])=>({id,e})).filter(x=>!q||bibNorm([x.e.nom,x.e.client,x.e.ville].join(" ")).includes(q)).sort((a,b)=>String(b.e.date||"").localeCompare(String(a.e.date||"")));
+  const dvOf=e=>{let r=null;S.devis.forEach((d,id)=>{if(!r&&(d.etudeId&&[...S.etudes.entries()].some(([k,x])=>x===e&&k===d.etudeId)))r=[id,d]});if(!r&&e.dossierId){const x=dvOfDossier(e.dossierId);if(x)r=x}return r};
+  const nM=L.filter(x=>String(x.e.date||"").slice(0,7)===TODAY.slice(0,7)).length,nC=L.filter(x=>!dvOf(x.e)).length;
+  main.innerHTML=`<div class="fa3h"><div><h1>Études <span class="et3-sub">${nM} ce mois · ${nC} à chiffrer</span></h1></div><div class="fa3ac"><input class="fa3q" id="q" type="search" placeholder="🔍 Rechercher" value="${esc(S.q||"")}"><button type="button" class="btn pri" id="et-new">＋ Nouvelle étude</button></div></div>
+  ${L.length?`<div class="et3-grid">${L.map(({id,e})=>{let G=null;try{G=etGeom(e)}catch(_){}const dv=dvOf(e),P=et3Pans(e),ok=!etReq(e).length;
+    return`<button type="button" class="et3-card" data-et="${esc(id)}"><div class="et3-th">${et3Plan(e,{w:300,h:150,cotes:false})}</div><div class="et3-cb"><b>${esc(e.client||e.nom||"Sans nom")}</b><small>${esc([e.ville&&titleCase(e.ville),({"2p":"2 pans","4p":"4 pans","ap":"1 pan","pp":"plusieurs pans"})[e.forme]||""].filter(Boolean).join(" · "))}</small>
+     <span class="et3-cf"><span>${G?nf(G.S,0)+" m²":"—"} · ${P.length} pan${P.length>1?"s":""}</span>${dv?`<em class="fa3p ok">→ ${esc(dv[1].num||"devis")}</em>`:`<em class="fa3p bl">Étape : ${ok?"Travaux":"Toiture"}</em>`}</span></div></button>`}).join("")}</div>`
+  :`<div class="empty">Aucune étude pour l'instant. Créez-en une ici ou depuis une fiche rendez-vous avec « Faire l'étude ».</div>`}`;
+  document.getElementById("et-new").onclick=()=>{S.etStep="bat";openEtude(null)};
+  main.querySelectorAll("[data-et]").forEach(b=>b.onclick=()=>{S.etStep=null;openEtude(b.dataset.et)});
+  const qi=document.getElementById("q");qi.addEventListener("input",()=>{S.q=qi.value;const p=qi.selectionStart;render();const n=document.getElementById("q");n.focus();n.setSelectionRange(p,p)})};
+/* ---------- devis préparé depuis l'étude (maquette 29) ---------- */
+function et3DvBanner(){const d=S.dvDraft;S.et3dvm=null;if(!d||isFa()||!d.etudeId||!S.etudes.get(d.etudeId)||document.getElementById("et3-dvb"))return;const e=S.etudes.get(d.etudeId),inn=document.querySelector("#dv-form .et-in");if(!inn)return;
+  const b=document.createElement("div");b.id="et3-dvb";b.className="et3-dvb";b.innerHTML=`<span>⛓ <b>Préparé depuis l'étude du ${fd(e.date||"")}.</b> Les quantités marquées ⛓ suivent le métré : si l'étude change, reprenez-les en un clic.</span><button type="button" class="btn sm2" data-dvrq>Reprendre le métré</button><button type="button" class="btn sm2" data-et3dvo="${esc(d.etudeId)}">Ouvrir l'étude</button>`;inn.prepend(b);
+  const M=etMes(e),o=document.getElementById("dv-out");if(M&&o&&!document.getElementById("et3-dvm")){const c=document.createElement("section");c.id="et3-dvm";c.className="card dvx-rc";
+    c.innerHTML=`<h3>Métré de l'étude</h3><div class="et3-dvth">${et3Plan(e,{w:300,h:170,cotes:false})}</div>${[["Surface toiture",M.S,"m²","S"],["Faîtage",M.fait,"ml","fait"],["Arêtiers",M.aret,"ml","aret"],["Égouts",M.egouts,"ml","egouts"],["Rives",M.rives,"ml","rives"],["Solins",M.solin,"ml","solin"],["Noues",M.noues,"ml","noues"]].filter(x=>x[1]>0).map(([l,q,u])=>`<div class="dvx-rl"><span>${l}</span><b>${nf(q,2)} ${u}</b></div>`).join("")}<p class="dvx-h2">Les lignes « saisi à la main » (descentes, échafaudage) restent libres, comme aujourd'hui.</p>`;o.appendChild(c);S.et3dvm=c}
+  (d.lignes||[]).forEach((l,i)=>{if(l.t==="g")return;const ov=l.ouv&&S.ouv.get(l.ouv),qe=l.qe||(ov&&ov.qe);const inp=document.querySelector(`#dv-lines [data-li="${i}"][data-lk="q"]`);if(inp&&qe&&qe!=="un"&&M&&M[qe]>0){inp.classList.add("et3-lk");inp.title="Quantité liée au métré de l'étude ("+((ET_MES.find(x=>x[0]===qe)||[,qe])[1])+")"}})}
+const _dvOut3=dvOut;dvOut=function(){_dvOut3.apply(this,arguments);try{const m=S.et3dvm,o=document.getElementById("dv-out");if(m&&o&&m.parentElement!==o)o.appendChild(m)}catch(_){}};
+const _dvEdit3=dvEdit;dvEdit=function(){_dvEdit3.apply(this,arguments);try{et3DvBanner()}catch(e){console.warn(e)}};
+const _dvLines3=dvLines;dvLines=function(){_dvLines3.apply(this,arguments);try{const b=document.getElementById("et3-dvb");if(b){b.remove();const m=document.getElementById("et3-dvm");if(m)m.remove();et3DvBanner()}}catch(_){}};
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-et3dvo]");if(!b)return;setView("etudes");S.etStep="trav";openEtude(b.dataset.et3dvo)});
+
+const _etOut3=etOut;etOut=function(){const st=S.etStep;if(st==="toit"){const e=S.et.draft,o=document.getElementById("et-out");if(o&&!o.contains(document.activeElement)){const{G,M}=et3Geo(e);o.innerHTML=et3Side(e,G,M,et3Pans(e))}
+  const cv=document.querySelector(".et3-toit .et3-cv");if(cv){const vw=cv.querySelector(".et3-vw");const svg=S.et3V==="3d"?et3Iso(e):et3Plan(e);cv.innerHTML=svg;if(vw)cv.appendChild(vw)}return}return _etOut3.apply(this,arguments)};
+
+/*@@/et3*/
+/*@@ao3*/
+/* ===== Appels d'offres : tableau en colonnes (maquette 49) et calendrier de charge (maquette 53) ===== */
+const AO3_COL=[["qual","À qualifier",["Détecté","À qualifier","Nouveau"]],["prep","Go · en préparation",["En préparation","Go"]],["dep","Déposés",["Déposé","En attente"]],["res","Résultats",["Gagné","Attribué","Perdu","Non retenu","Rejeté"]]];
+const ao3Pct=a=>{try{const s=aoScore(a);return s==null?(typeof a.score==="number"?Math.round(a.score):null):Math.round(s/13*100)}catch(_){return null}};
+const ao3R=()=>Object.assign({seuilP:70,seuilV:50},(S.cfg&&S.cfg.aoReglages)||{});
+const ao3K=v=>v?(v>=1000?"≈ "+Math.round(v/1000)+" k€":eur(v)):"—";
+const ao3Dm=s=>s?P(s).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}).replace(".",""):"—";
+function ao3Col(a){const s=a.statut||"";const c=AO3_COL.find(x=>x[2].includes(s));return c?c[0]:null}
+function ao3Head(md){return`<div class="fa3h"><div><p class="fa3bc">Commercial</p><h1>${md==="cal"?"Calendrier et charge":"Appels d'offres"}</h1></div><div class="fa3ac">
+  <div class="fa3tabs ao3-md">${[["tab","Tableau"],["cal","Calendrier"],["veille","Proposés par la veille"]].map(([k,l])=>`<button type="button" data-ao3md="${k}" aria-selected="${k===md}">${l}</button>`).join("")}</div>
+  <button type="button" class="btn" data-ao3reg>Critères de veille</button><button type="button" class="btn pri" data-ao3new>＋ AO manuel</button></div></div>`}
+function ao3Tab(){const A=[...S.ao.entries()].map(([id,a])=>Object.assign({id},a));const r=ao3R(),y=TODAY.slice(0,4),wk=addDays(TODAY,-7);
+  const by={};AO3_COL.forEach(([k])=>by[k]=[]);A.forEach(a=>{const k=ao3Col(a);if(k)by[k].push(a)});
+  const nw=A.filter(a=>String(a.detecteLe||"")>=wk&&a.statut!=="No-go").length;
+  const nx=by.prep.filter(a=>a.dateLimite&&a.dateLimite>=TODAY).sort((a,b)=>a.dateLimite.localeCompare(b.dateLimite))[0];
+  const jug=A.filter(a=>String(a.dateResultat||a.dateLimite||"").startsWith(y)&&["Gagné","Attribué","Perdu","Non retenu","Rejeté"].includes(a.statut)),gw=jug.filter(a=>["Gagné","Attribué"].includes(a.statut)).length;
+  const jeu=by.prep.reduce((s,a)=>s+num(a.montantEstime),0);
+  const kp=(l,v,s,c)=>`<div class="fa3k"><span class="fa3k-l">${l}</span><b>${v}</b><small class="${c||""}">${s}</small></div>`;
+  const card=(a,k)=>{const p=ao3Pct(a),j=a.dateLimite?daysBetween(TODAY,a.dateLimite):null;
+    const tag=k==="qual"?(p!=null?`<em class="fa3p ${p>=r.seuilP?"ok":p>=r.seuilV?"wa":"ko"}">Score ${p}</em>`:""):k==="prep"?(()=>{const t=String(a.remarques||"").split("\n").map(x=>x.trim()).filter(Boolean).pop();return`<em class="fa3p ${j!=null&&j<=5?"ko":"wa"}">${esc(a.memoireV1?"Mémoire V1 à relire":a.dpgfChiffree?"Contrôle avant dépôt":"DPGF à finir")}</em>`})():k==="dep"?`<em class="fa3p gr">Résultat attendu</em>`:["Gagné","Attribué"].includes(a.statut)?`<em class="fa3p ok">→ chantier ${a.dossierId?"créé":"à créer"}</em>`:`<em class="fa3p ko">${a.motifRejet?"motifs reçus":"motifs demandés"}</em>`;
+    return`<div class="ao3-c"><div class="ao3-ci" data-a2open="${esc(a.id)}" role="button" tabindex="0"><b>${esc(a.objet||a.ref||"Appel d'offres")}</b><small>${esc([a.acheteur,a.lot?(/^lot/i.test(a.lot)?a.lot:"lot "+a.lot):""].filter(Boolean).join(" · "))}</small>
+     <span class="ao3-m"><b>${k==="res"&&a.montantOffre?eur(num(a.montantOffre)):ao3K(num(a.montantEstime))}</b><small>⏱ ${k==="dep"?"déposé "+ao3Dm(a.dateDepot||a.dateLimite):k==="res"?(["Gagné","Attribué"].includes(a.statut)?"attribué":"non retenu"):ao3Dm(a.dateLimite)+(j!=null&&j>=0?" (J-"+j+")":"")}</small></span>${tag}</div>
+     ${k==="qual"?`<span class="ao3-gb"><button type="button" class="btn sm2" data-aoq="nogo" data-id="${esc(a.id)}">No-go</button><button type="button" class="btn pri sm2" data-aoq="go" data-id="${esc(a.id)}">Go</button></span>`:""}</div>`};
+  return ao3Head("tab")+`<div class="fa3kp">${kp("Nouveaux cette semaine",String(nw),"couverture / zinguerie uniquement")}${kp("Prochain dépôt",nx?ao3Dm(nx.dateLimite):"—",nx?`${esc(nx.acheteur||nx.ville||"")} · J-${daysBetween(TODAY,nx.dateLimite)}`:"aucun dépôt en vue",nx&&daysBetween(TODAY,nx.dateLimite)<=7?"ko":"")}${kp("Taux de réussite "+y,jug.length?`${gw} / ${jug.length}`:"—","sur les AO jugés")}${kp("Montant en jeu",ao3K(jeu),"AO en préparation")}</div>
+  <div class="ao3-kb">${AO3_COL.map(([k,l])=>`<div class="chx-kc"><p class="chx-kh"><b>${l}</b><span>${by[k].length}</span></p>${by[k].sort((a,b)=>String(a.dateLimite||"").localeCompare(String(b.dateLimite||""))).map(a=>card(a,k)).join("")||'<p class="dvx-h2">—</p>'}</div>`).join("")}</div>`}
+function ao3Cal(){const A=[...S.ao.entries()].map(([id,a])=>Object.assign({id},a)).filter(a=>["qual","prep","dep"].includes(ao3Col(a))&&(a.dateLimite||"")>=addDays(TODAY,-14)).sort((a,b)=>String(a.dateLimite).localeCompare(String(b.dateLimite)));
+  const t0=P(TODAY),days=[];for(let i=0;i<28;i++){const d=new Date(t0.getTime()+i*864e5);if(d.getDay()%6)days.push(iso(d))}
+  const col={qual:"#0c6ea8",prep:"#F2A33A",dep:"#9aa3a8"};const near=a=>a.dateLimite&&daysBetween(TODAY,a.dateLimite)<=7;
+  const rows=A.map(a=>{const k=ao3Col(a),st=a.dateGo||a.detecteLe||TODAY,en=a.dateLimite||st;const ix=days.map((d,i)=>d>=st&&d<=en?i:-1).filter(i=>i>=0);
+    const c=near(a)&&k==="prep"?"#E53935":col[k];const lab=k==="dep"?"résultat attendu":k==="qual"?`qualif. → dépôt ${ao3Dm(a.dateLimite)}`:`dépôt ${ao3Dm(a.dateLimite)}`;
+    return`<span class="ao3-gn" data-a2open="${esc(a.id)}">${esc((a.ville||a.acheteur||"").slice(0,22))}</span>${ix.length?`<span class="ao3-gb2" data-a2open="${esc(a.id)}" style="grid-column:${ix[0]+2}/${ix[ix.length-1]+3};background:${c}">${esc(lab)}</span>`:`<span class="ao3-gb2 mu" style="grid-column:2/-1">${k==="dep"?"résultat attendu":"hors période"}</span>`}`}).join("");
+  const load=days.map(d=>A.filter(a=>ao3Col(a)==="prep"&&(a.dateGo||a.detecteLe||TODAY)<=d&&d<=(a.dateLimite||d)).length);const mx=Math.max(1,...load);
+  const pk=days.map((d,i)=>[d,load[i]]).filter(x=>x[1]>=2);
+  return ao3Head("cal")+`<section class="fa3card ao3-cal"><div class="dvx-sh"><h3>Dépôts à venir</h3><span class="dvx-l">4 semaines</span></div>
+   <div class="ao3-g" style="--n:${days.length}"><span></span>${days.map(d=>`<span class="ao3-d${d===TODAY?" on":""}">${P(d).getDate()}</span>`).join("")}${rows||'<span class="dvx-h2" style="grid-column:1/-1">Aucun dépôt à venir.</span>'}</div></section>
+  <div class="ao3-2"><section class="dvx-sec"><div class="dvx-sh"><h3>Charge de préparation</h3><span class="dvx-l">AO à préparer en même temps</span></div><div class="ao3-ch">${load.map((v,i)=>`<i style="height:${Math.round(v/mx*100)}%;background:${v>=2?"#E53935":"#29B6F6"}" title="${fd(days[i])} : ${v} AO"></i>`).join("")}</div>
+    <p class="dvx-h2 ${pk.length?"ao3-ko":""}">${pk.length?`Pic le ${fd(pk[0][0])} : ${pk[0][1]} AO à préparer en même temps. Avancez le mémoire du suivant.`:"Pas de pic de préparation sur les 4 prochaines semaines."}</p></section>
+   <section class="dvx-sec"><h3>Capacité chantier si on gagne</h3>${A.filter(a=>ao3Col(a)!=="dep").map(a=>{const ch=vis().filter(d=>d.chantier&&["Planifié","En cours"].includes(d.chantier.statut)).length;return`<p class="ao3-cp">${esc(a.acheteur||a.ville||"")} (${ao3K(num(a.montantEstime))}) : ${num(a.montantEstime)>300000?"demanderait une 3e équipe ou de la sous-traitance !":ch>3?"à caler après les "+ch+" chantiers déjà planifiés":"compatible avec le planning actuel ✓"}</p>`}).join("")||'<p class="dvx-h2">Aucun AO en cours.</p>'}<button type="button" class="dvx-l" data-ao3plan>Voir le planning des équipes →</button></section></div>`}
+const _vAO3=vAO;vAO=function(){if(S.aoId&&S.ao.has(S.aoId))return _vAO3.apply(this,arguments);const md=S.ao3Md||"tab";if(md==="veille")return(_vAO3.apply(this,arguments),ao3Veille());main.innerHTML=md==="cal"?ao3Cal():ao3Tab()};
+function ao3Veille(){const h=main.querySelector(".hh,.phead,.rv2-hero");main.insertAdjacentHTML("afterbegin",ao3Head("veille"));if(h){const t=h.querySelector("h1");if(t)t.remove()}}
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest||S.view!=="ao")return;
+  const m=t.closest("[data-ao3md]");if(m){S.ao3Md=m.dataset.ao3md;if(m.dataset.ao3md==="veille")S.ao2Tab="decider";S.aoId=null;vAO();return}
+  if(t.closest("[data-ao3reg]")){S.ao3Md="veille";S.ao2Tab="reglages";S.aoId=null;vAO();return}
+  if(t.closest("[data-ao3new]")){const b=[...document.querySelectorAll("button")].find(x=>/Ajouter un AO/.test(x.textContent));if(b)b.click();else{S.ao3Md="veille";vAO();setTimeout(()=>{const c=[...document.querySelectorAll("button")].find(x=>/Ajouter un AO/.test(x.textContent));if(c)c.click()},60)}return}
+  if(t.closest("[data-ao3plan]")){setView("planning");return}},true);
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&S.view==="ao"&&e.target.matches&&e.target.matches(".ao3-ci[data-a2open]"))e.target.click()});
+
+/*@@/ao3*/
 boot();
 })();
 </script>
