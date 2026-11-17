@@ -141,6 +141,236 @@
 :root[data-theme="light"] .tabs .tsep{background:#DCE3EA}
 :root[data-theme="light"] .nt-mb,:root[data-theme="light"] .side-burger{color:#0B1921}
 :root[data-theme="light"] .theme-sw button{border-color:#DCE3EA}
+/*@@fa3*/
+.fa3h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 20px}
+.fa3h h1{margin:2px 0 0;font-size:26px}
+.fa3bc{margin:0;font-size:13px;color:var(--muted)}
+.fa3ac{display:flex;gap:8px;align-items:center;position:relative}
+.fa3more{position:relative}
+.fa3mn{position:absolute;right:0;top:calc(100% + 6px);z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:6px;min-width:210px;display:flex;flex-direction:column}
+.fa3mn[hidden]{display:none}
+.fa3mn button{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;font-size:14px;color:var(--ink)}
+.fa3mn button:hover{background:rgba(12,110,168,.08)}
+.fa3back{margin:-8px 0 14px}
+.fa3kp{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.fa3k{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:4px}
+.fa3k:hover{border-color:#9cc7e2}
+.fa3k-l{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fa3k b{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.fa3k b.wa{color:#B4500B}.fa3k b.ko{color:#C62828}.fa3k b.ok{color:#1E7B34}
+.fa3k small{font-size:13px;color:var(--muted)}
+.fa3card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fa3tb{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.fa3tabs{display:flex;gap:4px;flex-wrap:wrap}
+.fa3tabs button{all:unset;cursor:pointer;padding:8px 12px;border-radius:9px;font-weight:700;font-size:14px;color:var(--ink-2)}
+.fa3tabs button i{font-style:normal;font-weight:600;font-size:12px;color:var(--muted);margin-left:3px}
+.fa3tabs button[aria-selected=true]{background:#0F2433;color:#fff}
+.fa3tabs button[aria-selected=true] i{color:#9fb3c2}
+.fa3q{border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:14px;min-width:170px;background:var(--surface);color:var(--ink)}
+.fa3t{width:100%;border-collapse:collapse;font-size:14px}
+.fa3t th{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+.fa3t td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top}
+.fa3t tbody tr{cursor:pointer}
+.fa3t tbody tr:hover td{background:rgba(12,110,168,.04)}
+.fa3t .r{text-align:right}
+.fa3n{display:block;font-weight:800;color:var(--ink)}
+.fa3ty{display:inline-block;margin-top:4px;font-size:11.5px;font-weight:700;color:#0c6ea8;background:rgba(12,110,168,.1);border-radius:6px;padding:1px 7px}
+.fa3c b{display:block;font-weight:700;color:var(--ink)}
+.fa3c small{display:block;font-size:12.5px;color:var(--muted);max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fa3late{color:#C62828;font-weight:700}
+.fa3rd i{display:block;height:4px;border-radius:3px;background:#e7ecf0;margin:8px 0 0 auto;width:110px;overflow:hidden}
+.fa3rd i b{display:block;height:100%;background:#1E7B34;border-radius:3px}
+.fa3p{display:inline-block;font-size:12.5px;font-weight:700;border-radius:7px;padding:3px 8px;white-space:nowrap}
+.fa3p.wa{background:#FDEBD8;color:#B4500B}.fa3p.ko{background:#FBE1E1;color:#C62828}.fa3p.ok{background:#E2F3E6;color:#1E7B34}.fa3p.gr{background:#ECEFF2;color:#5c6b75}
+.fa3a{all:unset;cursor:pointer;color:#0c6ea8;font-weight:700;font-size:14.5px}
+.fa3a:hover{text-decoration:underline}
+[data-theme=dark] .fa3tabs button[aria-selected=true]{background:#2a4a60}
+[data-theme=dark] .fa3p.wa{background:rgba(244,140,50,.18);color:#f4a462}[data-theme=dark] .fa3p.ko{background:rgba(229,83,83,.18);color:#f08a8a}[data-theme=dark] .fa3p.ok{background:rgba(76,175,80,.18);color:#7fd087}[data-theme=dark] .fa3p.gr{background:rgba(255,255,255,.08);color:#aab6bf}
+[data-theme=dark] .fa3k b.wa{color:#f4a462}[data-theme=dark] .fa3k b.ko{color:#f08a8a}[data-theme=dark] .fa3k b.ok{color:#7fd087}
+[data-theme=dark] .fa3rd i{background:rgba(255,255,255,.1)}
+@media (max-width:860px){.fa3kp{grid-template-columns:1fr 1fr}.fa3t th:nth-child(3),.fa3t td:nth-child(3){display:none}}
+
+/*@@/fa3*/
+/*@@dvx*/
+/* en-tête */
+.phead.dv-bar[data-dvx]{display:block;padding-bottom:0}
+.phead.dv-bar[data-dvx]>div:not(.dvx-h),.phead.dv-bar[data-dvx]>.acts,.phead.dv-bar[data-dvx]>.lede{display:none!important}
+.dvx-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.dvx-bc{all:unset;cursor:pointer;font-size:13px;color:var(--muted)}
+.dvx-bc:hover{color:#0c6ea8}
+.dvx-t h1{margin:2px 0 0;font-size:24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dvx-dirty{font-size:12.5px;font-weight:700;color:var(--warn)}
+.dvx-st,.dvx-ty{font-size:12.5px;font-weight:700;border-radius:7px;padding:3px 9px;letter-spacing:0}
+.dvx-st.gr{background:#ECEFF2;color:#5c6b75}.dvx-st.bl,.dvx-ty{background:rgba(12,110,168,.1);color:#0c6ea8}.dvx-st.ok{background:#E2F3E6;color:#1E7B34}.dvx-st.ko{background:#FBE1E1;color:#C62828}
+.dvx-a{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dvx-mw{position:relative}
+.dvx-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:40;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.16);padding:6px;min-width:230px;display:flex;flex-direction:column;gap:2px}
+.dvx-menu[hidden]{display:none}
+.dvx-menu>*{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 12px;border-radius:8px;font-size:14px;color:var(--ink);display:block}
+.dvx-menu>*:hover{background:rgba(12,110,168,.08)}
+.dvx-menu .sm{display:none}
+/* onglets */
+#dv-form.dvx~*,.dvt-bar{margin-top:6px}
+/* mise en page 2 colonnes, récapitulatif toujours visible */
+#dv-form.dvx{grid-template-columns:minmax(0,1fr) 320px!important}
+#dv-form.dvx>#dv-out{display:block!important}
+#dv-form.dvx>.dv-wbar,#dv-form.dvx [data-dvwide]{display:none!important}
+#dv-form.dvx #dv-out>.dv-tabs{display:none}
+#dv-form.dvx #dv-out>#dvx-rc+.card:not(.fa-sc):not(.dvoff){display:none}
+#dv-form.dvx #dv-out.dv-pvon>#dvx-rc{display:none}
+.dvx-rc{padding:20px!important}
+.dvx-rc h3{margin:0 0 14px;font-size:16px}
+.dvx-rl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0;font-size:14.5px}
+.dvx-rl span{color:var(--ink-2)}.dvx-rl b{font-weight:700;color:var(--ink);text-align:right}
+.dvx-rl.neg b{color:#B4500B}.dvx-rl.sm{font-size:13.5px}.dvx-rl.strong b{color:#0c6ea8}
+.dvx-big{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:10px 0;padding:14px 0}
+.dvx-big span{font-size:15px;color:var(--ink)}.dvx-big b{font-size:25px;font-weight:800;color:#0c6ea8;white-space:nowrap}
+.dvx-kp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}
+.dvx-kp>div{background:rgba(15,36,51,.04);border-radius:10px;padding:10px 12px}
+.dvx-kp span{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dvx-kp b{font-size:17px;font-weight:800;color:var(--ink)}.dvx-kp b.ok{color:#1E7B34}.dvx-kp b.ko{color:#C62828}
+.dvx-h2{font-size:12.5px;color:var(--muted);line-height:1.5;margin:10px 0 0}
+.dvx-l{all:unset;cursor:pointer;color:#0c6ea8;font-weight:700}
+.dvx-l:hover{text-decoration:underline}
+/* cartes client / chantier */
+.dvx-cc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dvx-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.dvx-card>div:last-child{flex:1;min-width:0}
+.dvx-card b{display:block;font-size:15.5px;color:var(--ink);margin:2px 0 3px}
+.dvx-card p{margin:1px 0;font-size:13.5px;color:var(--ink-2)}
+.dvx-ch{display:flex;justify-content:space-between;gap:8px}
+.dvx-cl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.dvx-av,.dvx-ci{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px}
+.dvx-av{background:rgba(12,110,168,.1);color:#0c6ea8}
+.dvx-ci.ch{background:#FDF0E2;color:#C77B2A}.dvx-ci.ok{background:#E2F3E6;color:#1E7B34}
+#dv-form.dvx .cli-det:not([open]){display:none}
+#dv-form:not([data-tab="contenu"]) .dvx-cc,#dv-form:not([data-tab="contenu"]) .dvx-avw{display:none}
+/* lignes : présentation lecture, saisie au clic */
+#dv-form.dvx .dv-lh h3,#dv-form.dvx .dv-lh .dv-lhb [data-dvwide]{display:none}
+#dv-form.dvx .dvc{grid-template-columns:22px 52px minmax(0,1fr) 70px 64px 92px 0 104px!important}
+#dv-form.dvx.dvx-mt .dvc{grid-template-columns:22px 52px minmax(0,1fr) 70px 64px 92px 66px 104px!important}
+#dv-form.dvx .dv-row>.dvx[data-lk="q"],#dv-form.dvx .dv-head>span:nth-child(5){order:4}
+#dv-form.dvx .dv-row>[data-lk="u"],#dv-form.dvx .dv-head>span:nth-child(4){order:5}
+#dv-form.dvx .dv-row>[data-lk="pu"],#dv-form.dvx .dv-head>span:nth-child(6){order:6}
+#dv-form.dvx .dv-row>.dv-tva,#dv-form.dvx .dv-head>span:nth-child(7){order:7}
+#dv-form.dvx .dv-row>.dv-tot,#dv-form.dvx .dv-head>span:nth-child(8),#dv-form.dvx .dv-row>.dv-sub{order:8}
+#dv-form.dvx .dv-row>.dv-qa,#dv-form.dvx .dv-row>.dv-gtb,#dv-form.dvx .dv-row>*:nth-child(n+9){order:9}
+#dv-form.dvx:not(.dvx-mt) .dv-row>.dv-tva,#dv-form.dvx:not(.dvx-mt) .dv-head>span:nth-child(7){visibility:hidden;width:0;overflow:hidden;padding:0;border:0}
+#dv-form.dvx .dv-head{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#dv-form.dvx .dv-row .dvi{border-color:transparent;background:transparent;box-shadow:none}
+#dv-form.dvx .dv-row:hover .dvi:not([disabled]),#dv-form.dvx .dv-row .dvi:focus{border-color:var(--line);background:var(--surface)}
+#dv-form.dvx .dv-row .dvi:focus{border-color:#0c6ea8;box-shadow:0 0 0 3px rgba(12,110,168,.15)}
+#dv-form.dvx .dv-row:focus-within{background:#FFFBF0;box-shadow:inset 0 -2px 0 #F2B33D,inset 0 2px 0 #F2B33D}
+#dv-form.dvx .dv-tot{font-weight:800;color:var(--ink)}
+#dv-form.dvx .dv-n{color:var(--muted);font-size:12.5px}
+#dv-form.dvx .dv-g.dv-l1{background:#0F2433!important;color:#fff}
+#dv-form.dvx .dv-g.dv-l1 .dvi,#dv-form.dvx .dv-g.dv-l1 .dv-n,#dv-form.dvx .dv-g.dv-l1 .dv-fold{color:#fff!important;font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+#dv-form.dvx .dv-g.dv-l1 .dv-n{color:#4FC3F7!important}
+#dv-form.dvx .dv-g.dv-l1 .dvi:focus{color:var(--ink)!important;text-transform:none}
+#dv-form.dvx .dv-g.dv-l2{background:#E6F3FB!important}
+#dv-form.dvx .dv-g.dv-l2 .dvi,#dv-form.dvx .dv-g.dv-l2 .dv-n{color:#0c6ea8!important;font-weight:800}
+#dv-form.dvx .dv-g.dv-l3{background:var(--surface)!important;box-shadow:inset 3px 0 0 #0c6ea8}
+#dv-form.dvx .dv-g.dv-l3 .dvi,#dv-form.dvx .dv-g.dv-l3 .dv-n{color:#0c6ea8!important;font-weight:700}
+#dv-form.dvx .dv-g .dv-sub .dvi{font-weight:800}
+/* barre d'ajout */
+#dv-form.dvx .dv-addbar{display:flex!important;flex-wrap:wrap;gap:8px;align-items:center}
+#dv-form.dvx .dv-addbar[hidden]{display:none!important}
+.dvx-sw{flex:1 1 260px!important;min-width:240px!important;order:-1}
+.dvx-sw input{border:1.5px solid #0c6ea8!important;border-radius:10px!important;padding:10px 12px!important}
+#dv-form.dvx .dv-addbar [data-dvadd="ol"]{order:5}
+.dvx-tw{position:relative}
+.dvx-tm{position:absolute;left:0;bottom:calc(100% + 6px);z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.16);padding:6px;min-width:190px;display:flex;flex-direction:column}
+.dvx-tm[hidden]{display:none}
+.dvx-tm button{all:unset;cursor:pointer;padding:8px 12px;border-radius:8px;font-size:14px;color:var(--ink)}
+.dvx-tm button:hover{background:rgba(12,110,168,.08)}
+/* conditions, paiement */
+#dvt-cond[data-dvx]{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;display:none;flex-direction:column;gap:16px}
+#dv-form[data-tab="cond"] #dvt-cond[data-dvx]{display:flex}
+.dvx-sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 24px}
+.dvx-sec h3{margin:0 0 12px;font-size:16px}
+.dvx-sh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.dvx-sh h3{margin:0}
+.dvx-g2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.dvx-g2 .f label{display:block;font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
+.dvx-g2 input,.dvx-g2 select,.dvx-sel{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:14px;background:var(--surface);color:var(--ink);text-align:left;font-family:inherit}
+.dvx-sel{cursor:pointer}
+.dvx-suf{display:flex;align-items:center;gap:8px}.dvx-suf span{color:var(--muted);font-size:14px}
+.dvx-more{margin-top:12px}.dvx-more summary{cursor:pointer;font-size:13px;color:#0c6ea8;font-weight:700}
+.dvx-more .adj{margin-top:10px}
+.dvx-er{display:grid;grid-template-columns:28px minmax(0,1fr) 90px 120px 28px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.dvx-en{color:var(--muted);text-align:center}
+.dvx-el{border:1px solid transparent!important;background:transparent!important;font-size:14.5px}
+.dvx-el:hover,.dvx-el:focus{border-color:var(--line)!important;background:var(--surface)!important}
+.dvx-ep{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:2px 8px}
+.dvx-ep input{border:0!important;width:100%;text-align:right;background:transparent}
+.dvx-er>b{text-align:right}
+.dvx-x{all:unset;cursor:pointer;color:var(--muted);text-align:center}.dvx-x[disabled]{opacity:.3;cursor:default}
+.dvx-eb{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.dvx-mod select{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:700;font-size:14px;background:var(--surface);color:var(--ink);cursor:pointer}
+.dvx-warn{color:#C62828;font-size:13px;font-weight:700;margin:8px 0 0}
+#dvt-cond[data-dvx] #dv-ech{display:block}
+.dvx-pr{display:grid;grid-template-columns:110px 1fr auto;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.dvx-pr.tot{border-bottom:0;font-weight:800}
+/* situation */
+.dvx-avw{display:flex;flex-direction:column;gap:14px}
+#dv-form.dvx-sit:not(.dvx-showl) .et-in>.card:not(.dvt-p),#dv-form.dvx-sit:not(.dvx-showl) .fa-opts{display:none}
+.dvx-avh{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.dvx-avh>b{flex:1;min-width:220px}
+.dvx-avm{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
+.dvx-avm button{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:7px;padding:3px 9px;font-weight:700;font-size:12.5px;color:var(--ink-2)}
+.dvx-avm button[aria-pressed=true]{background:#0F2433;color:#fff;border-color:#0F2433}
+.dvx-avt{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:auto}
+.dvx-avt table{width:100%;border-collapse:collapse;font-size:14px}
+.dvx-avt th{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dvx-avt td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.dvx-avt .r{text-align:right;white-space:nowrap}.dvx-avt .mu{color:var(--muted)}
+.dvx-ag td{background:#0F2433;color:#fff;font-weight:800}
+.dvx-all{all:unset;cursor:pointer;color:#4FC3F7;font-size:11.5px;font-weight:700;margin-left:8px}
+.dvx-ap{min-width:170px}
+.dvx-ap i{display:inline-block;width:70px;height:6px;border-radius:4px;background:#e7ecf0;vertical-align:middle;margin-right:8px;overflow:hidden}
+.dvx-ap i b{display:block;height:100%;background:#29B6F6;border-radius:4px}
+.dvx-ap input{width:64px;border:1px solid var(--line);border-radius:7px;padding:4px 6px;text-align:right;font-size:13.5px;background:var(--surface);color:var(--ink)}
+.dvx-ap small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;padding-left:78px}
+.dvx-avt tfoot td{background:#E6F3FB;color:#0c6ea8;font-weight:800;border-bottom:0}
+[data-theme="dark"] .dvx-ag td{background:#1d3446}[data-theme="dark"] .dvx-avt tfoot td{background:rgba(12,110,168,.18);color:#7cc4ee}
+[data-theme="dark"] #dv-form.dvx .dv-g.dv-l2{background:rgba(12,110,168,.18)!important}
+[data-theme="dark"] #dv-form.dvx .dv-g.dv-l2 .dvi,[data-theme="dark"] #dv-form.dvx .dv-g.dv-l2 .dv-n,[data-theme="dark"] #dv-form.dvx .dv-g.dv-l3 .dvi{color:#7cc4ee!important}
+[data-theme="dark"] #dv-form.dvx .dv-row:focus-within{background:rgba(242,179,61,.08)}
+[data-theme="dark"] .dvx-kp>div{background:rgba(255,255,255,.05)}
+[data-theme="dark"] .dvx-st.gr{background:rgba(255,255,255,.08);color:#aab6bf}
+@media (max-width:1100px){#dv-form.dvx{grid-template-columns:1fr!important}.dvx-cc{grid-template-columns:1fr}}
+#dv-form.dvx #dv-out>.dv-tabs+.card{display:none}
+#dv-form.dvx #dv-out.dv-pvon>.dv-tabs+.card{display:block}
+.dvx-rc h3{text-transform:none!important;letter-spacing:0!important;color:var(--ink)!important;font-size:16px!important;font-weight:800}
+.dvx-rl b{white-space:nowrap}
+#dv-form.dvx .dv-g .dvi,#dv-form.dvx .dv-g .dvi[disabled]{background:transparent!important;border-color:transparent}
+#dv-form.dvx .dv-g.dv-l1:hover .dvi:not([disabled]){border-color:rgba(255,255,255,.25)}
+#dv-form.dvx textarea.dvi{field-sizing:content;min-height:22px;resize:none;overflow:hidden}
+#dv-form.dvx .dv-row select.dvi{appearance:none;-webkit-appearance:none;background-image:none!important;padding-right:4px}
+#dv-form.dvx .dv-row .dvi[disabled]{opacity:1;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+#dv-form.dvx .dv-g.dv-l1 .dvi[disabled]{color:#fff;-webkit-text-fill-color:#fff}
+#dv-form.dvx .dv-g.dv-l2 .dvi[disabled],#dv-form.dvx .dv-g.dv-l3 .dvi[disabled]{-webkit-text-fill-color:#0c6ea8}
+.dvb-tab{display:none!important}
+#dv-form.dvx .fa-opts{display:none}
+#dvt-cond .fa-opts{display:flex!important;flex-direction:column;gap:8px;margin-top:12px}
+.dvx-lg{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);width:100%}
+.dvx-lg i{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.dvx-lg .l1{background:#0F2433}.dvx-lg .l2{background:#E6F3FB;border:1px solid #b9dcf0}.dvx-lg .l3{width:3px;background:#0c6ea8;border-radius:0}
+.dvx-lg .sp{flex:1}.dvx-lg .hn{color:var(--muted)}
+#dv-form.dvx .dv-lh{border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:4px}
+#dv-form.dvx .dv-lh{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}
+.dvx-lg{width:auto;flex:1}
+#dv-form.dvx .dv-sub::after{content:" €";font-weight:800}
+#dv-form.dvx .dv-sub{display:flex;align-items:center;justify-content:flex-end;gap:2px}
+#dv-form.dvx .dv-sub .dvi{text-align:right;width:100%}
+#dv-form.dvx #dv-out>.fa-sc{display:none}
+#dv-form.dvx #dv-out>.card:has(.kpi2){display:none}
+.dvx-avt th,.dvx-avt td{padding:10px 10px}
+.dvx-avt td:first-child{min-width:230px}
+.dvx-avt th:nth-child(2),.dvx-avt th:nth-child(3){white-space:normal}
+.dvx-ap{min-width:150px;white-space:nowrap}.dvx-ap i{width:56px}.dvx-ap small{padding-left:64px}
+.dvx-ag td:first-child{white-space:normal}
+
+/*@@/dvx*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -7155,6 +7385,244 @@ document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)retur
   if(t.closest("[data-focopy]")){const x=document.getElementById("fo-txt");try{await navigator.clipboard.writeText(x.value);toast("Texte copié")}catch(_){x.select()}return}});
 document.addEventListener("change",async e=>{const x=e.target;if(x.matches&&x.matches("[data-fop]")){S.foP=x.value;render();return}if(x.dataset&&x.dataset.rhd2!=null){const i=+x.dataset.rhd2;await rhPut(S.rhOpen,p=>{p.docs[i].fin=x.value||null})}});
 
+/*@@fa3*/
+/* ===== Factures v3 — liste conforme à la maquette 11 ===== */
+const FA3_TB=[["toutes","Toutes"],["brouillons","Brouillons"],["encaisser","À encaisser"],["retard","En retard"],["payees","Payées"]];
+const FA3_TYB={acompte:"Acompte",situation:"Situation",finale:"Solde",avoir:"Avoir",libre:"Facture"};
+const MOIS_FR=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+function fa3St(f){if(!f.num)return["Brouillon","gr"];if(f.type==="avoir")return["Avoir","gr"];if(f.statut==="Payée"||faReste(f)<=0.5)return["Payée","ok"];
+  if(faLate(f))return[faPaid(f)>0?"Reste dû":"En retard","ko"];return[faPaid(f)>0?"Reste dû":"À encaisser","wa"]}
+function fa3ResteAFact(){let ht=0,n=0;S.devis.forEach((d,id)=>{if(d.statut!=="Signé")return;const k=dvCalc(d);const em=faOfDevis(id).map(([,x])=>x).filter(x=>x.num&&x.type!=="avoir");
+  if(em.some(x=>x.type==="finale"))return;const r=k.ht-em.reduce((a,x)=>a+dvCalc(x).ht,0);if(r>1){ht+=r;n++}});return{ht,n}}
+function faList2(){const q=bibNorm(S.faQ).trim(),tb=FA3_TB.some(x=>x[0]===S.faFlt)?S.faFlt:"toutes";
+  const all=[...S.fac.entries()];
+  const F={toutes:f=>true,brouillons:f=>!f.num,encaisser:f=>f.num&&f.type!=="avoir"&&f.statut!=="Payée"&&faReste(f)>0.5,retard:f=>f.num&&f.type!=="avoir"&&f.statut!=="Payée"&&faLate(f)&&faReste(f)>0.5,payees:f=>f.num&&f.type!=="avoir"&&(f.statut==="Payée"||faReste(f)<=0.5)};
+  const open=all.filter(([,f])=>F.encaisser(f)),late=all.filter(([,f])=>F.retard(f));
+  const ym=TODAY.slice(0,7);let encM=0,nP=0;all.forEach(([,f])=>(f.paiements||[]).forEach(p=>{if(String(p.date||"").slice(0,7)===ym){encM+=num(p.montant);nP++}}));
+  const raf=fa3ResteAFact();
+  const lateNames=late.map(([,f])=>(f.client&&f.client.nom)||"").filter(Boolean);
+  const kp=(l,v,s,c,flt)=>`<button type="button" class="fa3k" data-faflt="${flt||""}"><span class="fa3k-l">${l}</span><b class="${c}">${v}</b><small>${s}</small></button>`;
+  const L=all.filter(([,f])=>!q||bibNorm([f.num,f.client&&f.client.nom,f.client&&f.client.ville,f.objet,f.devisNum].join(" ")).includes(q));
+  const R=L.filter(([,f])=>F[tb](f)).sort((a,b)=>(a[1].num?1:0)-(b[1].num?1:0)||faNumInt(b[1].num)-faNumInt(a[1].num)||String(b[1].updatedAt||"").localeCompare(String(a[1].updatedAt||"")));
+  const per=S.obPer||25,pg=obPager("faPage",R.length,per);
+  const dm=s=>s?s.slice(8,10)+"/"+s.slice(5,7):"—";
+  const rows=R.slice(pg.from,pg.to).map(([id,f])=>{const k=dvCalc(f),c=f.client||{},[st,sc]=fa3St(f),net=faNet(f),rest=f.num&&f.type!=="avoir"?faReste(f):null,paid=net>0?Math.min(100,Math.round(100*faPaid(f)/net)):0;
+    const act=f.num&&f.type!=="avoir"&&rest>0.5?`<button type="button" class="fa3a" data-faenc="${esc(id)}">Encaisser</button>`:`<button type="button" class="fa3a" data-fao2="${esc(id)}">Voir</button>`;
+    return`<tr data-fao="${esc(id)}" tabindex="0"><td><b class="fa3n">${f.num?esc(f.num):"Brouillon"}</b><span class="fa3ty">${esc(FA3_TYB[f.type]||"Facture")}${f.type==="situation"&&f.sitN?" n°"+f.sitN:""}</span></td>
+    <td class="fa3c"><b>${esc(c.nom||"—")}</b><small>${esc(f.objet||c.ville||"")}</small></td>
+    <td>${dm(f.date)}</td><td class="${sc==="ko"?"fa3late":""}">${f.num&&f.type!=="avoir"?dm(faDue(f)):"—"}</td>
+    <td class="r"><b>${f.type==="avoir"?"− ":""}${eur2(k.ttc)}</b></td>
+    <td class="r fa3rd">${rest==null?"—":rest>0.5?eur2(rest):"—"}${rest==null?"":`<i><b style="width:${paid}%"></b></i>`}</td>
+    <td><span class="fa3p ${sc}">${st}</span></td><td class="r">${act}</td></tr>`}).join("");
+  const cnt=k=>L.filter(([,f])=>F[k](f)).length;
+  return`<div class="fa3kp">${kp("À encaisser",eur2(open.reduce((a,[,f])=>a+faReste(f),0)),`${open.length} facture${open.length>1?"s":""} ouverte${open.length>1?"s":""}`,"wa","encaisser")}
+   ${kp("En retard",eur2(late.reduce((a,[,f])=>a+faReste(f),0)),late.length?`${late.length} facture${late.length>1?"s":""} · ${esc(lateNames.slice(0,2).join(", "))}`:"aucune","ko","retard")}
+   ${kp("Encaissé en "+MOIS_FR[+TODAY.slice(5,7)-1],eur2(encM),`${nP} paiement${nP>1?"s":""}`,"ok","payees")}
+   ${kp("Reste à facturer",eur(Math.round(raf.ht)),`${raf.n} chantier${raf.n>1?"s":""} signé${raf.n>1?"s":""}`,"","").replace("data-faflt=\"\"","data-fatab=\"afaire\"")}</div>
+  <div class="fa3card"><div class="fa3tb"><div class="fa3tabs" role="tablist">${FA3_TB.map(([k,l])=>`<button type="button" role="tab" data-faflt="${k}" aria-selected="${k===tb}">${l} <i>${cnt(k)}</i></button>`).join("")}</div>
+   <input class="fa3q" id="fa-q" type="search" placeholder="🔍 Client, n°, chantier…" value="${esc(S.faQ)}" aria-label="Rechercher une facture"></div>
+  ${R.length?`<div class="ob-scroll"><table class="fa3t fa-t"><thead><tr><th>N°</th><th>Client · chantier</th><th>Date</th><th>Échéance</th><th class="r">Total TTC</th><th class="r">Reste dû</th><th>Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${pg.html}`
+   :`<div class="empty" style="margin:18px">${all.length?"Aucune facture pour ce filtre.":"Aucune facture pour l'instant."}</div>`}</div>`}
+function faHead(){return`<div class="fa3h"><div><p class="fa3bc">Facturation</p><h1>Factures</h1></div><div class="fa3ac">
+  <button type="button" class="btn" data-fadext>Exporter pour Dext</button><button type="button" class="btn pri" id="fa-new">＋ Nouvelle facture</button>
+  <div class="fa3more"><button type="button" class="btn" data-fa3more aria-label="Autres vues">⋯</button><div class="fa3mn" hidden>
+   <button type="button" data-fatab="liste">Factures</button><button type="button" data-fatab="afaire">À facturer</button><button type="button" data-fatab="treso">Trésorerie</button><button type="button" data-fatab="suivi">Suivi hors Pilotage</button><button type="button" data-fablank>Facture vierge</button></div></div></div></div>
+  ${faTabCur()!=="liste"?`<div class="fa3back"><button type="button" class="linkbtn" data-fatab="liste">‹ Retour à la liste des factures</button></div>`:""}`}
+document.addEventListener("click",e=>{const m=e.target.closest&&e.target.closest("[data-fa3more]");const mn=document.querySelector(".fa3mn");
+  if(m){if(mn)mn.hidden=!mn.hidden;return}if(mn&&!mn.hidden&&!e.target.closest(".fa3mn"))mn.hidden=true});
+
+/*@@/fa3*/
+/*@@dvx*/
+/* ===== Éditeur devis / facture v3 — maquettes 2, 4, 6, 12, 13, 14 ===== */
+const dvxIni=n=>{const w=String(n||"").replace(/[().,]/g," ").split(/\s+/).filter(x=>x&&!/^(et|de|du|la|le|les)$/i.test(x));return((w[0]||"?")[0]+((w[1]||"")[0]||"")).toUpperCase()};
+const dvxDm=s=>s?s.slice(8,10)+"/"+s.slice(5,7):"";
+function dvxStPill(d){const FA=isFa();
+  if(FA){if(!d.num)return`<span class="dvx-st gr">Brouillon</span>`;if(d.type!=="avoir"&&(d.statut==="Payée"||faReste(d)<=0.5))return`<span class="dvx-st ok">Payée</span>`;if(faLate(d))return`<span class="dvx-st ko">En retard</span>`;return`<span class="dvx-st bl">Émise${d.envoyeeLe?" · envoyée le "+dvxDm(d.envoyeeLe):""}</span>`}
+  const s=d.statut||"Brouillon",c={"Signé":"ok","Perdu":"ko","Expiré":"ko","Envoyé":"bl","Relancé":"bl"}[s]||"gr";
+  return`<span class="dvx-st ${c}">${esc(s)}${(s==="Envoyé"||s==="Relancé")&&d.envoyeLe?" le "+dvxDm(d.envoyeLe):""}${s==="Signé"&&d.signeLe?" le "+dvxDm(d.signeLe):""}</span>`}
+function dvxSitN(d){if(d.sitN)return d.sitN;if(!d.devisId)return 1;return faOfDevis(d.devisId).filter(([,x])=>x.type==="situation"&&x.num).length+(d.num?0:1)}
+function dvxTyp(d){if(!isFa())return"";const t=d.type==="finale"?"Facture de solde":d.type==="acompte"?"Facture d'acompte":d.type==="situation"?"Situation n°"+dvxSitN(d):d.type==="avoir"?"Avoir":"Facture";return`<span class="dvx-ty">${t}</span>`}
+function dvxAct(sel){const a=document.querySelector(".dvx-menu");return a?a.querySelector(sel):null}
+function dvxHead(){const ph=document.querySelector(".phead.dv-bar");if(!ph||ph.dataset.dvx)return;ph.dataset.dvx="1";const d=S.dvDraft,FA=isFa();
+  const acts=ph.querySelector(".acts");const draft=FA&&!d.num;const send=FA?(d.num?"fa":""):"dv";
+  const h=document.createElement("div");h.className="dvx-h";
+  h.innerHTML=`<div class="dvx-t"><button type="button" class="dvx-bc" data-dvx="back">${FA?"Factures":"Devis"} ›</button><h1>${esc(d.num||(FA?"Nouvelle facture":"Nouveau devis"))} ${dvxStPill(d)} ${dvxTyp(d)}</h1><span class="dvx-dirty" id="dvx-dirty"></span></div>
+  <div class="dvx-a"><button type="button" class="btn" data-dvx="pv">Aperçu</button>${FA?"":`<button type="button" class="btn" data-dvbar="pdf">Télécharger PDF</button>`}
+   <div class="dvx-mw"><button type="button" class="btn" data-dvx="menu" aria-label="Autres actions">⋯</button><div class="dvx-menu" hidden></div></div>
+   ${draft&&document.getElementById("fa-emit")?`<button type="button" class="btn" data-dvx="emit">Valider et numéroter</button>`:""}
+   ${document.getElementById("dv-save")&&(FA?!d.num:(!d.statut||d.statut==="Brouillon"))?`<button type="button" class="btn" data-dvx="save">Enregistrer</button>`:""}
+   <button type="button" class="btn pri" data-dvx="send"${FA&&!d.num?' title="Validez et numérotez d\'abord la facture"':""}>Envoyer au client</button></div>`;
+  ph.prepend(h);const mn=h.querySelector(".dvx-menu");
+  if(acts){[...acts.children].forEach(b=>{if(b.id==="dv-dirty"){b.style.display="none";return}mn.appendChild(b)})}
+  const bk=document.getElementById("dv-back");if(bk)mn.appendChild(Object.assign(bk,{textContent:FA?"Retour aux factures":"Retour aux devis"}));
+  const dd=document.getElementById("dv-dirty");if(dd){const up=()=>{const x=document.getElementById("dvx-dirty");if(x)x.textContent=dd.textContent};new MutationObserver(up).observe(dd,{childList:true,characterData:true,subtree:true});up()}}
+function dvxCards(){const inn=document.querySelector("#dv-form .et-in");if(!inn||document.getElementById("dvx-cc"))return;const d=S.dvDraft,FA=isFa(),c=d.client||{};
+  const nom=c.nom||"Client à renseigner",adr=c.cadr||c.adresse||"",cp=c.ccp||c.cp||"",vi=c.cville||c.ville||"";
+  let cl,ch;
+  if(FA){const dv=d.devisId&&S.devis.get(d.devisId);
+    cl=`<p>${esc(d.objet||"")}</p>${dv?`<p>Devis ${esc(dv.num||"")}${dv.statut==="Signé"?" signé":""}${dv.signeLe?" le "+dvxDm(dv.signeLe):""} · <button type="button" class="dvx-l" data-dvx="devis">voir le devis</button></p>`:`<p>${esc([adr,[cp,vi].filter(Boolean).join(" ")].filter(Boolean).join(", "))}</p>`}`;
+    const dos=d.dossierId&&S.docs.get(d.dossierId),k=dos&&dos.chantier||{};const fin=k.dateReception&&k.dateReception<=TODAY;
+    const autres=d.devisId?faOfDevis(d.devisId).filter(([j,x])=>x.num&&j!==S.dv&&x.type!=="avoir").map(([,x])=>(FA3_TYB[x.type]||"facture").toLowerCase()+" "+x.num):[];
+    ch=`<div class="dvx-ci ${fin?"ok":"ch"}">${fin?"✓":"⌂"}</div><div><span class="dvx-cl">Chantier</span><b>${dos?(fin?"Terminé le "+dvxDm(k.dateReception):esc(k.statut||"En cours")):"Sans chantier lié"}</b>
+     ${dos&&k.dateDebut?`<p>${fin?"Réception le "+fd(k.dateReception):"Démarrage le "+fd(k.dateDebut)}</p>`:""}<p>Facturé à ce jour : ${autres.length?esc(autres.join(", ")):"rien"}</p></div>`}
+  else{cl=`<p>${esc(adr)}</p><p>${esc([cp,vi].filter(Boolean).join(" "))}${c.tel?" · "+esc(c.tel):""}</p>`;
+    const autre=c.cadr&&c.adresse&&bibNorm(c.cadr)!==bibNorm(c.adresse);
+    ch=`<div class="dvx-ci ch">⌂</div><div><div class="dvx-ch"><span class="dvx-cl">Chantier</span><button type="button" class="dvx-l" data-dvx="cli">Modifier</button></div><b>${esc(d.objet||"Travaux de toiture")}</b>
+     <p>${autre?esc([c.adresse,[c.cp,c.ville].filter(Boolean).join(" ")].filter(Boolean).join(", ")):"Même adresse que le client"}</p><p>Devis du ${fd(d.date)} · valable ${esc(d.validite||S.cfg.dvValidite||30)} jours</p></div>`}
+  const box=document.createElement("div");box.id="dvx-cc";box.className="dvx-cc";
+  box.innerHTML=`<div class="dvx-card"><div class="dvx-av">${esc(dvxIni(nom))}</div><div><div class="dvx-ch"><span class="dvx-cl">Client</span>${FA&&d.num?"":`<button type="button" class="dvx-l" data-dvx="cli">Changer</button>`}</div><b>${esc(nom)}</b>${cl}</div></div><div class="dvx-card">${ch}</div>`;
+  inn.prepend(box)}
+function dvxRecap(){const o=document.getElementById("dv-out");if(!o||!S.dvDraft)return;const d=S.dvDraft,FA=isFa(),k=dvCalc(d);
+  let el=document.getElementById("dvx-rc");if(!el){el=document.createElement("div");el.id="dvx-rc";el.className="card dvx-rc"}
+  o.prepend(el);const r=(l,v,c)=>`<div class="dvx-rl${c?" "+c:""}"><span>${l}</span><b>${v}</b></div>`;
+  const tv=k.tvas.map(t=>r(`TVA ${nf(t.t*100,1)} %`,eur2(t.v))).join("");
+  if(FA&&d.type==="situation"&&d.avDet){const A=dvxSitCalc(d);
+    el.innerHTML=`<h3>Situation n°${dvxSitN(d)}</h3>${r("Cumul réalisé HT",eur2(A.cum))}${r("Situations précédentes","− "+eur2(A.prev),"neg")}${d.rg?r(`Retenue de garantie ${nf(num(d.rg)*100,0)} %`,"− "+eur2(faRG(d)),"neg"):""}${tv}
+    <div class="dvx-big"><span>Net à payer TTC</span><b>${eur2(faNet(d))}</b></div><p class="dvx-h2">On glisse l'avancement poste par poste : le montant à facturer se calcule tout seul, déductions comprises.</p>`}
+  else if(FA){const L=d.lignes||[];let ded=0;L.forEach(l=>{if(l.t!=="g"&&l.ded)ded+=num(l.q)*num(l.pu)});const trav=k.ht-ded;
+    el.innerHTML=`<h3>Récapitulatif</h3>${ded?r("Travaux HT",eur2(trav))+r("Acompte déjà facturé","− "+eur2(Math.abs(ded)),"neg")+r("Net HT",eur2(k.ht)):r("Total HT",eur2(k.ht))}${tv}${d.rg?r(`Retenue de garantie ${nf(num(d.rg)*100,0)} %`,"− "+eur2(faRG(d)),"neg"):""}
+    <div class="dvx-big"><span>${d.type==="avoir"?"Montant de l'avoir TTC":"Net à payer TTC"}</span><b>${eur2(d.type==="avoir"?k.ttc:faNet(d))}</b></div>
+    ${d.type==="avoir"?"":r("Échéance",`${Math.max(0,Math.round((new Date(faDue(d))-new Date(d.date||TODAY))/864e5))} jours · ${fd(faDue(d))}`)+r("Mode",esc(d.mode||"Virement"))}
+    ${d.num&&d.type!=="avoir"?r("Déjà réglé",eur2(faPaid(d)))+r("Reste dû",eur2(faReste(d)),"strong"):""}
+    <p class="dvx-h2">${d.type==="finale"?"Toutes les lignes sont reprises du devis signé : rien à retaper. Les acomptes déjà facturés sont déduits automatiquement.":d.num?"Facture émise : pour la corriger, faites un avoir.":"Vérifiez les lignes, puis « Valider et numéroter »."}</p>`}
+  else{const rem=(k.adj||[]).filter(a=>/remise/i.test(a.k||a.lib||""));
+    el.innerHTML=`<h3>Récapitulatif</h3>${(k.adj&&k.adj.length)?r("Total des lignes HT",eur2(k.brut))+(k.adj.map(a=>r(esc(a.lib),(a.v>0?"+ ":"− ")+eur2(Math.abs(a.v)),a.v<0?"neg":"")).join("")):""}${r("Total HT",eur2(k.ht))}${rem.length?"":`<div class="dvx-rl"><span>Remise</span><button type="button" class="dvx-l" data-dvx="remise">＋ Ajouter</button></div>`}${tv}
+    <div class="dvx-big"><span>Total TTC</span><b>${eur2(k.ttc)}</b></div>
+    <div class="dvx-kp"><div><span>Marge</span><b class="${k.mPct==null?"":k.mPct<MARGE_MIN()?"ko":"ok"}">${k.mPct==null?"—":Math.round(k.mPct*100)+" %"}</b></div><div><span>Main-d'œuvre</span><b>${nf(k.h,0)} h</b></div></div>
+    ${dvEch(d).map(x=>r(esc(x.lib||"Échéance")+(x.p!=null?"":""),eur2(k.ttc*num(x.p)/100),"sm")).join("")}
+    ${k.opt?r("Options (hors total)",eur2(k.opt)+" HT","sm"):""}
+    <p class="dvx-h2">Le récapitulatif reste visible à droite pendant la saisie, sans jamais cacher les lignes.</p>`}}
+/* ----- Conditions et paiement (maquette 6) ----- */
+function dvxCond(){const c=document.getElementById("dvt-cond");if(!c||c.dataset.dvx)return;c.dataset.dvx="1";const d=S.dvDraft,FA=isFa();
+  if(FA){c.innerHTML="";c.classList.add("dvx-pay");dvxPayFill(c);return}
+  const A=dvAdj(d),rm=A.find(a=>a.k==="remise"&&a.mode==="pct"),pr=A.find(a=>a.k==="prorata");
+  const RO=[["","— aucune —"],["2","2 %"],["3","3 %"],["5","5 %"],["8","8 %"],["10","10 %"],["15","15 %"]],PO=[["","— aucun —"],["1","1 %"],["1.5","1,5 %"],["2","2 %"],["2.5","2,5 %"],["3","3 %"]];
+  const opt=(L,v)=>{const s=v==null?"":String(v);return L.map(([a,b])=>`<option value="${a}"${a===s?" selected":""}>${b}</option>`).join("")+(s&&!L.some(x=>x[0]===s)?`<option value="${s}" selected>${nf(+s,1)} %</option>`:"")};
+  const adj=document.getElementById("dv-adj"),ech=document.getElementById("dv-ech");
+  c.innerHTML=`<section class="dvx-sec"><h3>Remise et ajustements</h3><div class="dvx-g2"><div class="f"><label>Remise globale</label><select data-dvxadj="remise">${opt(RO,rm&&rm.v)}</select></div><div class="f"><label>Compte prorata (marchés)</label><select data-dvxadj="prorata">${opt(PO,pr&&pr.v)}</select></div></div>
+   <details class="dvx-more"><summary>Autres ajustements (montant en euros, poste libre, prix final visé)</summary></details></section>
+   <section class="dvx-sec"><h3>Échéancier de paiement</h3><div id="dvx-ech"></div></section>
+   <section class="dvx-sec"><h3>Conditions du devis</h3><div class="dvx-g2">
+    <div class="f"><label>Validité</label><div class="dvx-suf"><input type="number" min="1" data-dv="validite" value="${esc(d.validite||S.cfg.dvValidite||30)}"><span>jours</span></div></div>
+    <div class="f"><label>TVA par défaut</label><select data-dvxtva>${TVAS.map(t=>`<option value="${t.v}"${t.v===d.tva?" selected":""}>${esc(t.l)}</option>`).join("")}</select></div>
+    <div class="f"><label>Délai d'exécution</label><input data-dv="delaiExec" value="${esc(d.delaiExec||"À convenir")}"></div>
+    <div class="f"><label>Mentions</label><button type="button" class="dvx-sel" data-dvment>Mentions ${esc(dvxCliType(d))} (par défaut) ▾</button></div></div></section>`;
+  if(adj)c.querySelector(".dvx-more").appendChild(adj);if(ech)c.querySelector("#dvx-ech").appendChild(ech)}
+function dvxCliType(d){const c=d.client||{};if(/syndic|copro|foncia|régie|regie/i.test((c.civ||"")+" "+(c.nom||"")))return"régie";if(c.siren||c.siret||/^(SAS|SASU|SARL|EURL|SA|SNC|SCI|Association|Collectivité|Entreprise)$/i.test(c.civ||""))return"professionnel";return"particulier"}
+document.addEventListener("change",e=>{const t=e.target;if(!S.dvDraft||!t.dataset)return;
+  if(t.dataset.dvxadj){const k0=t.dataset.dvxadj,v=t.value===""?null:parseFloat(t.value);dvAdjSet(A=>{const i=A.findIndex(a=>a.k===k0&&a.mode==="pct");if(v==null){if(i>=0)A.splice(i,1)}else if(i>=0)A[i].v=v;else A.push({k:k0,mode:"pct",v,sens:-1,lib:""})},true);dvOut();return}
+  if(t.dataset.dvxtva!=null){const s=document.getElementById("dv-tva");if(s){s.value=t.value;s.dispatchEvent(new Event("input",{bubbles:true}));s.dispatchEvent(new Event("change",{bubbles:true}))}}},true);
+const _dvEchHtml0=dvEchHtml;dvEchHtml=function(){const d=S.dvDraft;if(!d||isFa())return"";const E=dvEch(d),k=dvCalc(d),tot=E.reduce((a,x)=>a+num(x.p),0),ty=dvxCliType(d);
+  return`${E.map((x,i)=>`<div class="dvx-er"><span class="dvx-en">${i+1}</span><input class="dvi dvx-el" data-ech="${i}" data-ek="lib" value="${esc(x.lib||"")}" aria-label="Échéance"><label class="dvx-ep"><input class="dvi r" type="number" step="1" min="0" max="100" data-ech="${i}" data-ek="p" value="${x.p??""}" aria-label="Pourcentage"> %</label><b>${eur2(k.ttc*num(x.p)/100)}</b><button type="button" class="dvx-x" data-echrm="${i}" aria-label="Retirer"${E.length<2?" disabled":""}>✕</button></div>`).join("")}
+  ${Math.abs(tot-100)<0.01?"":`<p class="dvx-warn">Total ${nf(tot,1)} % : l'échéancier doit faire 100 %.</p>`}
+  <div class="dvx-eb"><button type="button" class="btn" data-echadd="ech">＋ Échéance</button><button type="button" class="btn" data-echadd="sit">＋ Situation de travaux</button><label class="dvx-mod"><select data-dvxmod><option value="">Modèle : ${ty} ▾</option><option value="particulier">Particulier : acompte ${Math.round(num(S.cfg.tauxAcompte||.35)*100)} % + solde</option><option value="pro">Professionnel : acompte 30 % + solde à 30 jours</option><option value="regie">Régie / syndic : 100 % à la réception</option></select></label></div>`};
+document.addEventListener("change",e=>{const t=e.target;if(!t.dataset||t.dataset.dvxmod==null||!t.value||!S.dvDraft)return;const v=t.value;const ac=Math.round(num(S.cfg.tauxAcompte||.35)*100);
+  dvEchSet(E=>{E.splice(0,E.length,...(v==="regie"?[{lib:"Totalité à la réception des travaux",p:100}]:v==="pro"?[{lib:"Acompte à la commande",p:30},{lib:"Solde à 30 jours après réception",p:70}]:[{lib:"Acompte à la signature",p:ac},{lib:"Solde à la réception des travaux",p:100-ac}]))},true);dvOut()});
+/* ----- Paiement et relances (facture) ----- */
+function dvxPayFill(c){const fo=document.querySelector(".fa-opts");const d=S.dvDraft,id=S.dv;const P=d.paiements||[],R=d.relances||[];
+  const due=faDue(d),late=d.num&&faLate(d);
+  c.innerHTML=`<section class="dvx-sec"><h3>Échéance et paiement</h3><div class="dvx-g2">
+   <div class="f"><label>Date de facture</label><input type="date" data-dvxf="date" value="${esc(d.date||"")}"${d.num?" disabled":""}></div>
+   <div class="f"><label>Échéance</label><input type="date" data-dvxf="echeance" value="${esc(due)}"${d.num?" disabled":""}></div>
+   <div class="f"><label>Mode de règlement</label><select data-dv="mode"${d.num?" disabled":""}>${["Virement","Chèque","Virement ou chèque","Espèces","CB"].map(m=>`<option${(d.mode||"Virement")===m?" selected":""}>${m}</option>`).join("")}</select></div>
+   </div><div id="dvx-fo"></div></section>
+  <section class="dvx-sec"><div class="dvx-sh"><h3>Paiements reçus</h3>${d.num&&d.type!=="avoir"&&faReste(d)>0.5?`<button type="button" class="btn pri" data-faenc="${esc(id)}">＋ Encaisser</button>`:""}</div>
+   ${P.length?P.map(p=>`<div class="dvx-pr"><span>${fd(p.date)}</span><span>${esc(p.mode||"")}</span><b>${eur2(p.montant)}</b></div>`).join(""):`<p class="dvx-h2">${d.num?"Aucun paiement enregistré.":"La facture n'est pas encore émise."}</p>`}
+   ${d.num&&d.type!=="avoir"?`<div class="dvx-pr tot"><span>Reste dû</span><span></span><b>${eur2(faReste(d))}</b></div>`:""}</section>
+  <section class="dvx-sec"><div class="dvx-sh"><h3>Relances</h3>${(()=>{const nx=d.num&&typeof faRelNext==="function"?faRelNext(d):null;return nx?`<button type="button" class="btn" data-farel="${esc(id)}">Préparer : ${esc(FA_REL_T[nx])}</button>`:""})()}</div>
+   <p class="dvx-h2">${late?`Échue depuis le ${fd(due)}.`:d.num?`Échéance le ${fd(due)}.`:""} Rappel à J+7, relance à J+15, mise en demeure à J+30, toujours en brouillon Outlook.</p>
+   ${R.length?R.map(x=>`<div class="dvx-pr"><span>${fd(x.le)}</span><span>${esc(FA_REL_T[x.n]||("Relance "+x.n))}</span><b>${x.par==="auto"?"automatique":"manuelle"}</b></div>`).join(""):`<p class="dvx-h2">Aucune relance pour l'instant.</p>`}</section>`;
+  const h=c.querySelector("#dvx-fo");if(fo&&h)h.appendChild(fo)}
+document.addEventListener("change",e=>{const t=e.target;if(!S.dvDraft||!isFa()||!t.dataset)return;
+  if(t.dataset.dvxf){S.dvDraft[t.dataset.dvxf]=t.value;const o=document.getElementById(t.dataset.dvxf==="date"?"dv-date":"dv-ech");if(o&&o.tagName==="INPUT")o.value=t.value;dvMark();dvOut();return}
+  if(t.dataset.dvxrg!=null){const cb=document.querySelector('[data-faopt="rg"]');const want=!!t.value;if(cb&&cb.checked!==want)cb.click();else{S.dvDraft.rg=want?0.05:null;dvMark();dvOut()}}},true);
+/* ----- Situation : avancement ouvrage par ouvrage (maquettes 13 et 14) ----- */
+function dvxSitBase(d){const dv=d.devisId&&S.devis.get(d.devisId);if(!dv)return null;const L=dv.lignes||[],N=dvNums(L),k=dvCalc(dv),fac=k.brut>0?k.ht/k.brut:1;
+  const sits=faOfDevis(d.devisId).map(([j,x])=>[j,x]).filter(([j,x])=>x.type==="situation"&&x.num&&j!==S.dv),last=sits.length?sits[sits.length-1][1]:null,pm=last&&last.avDet?last.avDet:null,pg=Math.max(0,...sits.map(([,x])=>num(x.pct)));
+  return{dv,L,N,fac,pm,pg,sits}}
+function dvxSitCalc(d){const B=dvxSitBase(d);if(!B)return{cum:0,prev:0,tot:0};let tot=0,cum=0,prev=0;
+  B.L.forEach((l,i)=>{if(l.t==="g"||l.opt||l.ded)return;const v=num(l.q)*num(l.pu)*B.fac;if(!(v>0))return;const key=String(B.N[i]);const p=num((d.avDet||{})[key]),p0=B.pm?num(B.pm[key]):B.pg;tot+=v;cum+=v*p/100;prev+=v*p0/100});
+  return{cum:r2(cum),prev:r2(prev),tot:r2(tot)}}
+function dvxSitRebuild(){const d=S.dvDraft,B=dvxSitBase(d);if(!B)return;const M=d.avDet||{};let all=0,cum=0;const ref=`devis ${B.dv.num} du ${dvFr(B.dv.date)}`;const n=dvxSitN(d);d.sitN=n;d.lignes=[];
+  B.L.forEach((l,i)=>{if(l.t==="g"||l.opt||l.ded)return;const v=num(l.q)*num(l.pu);if(!(v>0))return;const key=String(B.N[i]);const p=Math.min(100,Math.max(0,num(M[key])));all+=v;cum+=v*p/100;
+    const p0=B.pm?num(B.pm[key]):B.pg,dp=p-p0;if(Math.abs(dp)<0.01)return;
+    d.lignes.push({t:"l",nom:`${B.N[i]} ${l.nom||l.desc||"Ouvrage"} — avancement ${nf(p,0)} % (précédent ${nf(p0,0)} %)`,u:l.u||"U",q:r2(num(l.q)*dp/100),pu:r2(num(l.pu)*B.fac),tva:typeof l.tva==="number"?l.tva:B.dv.tva})});
+  d.pct=all>0?Math.round(cum/all*1000)/10:0;d.pctPrev=B.pg;d.fromAv=true;
+  d.lignes.unshift({t:"g",lvl:1,txt:`SITUATION N° ${n} — ${ref.toUpperCase()} — AVANCEMENT CUMULÉ ${nf(d.pct,0)} %`});dvMark();dvLines();dvOut();dvxAvRender()}
+function dvxAvRender(){const box=document.getElementById("dvx-av");if(!box)return;const d=S.dvDraft,B=dvxSitBase(d);
+  if(!B){box.innerHTML=`<div class="card"><p class="dvx-h2">Cette situation n'est pas liée à un devis : l'avancement ouvrage par ouvrage n'est pas disponible.</p></div>`;return}
+  const M=d.avDet||{},ro=!!d.num,mode=S.dvxAvMode||"pct";let gi=-1;const G=[];
+  B.L.forEach((l,i)=>{if(l.t==="g"&&(l.lvl||1)===1){G.push({t:l.txt||"Sans titre",i,rows:[]});return}if(l.t==="g"||l.opt||l.ded)return;const v=num(l.q)*num(l.pu)*B.fac;if(!(v>0))return;if(!G.length)G.push({t:"Ouvrages",i:-1,rows:[]});
+    const key=String(B.N[i]),p=num(M[key]),p0=B.pm?num(B.pm[key]):B.pg;G[G.length-1].rows.push({l,i,key,v,p,p0})});
+  let T={v:0,f0:0,c:0,af:0};
+  const body=G.map((g,gk)=>{if(!g.rows.length)return"";let s={v:0,f0:0,c:0,af:0};g.rows.forEach(r=>{s.v+=r.v;s.f0+=r.v*r.p0/100;s.c+=r.v*r.p/100;s.af+=r.v*(r.p-r.p0)/100});T.v+=s.v;T.f0+=s.f0;T.c+=s.c;T.af+=s.af;
+    const pc=x=>s.v?Math.round(x/s.v*100):0;
+    return`<tr class="dvx-ag"><td>${esc(String(g.t).toUpperCase())}${ro?"":` <button type="button" class="dvx-all" data-dvxall="${gk}">Tout à 100 %</button>`}</td><td></td><td></td><td class="r">${eur2(s.v)}</td><td class="r">${pc(s.f0)} %</td><td class="r">${pc(s.c)} %</td><td class="r">${s.af>0.005?eur2(s.af):"—"}</td></tr>`+
+    g.rows.map(r=>{const af=r.v*(r.p-r.p0)/100,q=num(r.l.q);return`<tr><td>${esc(r.l.nom||r.l.desc||"Ouvrage")}</td><td class="r">${nf(q,q%1?2:0)}</td><td>${esc(String(r.l.u||"").toLowerCase())}</td><td class="r">${eur2(r.v)}</td><td class="r mu">${nf(r.p0,0)} %</td>
+     <td class="dvx-ap"><i><b style="width:${Math.min(100,r.p)}%"></b></i>${ro?`<span>${nf(r.p,0)} %</span>`:mode==="q"?`<input type="number" step="any" min="0" max="${q}" data-dvxq="${esc(r.key)}" data-qt="${q}" value="${r2(q*r.p/100)}" aria-label="Quantité réalisée">`:`<input type="number" step="1" min="${r.p0}" max="100" data-dvxp="${esc(r.key)}" value="${r.p}" aria-label="Avancement en %">`}<small>soit ${nf(r2(q*r.p/100),2)} ${esc(String(r.l.u||"").toLowerCase())}</small></td>
+     <td class="r">${af>0.005?`<b>${eur2(af)}</b>`:"—"}</td></tr>`}).join("")}).join("");
+  const dos=d.dossierId&&S.docs.get(d.dossierId);
+  box.innerHTML=`<div class="dvx-avh"><b>${esc((d.client&&d.client.nom)||"")} · ${esc(d.objet||"")} — marché ${esc(B.dv.num||"")}</b>${ro?"":`<span class="dvx-avm">Saisir l'avancement en <button type="button" data-dvxmode="pct" aria-pressed="${mode==="pct"}">%</button><button type="button" data-dvxmode="q" aria-pressed="${mode==="q"}">Quantité</button></span>`}${!ro&&dos?`<button type="button" class="dvx-l" data-dvx="appav">↻ Reprendre l'avancement de l'appli équipes</button>`:""}</div>
+  <div class="dvx-avt"><table><thead><tr><th>Ouvrage</th><th class="r">Qté marché</th><th>Unité</th><th class="r">Montant HT</th><th class="r">Déjà facturé</th><th>Avancement à ce jour</th><th class="r">À facturer</th></tr></thead><tbody>${body}</tbody>
+  <tfoot><tr><td>Total de la situation</td><td></td><td></td><td class="r">${eur2(T.v)}</td><td class="r">${eur2(T.f0)}</td><td class="r">${T.v?Math.round(T.c/T.v*100):0} % · ${eur2(T.c)}</td><td class="r">${eur2(T.af)}</td></tr></tfoot></table></div>
+  <p class="dvx-h2"><button type="button" class="dvx-l" data-dvx="lignes">${S.dvxShowL?"Masquer":"Voir"} les lignes de la facture</button> générées à partir de l'avancement.</p>`;
+  const f=document.getElementById("dv-form");if(f)f.classList.toggle("dvx-showl",!!S.dvxShowL)}
+function dvxSit(){const d=S.dvDraft;if(!isFa()||d.type!=="situation"||document.getElementById("dvx-av"))return;const inn=document.querySelector("#dv-form .et-in");if(!inn)return;
+  if(!d.avDet){const B=dvxSitBase(d);if(B){d.avDet={};B.L.forEach((l,i)=>{if(l.t==="g"||l.opt||l.ded)return;const key=String(B.N[i]);d.avDet[key]=B.pm?num(B.pm[key]):Math.max(B.pg,num(d.pct))})}}
+  const box=document.createElement("div");box.id="dvx-av";box.className="dvx-avw";const cc=document.getElementById("dvx-cc");(cc||inn.firstChild)?inn.insertBefore(box,cc?cc.nextSibling:inn.firstChild):inn.appendChild(box);
+  document.getElementById("dv-form").classList.add("dvx-sit");const tb=document.querySelector('[data-dvt="contenu"]');if(tb)tb.textContent="Avancement";dvxAvRender()}
+document.addEventListener("input",e=>{const t=e.target;if(!S.dvDraft||!t.dataset)return;
+  if(t.dataset.dvxp!=null||t.dataset.dvxq!=null){const key=t.dataset.dvxp??t.dataset.dvxq;let p=t.dataset.dvxp!=null?parseFloat(t.value):(num(t.dataset.qt)>0?parseFloat(t.value)/num(t.dataset.qt)*100:0);if(isNaN(p))return;p=Math.max(0,Math.min(100,p));
+    S.dvDraft.avDet=Object.assign({},S.dvDraft.avDet,{[key]:Math.round(p*10)/10});clearTimeout(dvxSitRebuild.t);dvxSitRebuild.t=setTimeout(()=>{const a=document.activeElement,k=a&&a.dataset?(a.dataset.dvxp||a.dataset.dvxq):null,att=a&&a.dataset&&a.dataset.dvxp!=null?"dvxp":"dvxq",pos=a&&a.selectionStart;dvxSitRebuild();if(k){const n=document.querySelector(`[data-${att}="${CSS.escape(k)}"]`);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}},450)}});
+/* ----- Lignes : barre d'ajout (maquette 4) ----- */
+function dvxAddBar(){const ab=document.querySelector(".dv-addbar");if(!ab||ab.dataset.dvx)return;ab.dataset.dvx="1";const s=ab.querySelector("#dv-osearch");if(!s)return;
+  const sw=s.closest(".f");if(sw){sw.classList.add("dvx-sw");ab.prepend(sw)}s.placeholder="🔍 Rechercher un ouvrage ou un produit…";
+  const g=[...ab.querySelectorAll('[data-dvadd^="g"]')];if(g.length){const w=document.createElement("div");w.className="dvx-tw";w.innerHTML=`<button type="button" class="btn" data-dvx="titres">＋ Titre ▾</button><div class="dvx-tm" hidden></div>`;const m=w.querySelector(".dvx-tm");g.forEach(b=>{b.className="";m.appendChild(b)});const l=ab.querySelector('[data-dvadd="l"]');ab.insertBefore(w,l?l.nextSibling:null)}
+  if(!S.dvxFa&&!isFa()){const b=document.createElement("button");b.type="button";b.className="btn";b.dataset.dvbib="";b.textContent="📚 Bibliothèque";ab.appendChild(b)}}
+function dvxLegend(){const lh=document.querySelector("#dv-form .dv-lh");if(!lh||lh.dataset.dvx)return;lh.dataset.dvx="1";const g=document.createElement("div");g.className="dvx-lg";
+  g.innerHTML=`<span><i class="l1"></i>Titre</span><span><i class="l2"></i>Sous-titre</span><span><i class="l3"></i>Sous-sous-titre</span><span class="sp"></span><span class="hn">Clic sur une ligne pour la modifier · Tab pour passer au champ suivant</span>`;lh.prepend(g)}
+function dvxHeadL(){const h=document.querySelector("#dv-lines .dv-head");if(h&&h.children[3]&&h.children[3].textContent==="U")h.children[3].textContent="Unité"}
+function dvxSize(){dvxHeadL();document.querySelectorAll("#dv-lines textarea.dvi").forEach(t=>{if(t.offsetParent===null)return;t.style.height="auto";t.style.height=Math.max(22,t.scrollHeight)+"px"})}
+/* ----- Application ----- */
+function dvxApply(){if(!document.getElementById("dv-form")||!S.dvDraft)return;const f=document.getElementById("dv-form");f.classList.add("dvx");f.classList.remove("dv-wide");
+  const tb=document.querySelector('[data-dvt="cond"]');if(tb&&isFa())tb.textContent="Paiement et relances";
+  [dvxHead,dvxCards,dvxCond,dvxSit,dvxAddBar,dvxLegend,dvxRecap].forEach(fn=>{try{fn()}catch(e){console.warn("dvx",fn.name,e)}});
+  const mt=(S.dvDraft.lignes||[]).some(l=>l.t!=="g"&&typeof l.tva==="number"&&l.tva!==S.dvDraft.tva);f.classList.toggle("dvx-mt",mt);requestAnimationFrame(dvxSize);setTimeout(dvxSize,300)}
+const _dvLines1=dvLines;dvLines=function(){_dvLines1.apply(this,arguments);if(document.getElementById("dv-form")&&document.getElementById("dv-form").classList.contains("dvx")){dvxLegend();requestAnimationFrame(dvxSize)}};
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-dvt]"))setTimeout(dvxSize,30)});
+const _dvEdit1=dvEdit;dvEdit=function(){if(S.dvTab==="pv")S.dvTab="syn";_dvEdit1.apply(this,arguments);dvxApply()};
+const _dvOut1=dvOut;dvOut=function(){_dvOut1.apply(this,arguments);try{dvxRecap()}catch(e){console.warn(e)}};
+async function dvxSendDv(){const d=S.dvDraft,id=S.dv;if(!id||id==="new"||S.dvDirty){toast("Enregistrez d'abord le devis.");return}if(!d.num){toast("Le devis n'a pas encore de numéro : enregistrez-le.");return}
+  const c=d.client||{},k=dvCalc(d),to=faMailOk(c.mail)?c.mail.trim():null;
+  const subj=String(S.cfg.mailObjDevis||"Votre devis ALL TOITURES – {travaux} – {ville}").replace("{travaux}",d.objet||"travaux").replace("{ville}",titleCase(c.ville||c.cville||"")).replace(/\s+–\s*$/,"").slice(0,250);
+  const html=`<p>${faCiv(c)}</p><p>Suite à notre échange, veuillez trouver ci-joint notre devis n° ${hx(d.num)}${d.objet?` relatif à « ${hx(d.objet)} »`:""}, d'un montant de <b>${eur2(k.ttc)} TTC</b>.</p><p>Ce devis est valable ${esc(d.validite||30)} jours. Pour l'accepter, il vous suffit de nous le retourner daté et signé avec la mention « Bon pour accord ».</p><p>Nous restons à votre disposition pour toute question.</p>`+FA_SIG;
+  toast("Préparation du PDF et du brouillon…");try{await dvPdf()}catch(_){}
+  try{await olDraft(to,subj,html)}catch(e){toast(e.msg);return}
+  const d0=S.devis.get(id);if(d0&&S.db){const n=Object.assign(clone(d0),{envoyeLe:TODAY,updatedAt:new Date().toISOString()});if(["Brouillon","Finalisé"].includes(n.statut||"Brouillon"))n.statut="Envoyé";try{await S.db.collection("devis").doc(id).set(JSON.parse(JSON.stringify(n)));S.devis.set(id,n);S.dvDraft=clone(n)}catch(_){}}
+  render.force=true;render();render.force=false;toast(`Brouillon prêt dans Outlook${to?" pour "+to:" (sans destinataire : mail du client inconnu)"}. Joignez le PDF téléchargé, puis envoyez.`)}
+document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest("[data-dvx]");
+  const mn=document.querySelector(".dvx-menu");if(mn&&!mn.hidden&&!(t&&t.dataset.dvx==="menu")&&!e.target.closest(".dvx-menu"))mn.hidden=true;
+  const tm=document.querySelector(".dvx-tm");if(tm&&!tm.hidden&&!(t&&t.dataset.dvx==="titres"))setTimeout(()=>{tm.hidden=true},0);
+  if(!t)return;const a=t.dataset.dvx,d=S.dvDraft;
+  if(a==="menu"){if(mn)mn.hidden=!mn.hidden;return}
+  if(a==="titres"){const m=t.parentElement.querySelector(".dvx-tm");if(m)m.hidden=!m.hidden;return}
+  if(a==="back"){const b=document.getElementById("dv-back");if(b)b.click();return}
+  if(a==="pv"){if(typeof dvPvFull==="function"){if(!document.getElementById("dv-pv")){S.dvTab="pv";const o=document.getElementById("dv-out");if(o){o.innerHTML="";dvOut()}}setTimeout(()=>{dvPvFull();S.dvTab="syn";const o=document.getElementById("dv-out");if(o){o.innerHTML="";dvOut()}},60)}return}
+  if(a==="emit"){const b=document.getElementById("fa-emit");if(b)b.click();return}
+  if(a==="save"){const b=document.getElementById("dv-save");if(b)b.click();return}
+  if(a==="send"){if(isFa()){if(!d.num){toast("Validez et numérotez d'abord la facture.");return}faSend(S.dv)}else dvxSendDv();return}
+  if(a==="cli"){const det=document.querySelector(".cli-det");if(det){det.open=true;det.classList.add("dvx-open");det.scrollIntoView({behavior:"smooth",block:"start"})}return}
+  if(a==="devis"&&d&&d.devisId){setView("devis");dvOpen(d.devisId);return}
+  if(a==="remise"){const tb=document.querySelector('[data-dvt="cond"]');if(tb)tb.click();setTimeout(()=>{const s=document.querySelector('[data-dvxadj="remise"]');if(s)s.focus()},60);return}
+  if(a==="lignes"){S.dvxShowL=!S.dvxShowL;dvxAvRender();return}
+  if(a==="appav"){const D=d.dossierId&&S.docs.get(d.dossierId),M=D&&D.chantier&&D.chantier.av;if(!M||!Object.keys(M).length){toast("Aucun avancement saisi dans l'application équipes pour ce chantier.");return}
+    d.avDet=Object.assign({},d.avDet);Object.keys(d.avDet).forEach(k=>{if(M[k]!=null)d.avDet[k]=Math.max(num(d.avDet[k]),Math.min(100,num(M[k])))});dvxSitRebuild();toast("Avancement repris de l'application équipes");return}},true);
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+  const m=t.closest("[data-dvxmode]");if(m){S.dvxAvMode=m.dataset.dvxmode;dvxAvRender();return}
+  const g=t.closest("[data-dvxall]");if(g&&S.dvDraft){const B=dvxSitBase(S.dvDraft);if(!B)return;let gk=-1,on=false;const M=Object.assign({},S.dvDraft.avDet);
+    B.L.forEach((l,i)=>{if(l.t==="g"&&(l.lvl||1)===1){gk++;on=gk===+g.dataset.dvxall;return}if(gk<0&&+g.dataset.dvxall===0)on=true;if(on&&l.t!=="g"&&!l.opt&&!l.ded)M[String(B.N[i])]=100});S.dvDraft.avDet=M;dvxSitRebuild()}});
+
+/*@@/dvx*/
 boot();
 })();
 </script>
