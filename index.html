@@ -371,6 +371,88 @@
 .dvx-ag td:first-child{white-space:normal}
 
 /*@@/dvx*/
+/*@@dvb3*/
+#dv-form.dvx-bibon #dv-out>*:not(#dvb-dock){display:none!important}
+#dv-form.dvx-bibon{grid-template-columns:minmax(0,1fr) 420px!important}
+.dvb-dock{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;max-height:calc(100vh - 120px);overflow:hidden}
+.dvb-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px}.dvb-hd h3{margin:0;font-size:17px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.dvb-q{margin:0 16px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:14px;background:var(--surface);color:var(--ink)}
+.dvb-ch{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dvb-ch button{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.dvb-ch button[aria-pressed=true]{background:#0F2433;color:#fff;border-color:#0F2433}
+.dvb-l{flex:1;overflow-y:auto;position:relative;padding-bottom:10px}
+.dvb-gh{all:unset;box-sizing:border-box;cursor:pointer;display:flex;justify-content:space-between;width:100%;padding:10px 16px;font-size:11.5px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.dvb-gh[aria-expanded=true]{color:#0c6ea8}.dvb-gh i{font-style:normal}
+.dvb-i{display:grid;grid-template-columns:20px minmax(0,1fr) auto 30px;gap:8px;align-items:center;padding:9px 16px;border-top:1px solid var(--line);cursor:grab}
+.dvb-i:hover{background:#E6F3FB}
+.dvb-st{all:unset;cursor:pointer;color:#d5dde3;font-size:15px}.dvb-st.on{color:#F2A33A}
+.dvb-n b{display:block;font-size:14px;font-weight:600;color:var(--ink)}.dvb-n small,.dvb-p small{font-size:12px;color:var(--muted)}
+.dvb-p{text-align:right;white-space:nowrap}.dvb-p b{display:block;font-size:14px;color:var(--ink)}
+.dvb-add{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(12,110,168,.1);color:#0c6ea8;font-weight:800}
+.dvb-i:hover .dvb-add{background:#0c6ea8;color:#fff}
+.dvb-pop{position:absolute;left:16px;right:16px;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.16);padding:12px 14px;font-size:13px}
+.dvb-pop[hidden]{display:none}
+.dvb-pop>b{display:block;margin-bottom:6px;font-size:13.5px}
+.dvb-pop div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;color:var(--ink-2)}.dvb-pop div b{white-space:nowrap;color:var(--ink)}
+.dvb-pop .mg span,.dvb-pop .mg b{color:#1E7B34}
+.dvb-ft{display:flex;justify-content:space-between;gap:10px;padding:12px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.dvb-drop{margin:10px 0;border:2px dashed #0c6ea8;border-radius:10px;padding:12px;text-align:center;color:#0c6ea8;font-weight:700;background:rgba(12,110,168,.05)}
+.dvb-over{box-shadow:inset 0 -3px 0 #0c6ea8!important}.dvb-drop.dvb-over{background:rgba(12,110,168,.14)}
+.dvx-tbar{display:flex;align-items:center;gap:26px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:14.5px;color:var(--ink-2);position:sticky;bottom:10px;z-index:15}
+.dvx-tbar b{color:var(--ink)}.dvx-tbar b.big{font-size:20px;color:#0c6ea8}.dvx-tbar .sp{flex:1}.dvx-tbar .mg{color:#1E7B34;font-weight:800}.dvx-tbar .mg.ko{color:#C62828}
+.dvx-bibb[aria-pressed=true]{background:rgba(12,110,168,.1)!important;border-color:#9cc7e2!important;color:#0c6ea8!important}
+.dvb-rm{all:unset;cursor:pointer;padding:2px 8px;border-radius:6px;font-weight:800;color:var(--muted)}
+.dvb-rm:hover{background:rgba(12,110,168,.1);color:#0c6ea8}
+.dvb-menu{position:absolute;z-index:80;width:260px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;display:flex;flex-direction:column}
+.dvb-menu button{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;font-size:14px;color:var(--ink)}
+.dvb-menu button:hover{background:rgba(12,110,168,.08)}.dvb-menu button.del{color:#C62828}
+[data-theme="dark"] .dvb-i:hover{background:rgba(12,110,168,.15)}
+.dvb-g{display:block!important;grid-column:auto!important}
+#dv-form.dvx-bibon{grid-template-columns:minmax(0,1fr) 390px!important}
+@container dvl (max-width:700px){
+ #dv-form.dvx .dv-head.dvc,#dv-form.dvx .dv-row.dvc{grid-template-columns:18px 40px minmax(0,1fr) 54px 50px 78px 0 92px!important}
+ #dv-form.dvx .dv-head.dvc>span:nth-child(3),#dv-form.dvx .dv-row.dvc.dv-o>.dv-des{grid-column:auto}
+ #dv-form.dvx .dv-head.dvc>span:nth-child(4),#dv-form.dvx .dv-row.dvc.dv-o>select[data-lk="u"]{grid-column:auto;justify-self:stretch;width:auto}
+ #dv-form.dvx .dv-row.dvc.dv-g>.dv-gt{grid-column:3/7!important}
+ #dv-form.dvx .dv-row.dvc.dv-o>.dv-det{grid-column:1/-1}
+}
+.dvb-hd,.dvb-q,.dvb-ch,.dvb-ft{flex-shrink:0}
+.dvb-hd h3{text-transform:none!important;letter-spacing:0!important;color:var(--ink)!important;font-size:17px!important}
+
+/*@@/dvb3*/
+/*@@dvp3*/
+.dvp-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.dvp-hd h1{margin:0;font-size:24px}.dvp-hd p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.dvp-hd .acts{display:flex;gap:10px;align-items:center}
+.dvp-g{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;align-items:start}
+.dvp-nav{position:sticky;top:20px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.dvp-nav button{all:unset;cursor:pointer;padding:10px 12px;border-radius:10px;display:block}
+.dvp-nav b{display:block;font-size:14.5px;font-weight:600;color:var(--ink)}.dvp-nav small{font-size:12.5px;color:var(--muted)}
+.dvp-nav button[aria-current=true]{background:#E6F3FB}.dvp-nav button[aria-current=true] b{color:#0c6ea8}
+.dvp-c{display:flex;flex-direction:column;gap:18px}
+.dvp-s{margin:-6px 0 12px;font-size:13.5px;color:var(--muted)}
+.dvp-h{display:block;font-size:12.5px;color:var(--muted);margin-top:5px}
+.dvp-fmt{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding-left:4px}
+.dvp-fmt input{border:0!important;width:70px!important;padding:9px 4px 9px 7px!important}.dvp-fmt span{color:var(--ink-2);font-size:14px}
+.dvp-ap{margin-top:14px;background:rgba(15,36,51,.04);border-radius:10px;padding:12px 14px;color:#0c6ea8;font-weight:800}
+.dvp-th{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.dvp-th button{all:unset;cursor:pointer;width:108px;height:146px;box-sizing:border-box;border:1.5px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:8px;font-size:11.5px;color:var(--muted);background:var(--surface)}
+.dvp-th button i{display:block;height:8px;border-radius:2px}
+.dvp-th button[aria-pressed=true]{border:2px solid #0c6ea8}
+.dvp-row,.dvp-tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink)}
+.dvp-row small{color:var(--muted);font-size:12.5px}
+.dvp-sw{display:flex;gap:8px}.dvp-sw button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:50%;box-sizing:border-box}
+.dvp-sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px #0c6ea8}
+.dvp-tg{cursor:pointer}.dvp-tg input{position:absolute;opacity:0;pointer-events:none}
+.dvp-tg i{flex:0 0 40px;height:22px;border-radius:999px;background:#d5dde3;position:relative;transition:background .15s}
+.dvp-tg i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.dvp-tg input:checked+i{background:#0c6ea8}.dvp-tg input:checked+i::after{left:21px}
+.dvp-tg input:focus-visible+i{outline:2px solid #0c6ea8;outline-offset:2px}
+[data-theme="dark"] .dvp-nav button[aria-current=true]{background:rgba(12,110,168,.18)}
+@media (max-width:860px){.dvp-g{grid-template-columns:1fr}.dvp-nav{position:static;flex-direction:row;overflow-x:auto}}
+.dvx-suf span{white-space:nowrap}.dvx-sec .dvx-g2+.dvp-s{margin-top:12px}
+
+/*@@/dvp3*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -7451,6 +7533,7 @@ function dvxHead(){const ph=document.querySelector(".phead.dv-bar");if(!ph||ph.d
    <div class="dvx-mw"><button type="button" class="btn" data-dvx="menu" aria-label="Autres actions">⋯</button><div class="dvx-menu" hidden></div></div>
    ${draft&&document.getElementById("fa-emit")?`<button type="button" class="btn" data-dvx="emit">Valider et numéroter</button>`:""}
    ${document.getElementById("dv-save")&&(FA?!d.num:(!d.statut||d.statut==="Brouillon"))?`<button type="button" class="btn" data-dvx="save">Enregistrer</button>`:""}
+   ${FA?"":`<button type="button" class="btn dvx-bibb" data-dvx="bib" aria-pressed="${!!S.dvxBib}">📚 Bibliothèque</button>`}
    <button type="button" class="btn pri" data-dvx="send"${FA&&!d.num?' title="Validez et numérotez d\'abord la facture"':""}>Envoyer au client</button></div>`;
   ph.prepend(h);const mn=h.querySelector(".dvx-menu");
   if(acts){[...acts.children].forEach(b=>{if(b.id==="dv-dirty"){b.style.display="none";return}mn.appendChild(b)})}
@@ -7578,7 +7661,7 @@ document.addEventListener("input",e=>{const t=e.target;if(!S.dvDraft||!t.dataset
 function dvxAddBar(){const ab=document.querySelector(".dv-addbar");if(!ab||ab.dataset.dvx)return;ab.dataset.dvx="1";const s=ab.querySelector("#dv-osearch");if(!s)return;
   const sw=s.closest(".f");if(sw){sw.classList.add("dvx-sw");ab.prepend(sw)}s.placeholder="🔍 Rechercher un ouvrage ou un produit…";
   const g=[...ab.querySelectorAll('[data-dvadd^="g"]')];if(g.length){const w=document.createElement("div");w.className="dvx-tw";w.innerHTML=`<button type="button" class="btn" data-dvx="titres">＋ Titre ▾</button><div class="dvx-tm" hidden></div>`;const m=w.querySelector(".dvx-tm");g.forEach(b=>{b.className="";m.appendChild(b)});const l=ab.querySelector('[data-dvadd="l"]');ab.insertBefore(w,l?l.nextSibling:null)}
-  if(!S.dvxFa&&!isFa()){const b=document.createElement("button");b.type="button";b.className="btn";b.dataset.dvbib="";b.textContent="📚 Bibliothèque";ab.appendChild(b)}}
+}
 function dvxLegend(){const lh=document.querySelector("#dv-form .dv-lh");if(!lh||lh.dataset.dvx)return;lh.dataset.dvx="1";const g=document.createElement("div");g.className="dvx-lg";
   g.innerHTML=`<span><i class="l1"></i>Titre</span><span><i class="l2"></i>Sous-titre</span><span><i class="l3"></i>Sous-sous-titre</span><span class="sp"></span><span class="hn">Clic sur une ligne pour la modifier · Tab pour passer au champ suivant</span>`;lh.prepend(g)}
 function dvxHeadL(){const h=document.querySelector("#dv-lines .dv-head");if(h&&h.children[3]&&h.children[3].textContent==="U")h.children[3].textContent="Unité"}
@@ -7623,6 +7706,144 @@ document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
     B.L.forEach((l,i)=>{if(l.t==="g"&&(l.lvl||1)===1){gk++;on=gk===+g.dataset.dvxall;return}if(gk<0&&+g.dataset.dvxall===0)on=true;if(on&&l.t!=="g"&&!l.opt&&!l.ded)M[String(B.N[i])]=100});S.dvDraft.avDet=M;dvxSitRebuild()}});
 
 /*@@/dvx*/
+/*@@dvb3*/
+/* ===== Bibliothèque ancrée dans le devis — maquettes 5 et 9 ===== */
+const DVB_MET=[["Mise en place chantier","Chantier"],["Dépose et évacuation","Dépose"],["Charpente","Charpente"],["Couverture","Couverture"],["Zinguerie","Zinguerie"],["Fenêtres de toit","Fenêtres de toit"],["Ossature bois","Ossature bois"]];
+const dvbFav=()=>new Set(Array.isArray(S.cfg.favOuv)?S.cfg.favOuv:[]);
+const dvbRec=()=>{try{return JSON.parse(localStorage.getItem("pilotage.recOuv")||"[]")}catch(_){return[]}};
+function dvbRecAdd(id){try{const r=dvbRec().filter(x=>x!==id);r.unshift(id);localStorage.setItem("pilotage.recOuv",JSON.stringify(r.slice(0,20)))}catch(_){}}
+function dvbTarget(){const L=S.dvDraft.lignes||[],N=dvNums(L);let i=S.dvxFoc;if(i==null||i>=L.length)return{pos:L.length,lib:""};
+  let g=-1;for(let j=i;j>=0;j--){if(L[j].t==="g"){g=j;break}}if(g<0)return{pos:i+1,lib:""};const lv=L[g].lvl||1;let e=g+1;while(e<L.length&&!(L[e].t==="g"&&(L[e].lvl||1)<=lv))e++;
+  return{pos:L[i].t==="g"?e:i+1,lib:`${N[g]} ${L[g].txt||""}`.trim()}}
+function dvbAdd(id,pos){const l=dvMkOuvLine(id);if(!l)return;const t=pos==null?dvbTarget().pos:pos;dvbRecAdd(id);dvInsertAt(t,l,"q");S.dvxFoc=t;toast("Ouvrage ajouté · saisissez la quantité")}
+function dvbHtml(){const q=bibNorm(S.dvbQ||"").trim(),ch=S.dvbCh||"Couverture",fav=dvbFav(),rec=dvbRec();
+  let A=[...S.ouv.entries()];
+  if(q)A=A.filter(([,o])=>bibNorm([o.nom,o.sf,o.ss,o.met,o.desc].join(" ")).includes(q));
+  else if(ch==="fav")A=A.filter(([id])=>fav.has(id));else if(ch==="rec")A=rec.map(id=>[id,S.ouv.get(id)]).filter(x=>x[1]);else A=A.filter(([,o])=>o.met===ch);
+  const G=new Map();A.forEach(([id,o])=>{const k=q||ch==="fav"||ch==="rec"?(o.met||"Autres")+(o.sf?" › "+o.sf:""):(o.sf||"Autres");if(!G.has(k))G.set(k,[]);G.get(k).push([id,o])});
+  if(!S.dvbOpen)S.dvbOpen=new Set();
+  const groups=[...G.entries()].sort((a,b)=>a[0].localeCompare(b[0],"fr")).map(([k,L],gi)=>{const open=q||S.dvbOpen.has(k)||(G.size<=2);
+    return`<div class="dvb-g"><button type="button" class="dvb-gh" data-dvbg="${esc(k)}" aria-expanded="${!!open}"><span>${open?"▾":"▸"} ${esc(k.toUpperCase())}</span><i>${L.length}</i></button>${open?L.sort((a,b)=>num(a[1].ordre)-num(b[1].ordre)||String(a[1].nom).localeCompare(b[1].nom)).map(([id,o])=>{const k2=ouvCalc(o);
+      return`<div class="dvb-i" draggable="true" data-dvbi="${esc(id)}"><button type="button" class="dvb-st${fav.has(id)?" on":""}" data-dvbfav="${esc(id)}" aria-label="Favori">★</button><span class="dvb-n"><b>${esc(o.nom)}</b><small>MO ${nf(num(o.h),2)} h/${esc(String(o.u||"u").toLowerCase())}</small></span><span class="dvb-p"><b>${k2.pv==null?"—":eur2(k2.pv)}</b><small>/ ${esc(String(o.u||"u").toLowerCase())}</small></span><button type="button" class="dvb-add" data-dvbadd="${esc(id)}" aria-label="Ajouter au devis">＋</button></div>`}).join(""):""}</div>`}).join("");
+  return`<div class="dvb-hd"><h3>Bibliothèque</h3><button type="button" class="dvx-l" data-dvnewouv>＋ Nouvel ouvrage</button></div>
+  <input type="search" class="dvb-q" id="dvb-q" placeholder="🔍 Rechercher : tuile, faîtière, gouttière zinc…" value="${esc(S.dvbQ||"")}" aria-label="Rechercher dans la bibliothèque">
+  <div class="dvb-ch">${[["fav","★ Favoris"],["rec","Récents"]].concat(DVB_MET.map(([m,l])=>[m,l])).map(([k,l])=>`<button type="button" data-dvbch="${esc(k)}" aria-pressed="${!q&&ch===k}">${esc(l)}</button>`).join("")}</div>
+  <div class="dvb-l" id="dvb-l">${groups||`<p class="dvx-h2" style="padding:12px 16px">${ch==="fav"&&!q?"Aucun favori : cliquez sur l'étoile d'un ouvrage.":ch==="rec"&&!q?"Aucun ouvrage ajouté récemment.":"Aucun ouvrage trouvé."}</p>`}<div class="dvb-pop" id="dvb-pop" hidden></div></div>
+  <div class="dvb-ft"><span>Glissez un ouvrage dans le devis, ou cliquez sur ＋</span><button type="button" class="dvx-l" data-dvbhide>Masquer ›</button></div>`}
+function dvbRender(){const o=document.getElementById("dv-out");if(!o)return;let p=document.getElementById("dvb-dock");
+  const on=!!S.dvxBib&&!isFa()&&!!document.getElementById("dv-form");const f=document.getElementById("dv-form");if(f)f.classList.toggle("dvx-bibon",on);
+  const hb=document.querySelector('[data-dvx="bib"]');if(hb)hb.setAttribute("aria-pressed",on);
+  if(!on){if(p)p.remove();dvbBar();return}
+  if(!p){p=document.createElement("div");p.id="dvb-dock";p.className="dvb-dock";o.appendChild(p)}else if(p.parentElement!==o)o.appendChild(p);
+  const st=document.getElementById("dvb-l"),sc=st?st.scrollTop:0,qf=document.activeElement&&document.activeElement.id==="dvb-q",pos=qf?document.activeElement.selectionStart:0;
+  p.innerHTML=dvbHtml();const nl=document.getElementById("dvb-l");if(nl)nl.scrollTop=sc;if(qf){const q=document.getElementById("dvb-q");q.focus();try{q.setSelectionRange(pos,pos)}catch(_){}}dvbBar()}
+function dvbBar(){const inn=document.querySelector("#dv-form .et-in");if(!inn)return;let b=document.getElementById("dvx-tbar");const on=document.getElementById("dv-form").classList.contains("dvx-bibon");
+  if(!on){if(b)b.remove();return}const d=S.dvDraft,k=dvCalc(d);if(!b){b=document.createElement("div");b.id="dvx-tbar";b.className="dvx-tbar";const lc=[...inn.children].find(x=>x.querySelector&&x.querySelector("#dv-lines"));lc?lc.after(b):inn.appendChild(b)}
+  b.innerHTML=`<span>Total HT <b>${eur2(k.ht)}</b></span><span>TVA <b>${eur2(k.ttc-k.ht)}</b></span><span>TTC <b class="big">${eur2(k.ttc)}</b></span><span class="sp"></span><span class="mg ${k.mPct!=null&&k.mPct<MARGE_MIN()?"ko":""}">Marge ${k.mPct==null?"—":Math.round(k.mPct*100)+" %"} · MO ${nf(k.h,0)} h</span>`}
+const _dvOut2=dvOut;dvOut=function(){_dvOut2.apply(this,arguments);try{dvbRender()}catch(e){console.warn(e)}};
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+  const ob=t.closest("[data-dvbib]");if(ob&&document.getElementById("dv-form")&&document.getElementById("dv-form").classList.contains("dvx")){e.preventDefault();e.stopImmediatePropagation();S.dvxBib=!S.dvxBib;dvbRender();return}
+  if(t.closest('[data-dvx="bib"]')){e.stopImmediatePropagation();S.dvxBib=!S.dvxBib;dvbRender();return}
+  if(t.closest("[data-dvbhide]")){S.dvxBib=false;dvbRender();return}
+  const c=t.closest("[data-dvbch]");if(c){S.dvbCh=c.dataset.dvbch;S.dvbQ="";dvbRender();return}
+  const g=t.closest("[data-dvbg]");if(g){if(!S.dvbOpen)S.dvbOpen=new Set();const k=g.dataset.dvbg;S.dvbOpen.has(k)?S.dvbOpen.delete(k):S.dvbOpen.add(k);dvbRender();return}
+  const fv=t.closest("[data-dvbfav]");if(fv){const s=dvbFav(),id=fv.dataset.dvbfav;s.has(id)?s.delete(id):s.add(id);saveCfg(Object.assign({},S.cfg,{favOuv:[...s]}));S.cfg.favOuv=[...s];dvbRender();return}
+  const a=t.closest("[data-dvbadd]");if(a){if(S.dvDraft&&S.dvDraft.statut&&S.dvDraft.statut!=="Brouillon"){toast("Ce devis n'est plus en brouillon : créez une nouvelle version pour le modifier.");return}dvbAdd(a.dataset.dvbadd);return}},true);
+document.addEventListener("input",e=>{if(e.target.id==="dvb-q"){S.dvbQ=e.target.value;dvbRender()}});
+document.addEventListener("focusin",e=>{const r=e.target.closest&&e.target.closest("#dv-lines .dv-row[data-ri]");if(r)S.dvxFoc=+r.dataset.ri});
+/* composition au survol */
+document.addEventListener("mouseover",e=>{const it=e.target.closest&&e.target.closest(".dvb-i");const pop=document.getElementById("dvb-pop");if(!pop)return;if(!it){if(!e.target.closest(".dvb-pop"))pop.hidden=true;return}
+  const o=S.ouv.get(it.dataset.dvbi);if(!o)return;const k=ouvCalc(o),coef=k.coef||1;
+  pop.innerHTML=`<b>Composition — ${esc(o.nom.length>48?o.nom.slice(0,46)+"…":o.nom)}</b>${(o.comp||[]).map(c=>{const p=ouvPx(c);return`<div><span>${esc(p.des||c.des||c.lib||"")} ${c.q!=null?"("+nf(num(c.q),2)+")":""}</span><b>${p.v==null?"—":eur2(num(c.q)*p.v*coef)}</b></div>`}).join("")}
+   <div><span>Main-d'œuvre ${nf(k.h,2)} h × ${k.tv!=null?eur(k.tv):"—"}</span><b>${k.mo==null?"—":eur2(k.mo)}</b></div><div class="mg"><span>Marge</span><b>${k.marge==null?"—":eur2(k.marge)+" · "+Math.round((k.mPct||0)*100)+" %"}</b></div>`;
+  pop.hidden=false;const l=document.getElementById("dvb-l");pop.style.top=(it.offsetTop+it.offsetHeight+4)+"px"});
+/* glisser-déposer */
+document.addEventListener("dragstart",e=>{const it=e.target.closest&&e.target.closest(".dvb-i");if(!it)return;e.dataTransfer.setData("text/plain","dvbouv:"+it.dataset.dvbi);e.dataTransfer.effectAllowed="copy";
+  const box=document.getElementById("dv-lines");if(box&&!document.getElementById("dvb-drop")){const tg=dvbTarget(),z=document.createElement("div");z.id="dvb-drop";z.className="dvb-drop";z.textContent=`Déposez l'ouvrage ici · ou cliquez sur ＋ pour l'ajouter${tg.lib?" à « "+tg.lib+" »":" en fin de devis"}`;box.appendChild(z)}});
+document.addEventListener("dragend",()=>{const z=document.getElementById("dvb-drop");if(z)z.remove();document.querySelectorAll(".dvb-over").forEach(x=>x.classList.remove("dvb-over"))});
+document.addEventListener("dragover",e=>{const r=e.target.closest&&(e.target.closest("#dv-lines .dv-row[data-ri]")||e.target.closest("#dvb-drop"));if(!r)return;e.preventDefault();document.querySelectorAll(".dvb-over").forEach(x=>x!==r&&x.classList.remove("dvb-over"));r.classList.add("dvb-over")});
+document.addEventListener("drop",e=>{const v=e.dataTransfer&&e.dataTransfer.getData("text/plain");if(!v||!v.startsWith("dvbouv:"))return;const r=e.target.closest&&e.target.closest("#dv-lines .dv-row[data-ri]");const z=e.target.closest&&e.target.closest("#dvb-drop");if(!r&&!z)return;e.preventDefault();
+  if(S.dvDraft&&S.dvDraft.statut&&S.dvDraft.statut!=="Brouillon"){toast("Ce devis n'est plus en brouillon.");return}const id=v.slice(7);
+  let pos;if(r){const i=+r.dataset.ri,L=S.dvDraft.lignes;pos=i+1;if(L[i]&&L[i].t==="g"){pos=i+1}}else pos=dvbTarget().pos;dvbAdd(id,pos)});
+/* menu ⋯ d'une ligne */
+function dvbRowMenus(){document.querySelectorAll("#dv-form.dvx #dv-lines .dv-row.dv-o[data-ri],#dv-form.dvx #dv-lines .dv-row.dv-l[data-ri]").forEach(r=>{if(r.querySelector(".dvb-rm"))return;const qa=r.querySelector(".dv-qa");if(!qa)return;
+  const b=document.createElement("button");b.type="button";b.className="dvb-rm";b.dataset.dvbrm=r.dataset.ri;b.textContent="⋯";b.setAttribute("aria-label","Actions de la ligne");qa.prepend(b)})}
+const _dvLines2=dvLines;dvLines=function(){_dvLines2.apply(this,arguments);try{dvbRowMenus()}catch(_){}};
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;const old=document.getElementById("dvb-menu");
+  const b=t.closest("[data-dvbrm]");if(!b){if(old&&!t.closest("#dvb-menu"))old.remove();
+    const m=t.closest("[data-dvbma]");if(m){const i=+m.dataset.i,a=m.dataset.dvbma,L=S.dvDraft.lignes,clk=s=>{const x=document.querySelector(s);if(x)x.click()};if(old)old.remove();
+      if(a==="comp"||a==="desc"){clk(`[data-dvtg="${i}"]`);if(a==="desc")setTimeout(()=>{const d=document.querySelector(`[data-li="${i}"][data-lk="desc"]`);if(d)d.focus()},80)}
+      else if(a==="dup"){L.splice(i+1,0,clone(L[i]));dvMark();dvLines();dvOut()}
+      else if(a==="ins"){dvInsertAt(i+1,{t:"l",nom:"",u:"U",q:1,pu:null},"nom")}
+      else if(a==="save"){clk(`[data-dvtg="${i}"]`);setTimeout(()=>clk(`[data-dvsaveouv="${i}"]`),80)}
+      else if(a==="del")clk(`[data-dvrmb="${i}"]`)}return}
+  if(old)old.remove();const i=+b.dataset.dvbrm,l=S.dvDraft&&S.dvDraft.lignes[i];if(!l)return;const lock=S.dvDraft.statut&&S.dvDraft.statut!=="Brouillon"&&!isFa();
+  const m=document.createElement("div");m.id="dvb-menu";m.className="dvb-menu";
+  m.innerHTML=[["comp","Voir la composition (fournitures, main-d'œuvre)"],["desc","Ajouter une description"],["dup","Dupliquer la ligne"],["ins","Insérer une ligne en dessous"],["save","Enregistrer comme ouvrage"],["del","Supprimer"]].filter(([k])=>!lock||k==="comp").filter(([k])=>k!=="save"||!(l.ouv&&S.ouv.has(l.ouv))).map(([k,v])=>`<button type="button" data-dvbma="${k}" data-i="${i}"${k==="del"?' class="del"':""}>${v}</button>`).join("");
+  document.body.appendChild(m);const rc=b.getBoundingClientRect();m.style.top=(rc.bottom+window.scrollY+4)+"px";m.style.left=Math.max(8,rc.right+window.scrollX-260)+"px"});
+
+/*@@/dvb3*/
+/*@@dvp3*/
+/* ===== Paramètres des devis et factures — maquette 3 ===== */
+const DVP_M=[["num","Numérotation","Format et prochains numéros"],["pdf","Mise en page du PDF","Logo, couleurs, modèle"],["ment","Mentions et conditions","CGV, assurance, pénalités"],["pay","Paiement et acomptes","Échéancier, IBAN, délais"],["tva","TVA, unités et prix","Taux, coefficient, arrondis"],["rel","Relances","Devis et factures impayées"],["mail","Envoi par mail","Textes types, signature"]];
+const DVP_TH=[["marine","Classique","en-tête bleu foncé","#0F2433"],["","Moderne","bandeau bleu clair","#00A9E0"],["epure","Épuré","noir et blanc","#c9d1d7"],["tuile","Terre cuite","tons tuile","#8E3B1B"]];
+const DVP_COL=["#0F2433","#00739A","#00A9E0","#465665"];
+vDvParams=function(){const c=S.cfg||{},M=dvMent(),thc=c.dvTheme||"",B=c.dvBands||{},col=B.g1||"#0F2433";
+  const nfa=faNextNum(),ndv=dvNextNum();const pre=M.faPrefix||"FA-";
+  const fld=(k,l,v,suf,t,h)=>`<div class="f"><label for="dp-${k}">${l}</label><div class="dvx-suf"><input id="dp-${k}" data-dp="${k}" type="${t||"number"}" step="any" value="${esc(v==null?"":v)}">${suf?`<span>${suf}</span>`:""}</div>${h?`<small class="dvp-h">${h}</small>`:""}</div>`;
+  const tg=(k,l,on)=>`<label class="dvp-tg"><span>${l}</span><input type="checkbox" data-dpt="${k}"${on?" checked":""}><i></i></label>`;
+  const sec=S.dvpSec||"num";
+  main.innerHTML=`<div class="dvp-hd"><div><h1>Paramètres des devis et factures</h1><p>Ce qui s'applique par défaut à chaque nouveau document. Modifiable à tout moment.</p></div><div class="acts"><span class="dvx-dirty" id="dvp-dirty"></span><button type="button" class="btn pri" id="dp-save">Enregistrer</button></div></div>
+  <div class="dvp-g"><nav class="dvp-nav">${DVP_M.map(([k,l,s])=>`<button type="button" data-dpsec="${k}" aria-current="${k===sec}"><b>${l}</b><small>${s}</small></button>`).join("")}</nav>
+  <div class="dvp-c">
+   <section class="dvx-sec" id="dps-num"><h3>Numérotation</h3><p class="dvp-s">Les numéros se suivent sans trou, comme l'exige la loi pour les factures.</p><div class="dvx-g2">
+    <div class="f"><label>Format des devis</label><input value="DE-{numéro sur 5 chiffres}" disabled><small class="dvp-h">Prochain numéro : <b>${esc(ndv)}</b></small></div>
+    <div class="f"><label for="dp-faPrefix">Format des factures</label><div class="dvp-fmt"><input id="dp-faPrefix" data-dpm="faPrefix" value="${esc(pre)}" maxlength="8"><span>{numéro sur 5 chiffres}</span></div><small class="dvp-h">Prochain numéro : <b>${esc(nfa)}</b></small></div>
+    <div class="f"><label>Format des avoirs</label><input value="Même suite que les factures" disabled><small class="dvp-h">Un avoir prend le numéro de facture suivant.</small></div>
+    <div class="f"><label>Remise à zéro</label><input value="Jamais" disabled><small class="dvp-h">Numérotation continue d'une année sur l'autre.</small></div></div>
+    <div class="dvp-ap">Aperçu : ${esc(ndv)} · ${esc(nfa)}</div></section>
+   <section class="dvx-sec" id="dps-pdf"><h3>Mise en page du PDF</h3><p class="dvp-s">Choisissez le modèle et la couleur de vos documents.</p>
+    <div class="dvp-th">${DVP_TH.map(([v,l,s,cc])=>`<button type="button" data-dpth="${v}" aria-pressed="${thc===v}"><i style="background:${cc}"></i><span>${l}<br>${s}</span></button>`).join("")}</div>
+    <div class="dvp-row"><span>Couleur principale <small>(bandeau des titres)</small></span><span class="dvp-sw">${DVP_COL.map(x=>`<button type="button" data-dpcol="${x}" style="background:${x}" aria-pressed="${col===x}" aria-label="Couleur ${x}"></button>`).join("")}</span></div>
+    ${tg("pdfDetail","Afficher le détail des ouvrages (fournitures, main-d'œuvre)",c.pdfDetail===true)}
+    ${tg("pdfSousTot","Afficher les sous-totaux par section",c.pdfSousTot!==false)}
+    ${tg("pdfBpa","Ajouter le cadre « Bon pour accord » avec signature",c.pdfBpa!==false)}
+    <p class="dvp-s">Couleurs fines des sous-titres : bouton « 🎨 Bandeaux » dans un devis. Logo : celui de la fiche Entreprise.</p></section>
+   <section class="dvx-sec" id="dps-def"><h3>Valeurs par défaut</h3><div class="dvx-g2">
+    ${fld("dvValidite","Validité des devis",c.dvValidite||30,"jours")}
+    <div class="f"><label for="dp-dvTva">Taux de TVA</label><select id="dp-dvTva" data-dp="dvTva">${TVAS.map(t=>`<option value="${t.v}"${t.v===(c.dvTva!=null?c.dvTva:0.1)?" selected":""}>${esc(t.l)}</option>`).join("")}</select></div>
+    ${fld("tauxAcompte","Acompte à la signature",c.tauxAcompte!=null?Math.round(c.tauxAcompte*100):35,"%")}
+    <div class="f"><label for="dp-echeanceJours">Délai de paiement des factures</label><select id="dp-echeanceJours" data-dp="echeanceJours">${[0,15,30,45,60].map(j=>`<option value="${j}"${num(c.echeanceJours||30)===j?" selected":""}>${j?j+" jours":"À réception"}</option>`).join("")}</select></div></div></section>
+   <section class="dvx-sec" id="dps-ment"><h3>Mentions et conditions</h3><p class="dvp-s">Assurance décennale (${esc(M.assureur||"à renseigner")}${M.contrat?" · n° "+esc(M.contrat):""}), conditions générales, attestation de TVA à taux réduit, pénalités de retard.</p><button type="button" class="btn" data-dvment>Modifier les mentions</button></section>
+   <section class="dvx-sec" id="dps-pay"><h3>Paiement et acomptes</h3><p class="dvp-s">IBAN imprimé : <b>${esc(M.iban||"à renseigner dans les mentions")}</b>${M.bic?" · BIC "+esc(M.bic):""}</p><p class="dvp-s">Échéancier par défaut : acompte de ${c.tauxAcompte!=null?Math.round(c.tauxAcompte*100):35} % à la signature, solde à la réception. Modifiable dans chaque devis (onglet Conditions et paiement).</p></section>
+   <section class="dvx-sec" id="dps-tva"><h3>TVA, unités et prix</h3><div class="dvx-g2">${fld("tauxVente","Taux horaire de vente",c.tauxVente,"€ HT")}${fld("coefMat","Coefficient sur matériaux",c.coefMat,"×")}${fld("margeMin","Marge minimale d'alerte",c.margeMin!=null?Math.round(c.margeMin*100):"","%")}</div></section>
+   <section class="dvx-sec" id="dps-rel"><h3>Relances</h3><div class="dvx-g2">${fld("delaiRelance","Relance du devis après",c.delaiRelance||7,"jours")}</div><p class="dvp-s">Devis jusqu'à 5 000 € HT : brouillon de relance préparé. Au-delà : relance par téléphone. Factures impayées : rappel à J+7, relance à J+15, mise en demeure à J+30, en brouillon Outlook.</p></section>
+   <section class="dvx-sec" id="dps-mail"><h3>Envoi par mail</h3><div class="dvx-g2">${fld("mailObjDevis","Objet du mail de devis",c.mailObjDevis||"Votre devis ALL TOITURES – {travaux} – {ville}",null,"text")}${fld("mailObjFacture","Objet du mail de facture",c.mailObjFacture||"Votre facture ALL TOITURES – {numéro}",null,"text")}</div><p class="dvp-s">Les mails sont toujours préparés en brouillon dans Outlook, jamais envoyés automatiquement.</p></section>
+  </div></div>`;
+  const mark=()=>{const x=document.getElementById("dvp-dirty");if(x)x.textContent="Modifications non enregistrées"};
+  main.querySelectorAll("input,select").forEach(x=>x.addEventListener("input",mark));
+  document.getElementById("dp-save").onclick=async()=>{const nc=clone(S.cfg||{});document.querySelectorAll("[data-dp]").forEach(x=>{const k=x.dataset.dp;let v=x.value;if(x.type==="number"||k==="dvTva"||k==="echeanceJours"){if(v==="")return;v=parseFloat(String(v).replace(",","."));if(isNaN(v))return;if(k==="tauxAcompte"||k==="margeMin")v=v/100}nc[k]=v});
+    const th=document.querySelector("[data-dpth][aria-pressed=true]");if(th)nc.dvTheme=th.dataset.dpth;
+    const cl=document.querySelector("[data-dpcol][aria-pressed=true]");if(cl){nc.dvBands=Object.assign({},nc.dvBands||{},{g1:cl.dataset.dpcol})}
+    document.querySelectorAll("[data-dpt]").forEach(x=>{nc[x.dataset.dpt]=x.checked});
+    const pf=document.getElementById("dp-faPrefix");if(pf&&pf.value.trim()&&pf.value.trim()!==(dvMent().faPrefix||"FA-")){nc.mentions=Object.assign({},nc.mentions||{},{faPrefix:pf.value.trim()})}
+    await saveCfg(nc);const x=document.getElementById("dvp-dirty");if(x)x.textContent=""}};
+document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest("[data-dpsec],[data-dpcol],[data-dpth]");if(!t)return;
+  if(t.dataset.dpsec){S.dvpSec=t.dataset.dpsec;document.querySelectorAll("[data-dpsec]").forEach(b=>b.setAttribute("aria-current",b===t));const id=t.dataset.dpsec==="num"?"dps-num":"dps-"+t.dataset.dpsec;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(t.dataset.dpcol){document.querySelectorAll("[data-dpcol]").forEach(b=>b.setAttribute("aria-pressed",b===t))}
+  const x=document.getElementById("dvp-dirty");if(x)x.textContent="Modifications non enregistrées"});
+/* options du PDF : sous-totaux, bon pour accord, détail des ouvrages */
+const _dvBlocks3=dvBlocks;dvBlocks=function(d){const B=_dvBlocks3.apply(this,arguments);const c=S.cfg||{};
+  try{if(c.pdfSousTot===false)B.forEach(b=>{if(b&&typeof b.h==="string"&&/pd-g pd-g\d/.test(b.h))b.h=b.h.replace(/<span class="r">[^<]*<\/span><\/div>$/,'<span class="r"></span></div>')});
+   if(c.pdfBpa===false)B.forEach(b=>{if(b&&typeof b.h==="string"&&b.h.includes('<div class="pd-lb">Bon pour accord</div>'))b.h=b.h.replace(/<div class="pd-box"><div class="pd-lb">Bon pour accord<\/div>[\s\S]*?<div class="pd-sz"><\/div><\/div>/,"")});
+   if(c.pdfDetail===true&&d&&d.kind!=="facture"){const L=(d.lignes||[]).filter(l=>!(l.t==="g"&&!(l.txt||"").trim()));let i=0;
+     B.forEach(b=>{if(!b||typeof b.h!=="string"||!b.h.startsWith('<div class="pd-row')||b.h.includes("<span>Désignation</span>"))return;const l=L[i++];if(!l||l.t==="g"||!l.s||!(l.s.comp||[]).length&&!num(l.s.h))return;
+       const fo=(l.s.comp||[]).map(x=>{const p=ouvPx(x);return(p.des||x.des||x.lib||"").toLowerCase()}).filter(Boolean).slice(0,6).join(", ");
+       const det=`<span class="pd-desc">${fo?"Fournitures : "+esc(fo)+". ":""}${num(l.s.h)?"Main-d'œuvre : "+nf(num(l.s.h),2)+" h / "+esc(String(l.u||"u").toLowerCase())+".":""}</span>`;
+       const key=esc(l.nom||"")+"</span>";const j=b.h.indexOf(key);if(j>=0)b.h=b.h.slice(0,j+key.length)+det+b.h.slice(j+key.length)})}}catch(e){console.warn(e)}
+  return B};
+
+/*@@/dvp3*/
 boot();
 })();
 </script>
