@@ -6449,10 +6449,10 @@ async function boot(){render();
   db.doc("config/params").onSnapshot(s=>{S.cfg=Object.assign(clone(DEF_CFG),s.exists?s.data():{});S.ld.add("cfg");if(!S.cfg.bareme)S.cfg.bareme=clone(DEF_CFG.bareme);render()},e=>console.warn(e));
   db.doc("data/entreprise").onSnapshot(s=>{S.ent=s.exists?s.data():null;if(S.view==="etudes"&&S.et&&document.getElementById("et-out"))etOut();if(!S.entDirty){S.entDraft=null;if(S.view==="entreprise"){render.force=true;render();render.force=false}}},e=>console.warn(e));
   db.collection("biblio").onSnapshot(s=>{S.bib=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));S.ld.add("biblio");dvAutoScan();if(S.view==="etudes"&&S.et&&document.getElementById("et-out"))etOut();if(S.view==="bibliotheque"&&!(S.drawer&&String(S.drawer.kind).startsWith("bib")))render();if(S.view==="ouvrages"&&!S.drawer)render()},e=>console.warn(e));
-  db.collection("factures").onSnapshot(s=>{S.fac=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));if(S.view==="facturation"&&!(S.dv&&isFa()))render()},e=>console.warn(e));
+  db.collection("factures").onSnapshot(s=>{S.fac=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));if(S.view==="facturation"&&!(S.dv&&isFa()))render();if(S.view==="dashboard"&&!S.drawer)render()},e=>console.warn(e));
   db.collection("modeles").onSnapshot(s=>{S.mod=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));if(S.drawer&&S.drawer.kind==="dvmod"&&!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches("#md-nom,[data-mdren]")))mdDraw();if(S.view==="devis"&&S.dvDraft&&!(S.dvDraft.lignes||[]).length)dvLines()},e=>console.warn(e));
   db.collection("clients").onSnapshot(s=>{S.cli=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));if(S.view==="clients"&&!S.drawer)render();cliLinkUpd()},e=>console.warn(e));
-  db.collection("devis").onSnapshot(s=>{S.devis=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));S.ld.add("devis");dvAutoScan();setTimeout(dvOrphanScan,2500);if(S.view==="devis"&&!S.dv)render()},e=>console.warn(e));
+  db.collection("devis").onSnapshot(s=>{S.devis=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));S.ld.add("devis");dvAutoScan();setTimeout(dvOrphanScan,2500);if(S.view==="devis"&&!S.dv)render();if(S.view==="dashboard"&&!S.drawer)render()},e=>console.warn(e));
   db.collection("ouvrages").onSnapshot(s=>{const old=S.ouv,now=Date.now();S.ouv=new Map(s.docs.map(d=>[d.id,(S.ouvEdit[d.id]&&now-S.ouvEdit[d.id]<8000&&old.get(d.id))||JSON.parse(JSON.stringify(d.data()))]));
     if(S.view==="ouvrages"&&S.ouvMode==="tab"&&document.querySelector("table.ot")){const ids=new Set([...document.querySelectorAll("tr[data-ot]")].map(r=>r.dataset.ot));if([...S.ouv.keys()].some(k=>!ids.has(k))&&!S.ouvQ&&!S.ouvMet)render.force=true}S.ld.add("ouvrages");dvAutoScan();if(S.view==="ouvrages"&&!S.drawer){render();render.force=false}},e=>console.warn(e));
   db.collection("ao").onSnapshot(s=>{S.ao=new Map(s.docs.map(d=>[d.id,JSON.parse(JSON.stringify(d.data()))]));if(!(S.drawer&&S.drawer.kind==="ao"))render();else badges()},e=>console.warn(e));
@@ -6670,8 +6670,8 @@ vHome=function(){const L=vis(),cfg=S.cfg;const A=all();
   const DV=[];S.devis.forEach((d,id)=>{if(d&&d.kind!=="facture"&&d.type!=="avoir")DV.push([id,d])});
   const att=DV.filter(([,d])=>["Envoyé","Relancé"].includes(d.statut)),attHT=sum(att,([,d])=>dvCalc(d).ht);
   const nRel=A.filter(d=>d.rdv&&["Devis envoyé","Relancé"].includes(d.rdv.statut)&&d.rdv.dateRelance&&d.rdv.dateRelance<=TODAY).length;
-  const open=L.filter(d=>d.facture&&d.facture.dateFacture).map(d=>faCalc(d)).filter(f=>f.reste>0.5);
-  const enc=sum(open,f=>f.reste),encR=sum(open.filter(f=>f.retard),f=>f.reste);
+  const FL=[];if(S.fac)S.fac.forEach(f=>{if(f&&f.num&&f.type!=="avoir"&&f.statut!=="Payée")FL.push(f)});
+  const enc=sum(FL,f=>faResteHT(f)),encR=sum(FL.filter(f=>faLate(f)),f=>faResteHT(f));
   const y=String(TODAY).slice(0,4),sg=DV.filter(([,d])=>d.statut==="Signé"&&String(d.date||"").slice(0,4)===y).map(([,d])=>dvCalc(d)).filter(c=>c.mPct!=null&&c.cout>0);
   const mg=sg.length?sum(sg,c=>c.marge)/Math.max(1,sum(sg,c=>c.ht)):null;
   const jd=new Date(P(TODAY)).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
@@ -6696,8 +6696,8 @@ vHome=function(){const L=vis(),cfg=S.cfg;const A=all();
     <div class="h2-ac"><button type="button" class="btn" data-hgo="rdv:add-rdv">+ Rendez-vous</button><button type="button" class="btn" data-hgo="etudes:et-new">+ Étude</button><button type="button" class="btn pri" data-hgo="devis:dv-new">+ Devis</button></div></div>
   <div class="h2-k">
     ${kpi("Chiffre signé · "+moLb,eur(caS),objM?`objectif ${keur(objM)} · ${Math.round(pS*100)} %`:`${sign.length} devis signé${sign.length>1?"s":""}`,objM?(pS>=1?"ok":pS>=.7?"":"ko"):"","affaires")}
-    ${kpi("Devis en attente",eur(attHT),`${att.length} devis · ${nRel} à relancer`,"","devis")}
-    ${kpi("À encaisser",eur(enc),encR?`dont ${eur(encR)} en retard`:"aucun retard",encR?"ko":"ok","facturation")}
+    ${kpi("Devis en attente HT",eur(attHT),`${att.length} devis · ${nRel} à relancer`,"","devis")}
+    ${kpi("À encaisser HT",eur(enc),(encR?`dont ${eur(encR)} en retard`:"aucun retard")+` · ${FL.length} facture${FL.length>1?"s":""}`,encR?"ko":"ok","facturation")}
     ${kpi("Marge moyenne des devis signés",mg==null?"—":Math.round(mg*100)+" %",mg==null?"composition des ouvrages à renseigner":sg.length+" devis "+y,"","stats")}
   </div>
   <div class="h2-g">
