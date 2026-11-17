@@ -714,6 +714,42 @@
 .chx-tt .mu{color:var(--muted);font-size:12.5px}
 
 /*@@/chx2*/
+/*@@act5*/
+.a5-m{position:fixed;z-index:400;min-width:224px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(11,25,33,.18);padding:6px;font-size:14px}
+.a5-m hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+.a5-i{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--ink);position:relative;white-space:nowrap}
+.a5-i:hover,.a5-i:focus-visible,.a5-p.open{background:rgba(12,110,168,.08)}
+.a5-i:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.a5-i>i{font-style:normal;color:var(--muted);font-size:15px}
+.a5-i.dg{color:#B42318}.a5-i.dg:hover{background:rgba(180,35,24,.08)}
+.a5-i[disabled]{opacity:.45;cursor:not-allowed}
+.a5-g{display:flex;flex-direction:column}
+.a5-st{padding:6px 10px}.a5-st i{color:var(--accent-ink,#0C6EA8);font-weight:900}
+.a5-s{display:none;position:absolute;left:calc(100% + 4px);top:-6px;min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(11,25,33,.18);padding:6px;z-index:2}
+.a5-r .a5-s{left:auto;right:calc(100% + 4px)}
+.a5-p:hover>.a5-s,.a5-p.open>.a5-s{display:block}
+@media (max-width:700px){.a5-m{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;left:auto!important;right:8px}.a5-s{position:static;box-shadow:none;border:0;padding:2px 0 2px 10px;min-width:0}.a5-p{flex-wrap:wrap}.a5-p:hover>.a5-s{display:none}.a5-p.open>.a5-s{display:block;width:100%}}
+.a5-ra{display:inline-flex;align-items:center;gap:4px;justify-content:flex-end}
+.a5-d{min-width:30px}
+/* récap : ajuster le prix final */
+.a5-tgb{all:unset;box-sizing:border-box;display:block;width:100%;text-align:center;cursor:pointer;margin:10px 0 4px;padding:9px 12px;border:1px dashed var(--accent);border-radius:10px;color:var(--accent-ink,#0C6EA8);font-weight:700;font-size:13.5px}
+.a5-tgb:hover{background:rgba(12,110,168,.06)}
+.a5-tg:not(:has(.a5-tgb)){margin:10px 0 4px;padding:12px;border:1px solid var(--accent);border-radius:12px;background:rgba(12,110,168,.04);display:flex;flex-direction:column;gap:8px}
+.a5-tgh{display:flex;justify-content:space-between;align-items:center}
+.a5-tgr{display:flex;gap:8px;align-items:center}.a5-tgr input{flex:1;min-width:0;font-size:16px;font-weight:700}
+.a5-w{display:flex}.a5-w button{flex:1;font-size:12.5px}
+.a5-tg .btn{align-self:flex-end}
+/* menu latéral repliable */
+#tabs p.sg[data-a5g]{cursor:pointer;user-select:none;border-radius:6px}
+#tabs p.sg[data-a5g]:hover{opacity:.85}
+#tabs p.sg[data-a5g]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.a5-chev{margin-left:auto;font-size:11px;opacity:.7;transition:transform .15s}
+#tabs p.sg.a5-fold .a5-chev{transform:rotate(-90deg)}
+#tabs a.a5-hid{display:none!important}
+table:has(tr[data-dvo]) tr>:last-child{position:sticky;right:0;background:var(--surface);z-index:1;box-shadow:-8px 0 8px -8px rgba(11,25,33,.18)}
+table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
+
+/*@@/act5*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -8819,6 +8855,136 @@ const _chxTempsP=chxTemps;chxTemps=function(d,M){chxTTLoad(d.id);let h=_chxTemps
   const ph=pwHeures(M),k=h.indexOf(ph);h=k>=0?h.slice(0,k)+tbl+`<details class="chx-hd"><summary>Heures par personne et par jour</summary>${ph}</details>`+h.slice(k+ph.length):h+tbl;}catch(e){console.warn(e)}return h};
 
 /*@@/chx2*/
+/*@@act5*/
+/* ===== Menu ⋯ des devis et factures, ajustement du prix final, Enregistrer et quitter, menu latéral repliable ===== */
+const A5_FA_DEL=/^(num|emiseLe|paiements|relances|echeance|odAt|envoyeLe|envoi|pdf|rgLib|payeLe)$/;
+const A5_DV_DEL=/^(sign|envoy|relan|od|offre|prev|rempl|dossier|suivi|pdf|valideLe|finalis)/i;
+function a5Close(){document.querySelectorAll(".a5-m").forEach(m=>m.remove())}
+function a5Items(k,id){
+  if(k==="dv"){const d=S.devis.get(id);if(!d)return"";const st=d.statut||"Brouillon",br=st==="Brouillon",hasFa=faOfDevis(id).some(([,f])=>f.num);
+    const sts=DV_ST.filter(x=>x!=="Remplacé").map(x=>`<button type="button" class="a5-i a5-st${x===st?" cur":""}" data-a5="st" data-v="${x}"><span class="ob-st ${OB_ST[x]||"gray"}">${x}</span>${x===st?"<i>✓</i>":""}</button>`).join("");
+    return`<div class="a5-g">${sts}</div><hr>
+    <div class="a5-i a5-p" tabindex="0">Voir<i>›</i><div class="a5-s"><button type="button" class="a5-i" data-a5="voir">Le devis (aperçu client)</button><button type="button" class="a5-i" data-a5="pdf">Télécharger le PDF</button><button type="button" class="a5-i" data-a5="bord">Bordereau (sans prix)</button></div></div>
+    <div class="a5-i a5-p" tabindex="0">Modifier<i>›</i><div class="a5-s"><button type="button" class="a5-i" data-a5="edit">${br?"Modifier le devis":"Ouvrir le devis"}</button>${d.num&&!br?`<button type="button" class="a5-i" data-a5="ver">Nouvelle version</button>`:""}</div></div>
+    <button type="button" class="a5-i" data-a5="dup">Dupliquer</button>
+    ${d.num?`<div class="a5-i a5-p" tabindex="0">Facturer<i>›</i><div class="a5-s"><button type="button" class="a5-i" data-a5="fac">Acompte</button><button type="button" class="a5-i" data-a5="fsit">Situation</button><button type="button" class="a5-i" data-a5="ffin">Facture finale</button></div></div>`:""}
+    <div class="a5-i a5-p" tabindex="0">Envoyer<i>›</i><div class="a5-s"><button type="button" class="a5-i" data-a5="mail">Par mail (brouillon Outlook)</button>${Object.entries(OFF_T).map(([o,v])=>`<button type="button" class="a5-i" data-a5="off" data-v="${o}">Offre ${v.toLowerCase()}</button>`).join("")}</div></div>
+    <hr><button type="button" class="a5-i dg" data-a5="del"${hasFa?' disabled title="Une facture est émise sur ce devis"':""}>Supprimer</button>`}
+  const f=S.fac.get(id);if(!f)return"";const rest=f.num&&f.type!=="avoir"?faReste(f):0;
+  return`<button type="button" class="a5-i" data-a5="fopen">${f.num?"Voir la facture":"Modifier le brouillon"}</button>
+  <button type="button" class="a5-i" data-a5="fpdf">Télécharger le PDF</button>
+  <button type="button" class="a5-i" data-a5="fdup">Dupliquer</button>
+  ${f.devisId&&S.devis.has(f.devisId)?`<button type="button" class="a5-i" data-a5="fdv">Voir le devis ${esc(S.devis.get(f.devisId).num||"")}</button>`:""}
+  ${f.num?`<hr><button type="button" class="a5-i" data-a5="fsend">Envoyer au client</button>`:""}
+  ${rest>0.5?`<button type="button" class="a5-i" data-a5="fenc">Encaisser un paiement</button><button type="button" class="a5-i" data-a5="frel">Préparer une relance</button>`:""}
+  ${f.num&&f.type!=="avoir"?`<button type="button" class="a5-i" data-a5="fav">Créer un avoir</button>`:""}
+  ${!f.num?`<hr><button type="button" class="a5-i dg" data-a5="fdel">Supprimer le brouillon</button>`:""}`}
+function a5Open(btn,k,id){a5Close();const m=document.createElement("div");m.className="a5-m";m.dataset.k=k;m.dataset.id=id;m.setAttribute("role","menu");m.innerHTML=a5Items(k,id);document.body.appendChild(m);
+  const r=btn.getBoundingClientRect(),h=m.offsetHeight,w=m.offsetWidth;m.style.top=Math.max(8,r.bottom+4+h>innerHeight-8?r.top-h-4:r.bottom+4)+"px";m.style.left=Math.max(8,Math.min(r.right-w,innerWidth-w-8))+"px";
+  const L=parseFloat(m.style.left);if(L+w+230>innerWidth)m.classList.add("a5-r")}
+window.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+  const b=t.closest('[data-obmenu][data-kind="dv"],[data-a5m]');
+  if(b){e.preventDefault();e.stopPropagation();const k=b.dataset.a5m?b.dataset.k:"dv",id=b.dataset.a5m||b.dataset.obmenu;const o=document.querySelector(".a5-m");if(o&&o.dataset.id===id){a5Close();return}a5Open(b,k,id);return}
+  const m=t.closest(".a5-m");if(!m){a5Close();return}
+  const p=t.closest(".a5-p");if(p&&!t.closest("[data-a5]")){e.stopPropagation();m.querySelectorAll(".a5-p.open").forEach(x=>x!==p&&x.classList.remove("open"));p.classList.toggle("open");return}
+  const a=t.closest("[data-a5]");if(!a||a.disabled)return;e.stopPropagation();a5Close();a5Act(m.dataset.k,m.dataset.id,a.dataset.a5,a.dataset.v)},true);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")a5Close()});
+addEventListener("scroll",()=>a5Close(),{passive:true});
+const a5Busy=()=>{if(S.dv&&S.dvDirty){toast("Un "+(isFa()?"document":"devis")+" ouvert a des modifications non enregistrées : enregistrez-le d'abord.");return true}return false};
+async function a5Act(k,id,a,v){
+  if(k==="dv"){const d=S.devis.get(id);if(!d)return;
+    if(a==="st")return dvQuickSt(id,v);
+    if(a==="del")return dvQuickDel(id);
+    if(a==="bord")return a5Bord(d);
+    if(a5Busy())return;
+    if(a==="voir"){if(S.view!=="devis")setView("devis");S.dvTab="pv";return dvOpen(id)}
+    if(a==="pdf"){if(S.view!=="devis")setView("devis");S.dvTab="pv";dvOpen(id);return setTimeout(()=>typeof dvPdf==="function"&&dvPdf(),400)}
+    if(a==="edit"){if(S.view!=="devis")setView("devis");S.dvTab="";return dvOpen(id)}
+    if(a==="ver"){if(S.view!=="devis")setView("devis");S.dvTab="";dvOpen(id);return setTimeout(()=>dvNewVersion(),200)}
+    if(a==="dup")return a5DupDv(id);
+    if(a==="fac")return faCreate(id,"acompte");
+    if(a==="ffin")return faCreate(id,"finale");
+    if(a==="fsit")return faNewOpen(id);
+    if(a==="mail"){if(!d.num){toast("Enregistrez d'abord le devis.");return}if(S.view!=="devis")setView("devis");S.dvTab="pv";dvOpen(id);return setTimeout(()=>{if(typeof dvxSendDv==="function")dvxSendDv()},400)}
+    if(a==="off"){if(!d.num){toast("Enregistrez d'abord le devis.");return}if(S.view!=="devis")setView("devis");S.dvTab="";dvOpen(id);return setTimeout(()=>{const b=document.querySelector(`[data-dvoff="${v}"]`);if(b)b.click();else toast("Ouvrez l'onglet de l'offre client dans le devis pour la monter.")},500)}
+    return}
+  const f=S.fac.get(id);if(!f)return;
+  if(a==="fdel")return faQuickDel(id);
+  if(a==="frel")return faRelance(id);
+  if(a==="fenc")return faEncOpen(id);
+  if(a5Busy())return;
+  if(a==="fopen")return faOpen(id);
+  if(a==="fpdf"){faOpen(id);return setTimeout(dvPdf,400)}
+  if(a==="fdv"){setView("devis");return dvOpen(f.devisId)}
+  if(a==="fsend"){faOpen(id);return setTimeout(()=>faSend(id),400)}
+  if(a==="fav"){faOpen(id);return setTimeout(faAvoir,400)}
+  if(a==="fdup")return a5DupFa(id)}
+async function a5DupDv(id){const o=S.devis.get(id);if(!o)return;const n=clone(o);Object.keys(n).forEach(x=>{if(A5_DV_DEL.test(x))delete n[x]});
+  n.num=dvNextNum();n.statut="Brouillon";n.date=TODAY;n.createdAt=n.updatedAt=new Date().toISOString();n.dupDe=o.num||null;
+  const nid="dv"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  if(S.db){try{await S.db.collection("devis").doc(nid).set(JSON.parse(JSON.stringify(n)))}catch(_){toast("Duplication impossible, réessayez.");return}}
+  S.devis.set(nid,n);if(S.view!=="devis")setView("devis");S.dvTab="";dvOpen(nid);toast(`Copie ${n.num} créée en brouillon à partir de ${o.num||"ce devis"} : modifiez le client ou les lignes si besoin.`)}
+async function a5DupFa(id){const o=S.fac.get(id);if(!o)return;if(o.type==="avoir"){toast("Un avoir ne se duplique pas.");return}const n=clone(o);Object.keys(n).forEach(x=>{if(A5_FA_DEL.test(x))delete n[x]});
+  n.statut="Brouillon";n.date=TODAY;n.updatedAt=new Date().toISOString();n.dupDe=o.num||null;
+  const nid="fa"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  if(S.db){try{await S.db.collection("factures").doc(nid).set(JSON.parse(JSON.stringify(n)))}catch(_){toast("Duplication impossible, réessayez.");return}}
+  S.fac.set(nid,n);faOpen(nid);toast(`Copie de ${o.num||"la facture"} créée en brouillon (non numérotée).`)}
+/* Bordereau : quantités sans prix, à imprimer */
+function a5Bord(d){const L=(d.lignes||[]).filter(l=>!(l.t==="g"&&!(l.txt||"").trim())),N=dvNums(L),c=d.client||{};
+  const rows=L.map((l,i)=>l.t==="g"?`<tr class="g"><td>${esc(N[i])}</td><td colspan="5">${esc(l.txt||"")}</td></tr>`:l.tx?`<tr><td></td><td colspan="5"><i>${esc(l.nom||"")}</i></td></tr>`
+    :`<tr><td>${esc(N[i])}</td><td>${esc(l.nom||"").replace(/\n/g,"<br>")}${l.opt?" <small>(option)</small>":""}</td><td class="c">${esc(l.u||"")}</td><td class="r">${l.q!=null&&l.q!==""?nf(num(l.q),2):""}</td><td></td><td></td></tr>`).join("");
+  const w=window.open("","_blank");if(!w){toast("Autorisez les fenêtres pour imprimer le bordereau.");return}
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bordereau ${esc(d.num||"")}</title><style>body{font:12px/1.4 Arial,sans-serif;color:#0B1921;margin:28px}h1{font-size:18px;margin:0 0 4px;color:#0C3A5B}p{margin:0 0 14px;color:#555}table{width:100%;border-collapse:collapse}th,td{border:1px solid #C9D3DC;padding:6px 8px;vertical-align:top}th{background:#EAF3FA;text-align:left;font-size:11px;text-transform:uppercase}tr.g td{background:#F4F7FA;font-weight:700}.r{text-align:right}.c{text-align:center}td:nth-child(5),td:nth-child(6){width:90px}@media print{body{margin:10mm}}</style></head><body>
+  <h1>Bordereau de quantités · ${esc(d.num||"")}</h1><p>${esc(d.objet||"")}${c.nom?" — "+esc(c.nom):""}</p>
+  <table><thead><tr><th>N°</th><th>Désignation</th><th class="c">Unité</th><th class="r">Quantité</th><th class="r">P.U. HT</th><th class="r">Total HT</th></tr></thead><tbody>${rows}</tbody></table>
+  <script>setTimeout(()=>print(),300)<\/script></body></html>`);w.document.close()}
+/* Factures : bouton ⋯ sur chaque ligne */
+const _faList2A5=faList2;faList2=function(){let h=_faList2A5.apply(this,arguments);try{h=h.replace(/(<button type="button" class="fa3a" data-fa(?:enc|o2)="([^"]+)">[^<]*<\/button>)/g,(m0,b,id)=>`<span class="a5-ra">${b}<button type="button" class="ob-dots a5-d" data-a5m="${id}" data-k="fa" aria-label="Actions de la facture">⋯</button></span>`)}catch(_){}return h};
+/* Récapitulatif : ajuster le prix final (maquette récap) */
+const a5n=v=>{const x=parseFloat(String(v==null?"":v).replace(/\s/g,"").replace(",","."));return isNaN(x)?undefined:x};
+function a5Tgt(){const el=document.getElementById("dvx-rc");if(!el||isFa()||!S.dvDraft||el.querySelector(".a5-tg"))return;const d=S.dvDraft,br=!d.statut||d.statut==="Brouillon";if(!br)return;const k=dvCalc(d);if(!(k.brut>0))return;
+  const T=S.a5T||{m:"ht",w:"prix"},big=el.querySelector(".dvx-big");const box=document.createElement("div");box.className="a5-tg";
+  box.innerHTML=S.a5T?`<div class="a5-tgh"><b>Prix final souhaité</b><button type="button" class="dvx-l" data-a5t="x">Fermer</button></div>
+    <div class="a5-tgr"><input class="dvi r" type="number" step="0.01" min="0" id="a5-tv" value="${T.v??""}" placeholder="${(T.m==="ttc"?k.ttc:k.ht).toFixed(2)}"><div class="seg" role="group"><button type="button" data-a5t="ht" aria-pressed="${T.m!=="ttc"}">HT</button><button type="button" data-a5t="ttc" aria-pressed="${T.m==="ttc"}">TTC</button></div></div>
+    <div class="seg a5-w" role="group"><button type="button" data-a5t="prix" aria-pressed="${T.w!=="adj"}">Répartir sur les prix</button><button type="button" data-a5t="adj" aria-pressed="${T.w==="adj"}">Remise / plus-value</button></div>
+    <p class="dvx-h2">${T.w==="adj"?"L'écart apparaît en remise commerciale (ou plus-value) sous le total des lignes.":"Les prix unitaires sont recalculés au prorata, les lignes en option ne bougent pas."} Actuel : ${eur2(k.ht)} HT · ${eur2(k.ttc)} TTC.</p>
+    <button type="button" class="btn pri sm" data-a5t="go">Appliquer</button>`
+    :`<button type="button" class="a5-tgb" data-a5t="open">🎯 Ajuster le prix final</button>`;
+  big?big.after(box):el.appendChild(box)}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-a5t]");if(!b)return;e.preventDefault();const x=b.dataset.a5t,bx=b.closest(".a5-tg"),inp=bx&&bx.querySelector("input")||document.getElementById("a5-tv");const T=S.a5T||{m:"ht",w:"prix"};if(inp&&inp.value!=="")T.v=a5n(inp.value);
+  if(x==="open")S.a5T={m:"ht",w:"prix"};else if(x==="x")S.a5T=null;else if(x==="ht"||x==="ttc"){T.m=x;S.a5T=T}else if(x==="prix"||x==="adj"){T.w=x;S.a5T=T}
+  else if(x==="go"){if(!(T.v>0)){toast("Indiquez le prix final souhaité.");if(inp)inp.focus();return}S.dvTgt={v:T.v,m:T.m,w:T.w};S.a5T=null;dvTgtApply();
+    if(T.w!=="adj"&&S.dvDraft){const d=S.dvDraft,k=dvCalc(d),cur=T.m==="ttc"?k.ttc:k.ht;if(Math.abs(cur-T.v)>=0.01&&Math.abs(cur-T.v)<20){const n0=dvAdj(d).length;S.dvTgt={v:T.v,m:T.m,w:"adj"};dvTgtApply();const A=d.ajust||[];if(A.length>n0){A[A.length-1].lib="Arrondi";dvOut();const b=document.getElementById("dv-adj");if(b)b.innerHTML=dvAdjHtml()}}}
+    return a5TgtPaint()}
+  a5TgtPaint();if(x!=="x"){const i=document.getElementById("a5-tv");if(i){i.focus();i.select()}}});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="a5-tv"&&S.a5T)S.a5T.v=a5n(e.target.value)});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="a5-tv"){e.preventDefault();const g=document.querySelector('[data-a5t="go"]');if(g)g.click()}});
+function a5TgtPaint(){const o=document.querySelector(".a5-tg");if(o)o.remove();a5Tgt()}
+const _dvxRecapA5=dvxRecap;dvxRecap=function(){_dvxRecapA5.apply(this,arguments);try{a5Tgt()}catch(_){}};
+/* Enregistrer et quitter */
+function a5SaveBtns(){const s=document.querySelector('.dvx-h [data-dvx="save"]');if(!s||s.dataset.a5)return;s.dataset.a5="1";s.title="Enregistrer sans quitter (Ctrl+S)";
+  const q=document.createElement("button");q.type="button";q.className="btn";q.dataset.a5q="";q.textContent="Enregistrer et quitter";s.after(q)}
+async function a5SaveQuit(){const b=document.getElementById("dv-save");if(!b)return;const was=S.dv;b.click();for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,150));if(!S.dvDirty&&S.dv&&S.dv!=="new")break}
+  if(S.dvDirty||!S.dv||S.dv==="new"){return}const fa=isFa();dvBack();if(!fa&&S.view!=="devis")setView("devis")}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-a5q]")){e.preventDefault();a5SaveQuit()}});
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==="s"||e.key==="S")&&S.dv&&S.dvDraft){const b=document.querySelector('.dvx-h [data-dvx="save"]');if(b){e.preventDefault();b.click()}}});
+const _dvxHeadA5=dvxHead;dvxHead=function(){_dvxHeadA5.apply(this,arguments);try{a5SaveBtns()}catch(_){}};
+/* Menu latéral : groupes repliables */
+function a5NavLoad(){try{return JSON.parse(localStorage.getItem("pilotage.navfold")||"{}")||{}}catch(_){return{}}}
+function a5NavSave(o){try{localStorage.setItem("pilotage.navfold",JSON.stringify(o))}catch(_){}}
+function a5Nav(){const nav=document.getElementById("tabs");if(!nav)return;const F=a5NavLoad();let cur=null;
+  [...nav.children].forEach(el=>{if(el.matches("p.sg")){cur=el;const g=el.textContent.trim();el.dataset.a5g=g;if(!el.dataset.a5n){el.dataset.a5n="1";el.setAttribute("role","button");el.tabIndex=0;el.insertAdjacentHTML("beforeend",'<span class="a5-chev" aria-hidden="true">▾</span>')}}
+    else if(cur&&el.matches("a[data-v]"))el.dataset.a5in=cur.dataset.a5g;else if(!el.matches("a[data-v]"))cur=null});
+  nav.querySelectorAll("p.sg[data-a5g]").forEach(p=>{const g=p.dataset.a5g,act=!!nav.querySelector(`a[data-a5in="${CSS.escape(g)}"][data-v="${CSS.escape(S.view||"")}"]`);const fold=!!F[g]&&!act;p.classList.toggle("a5-fold",fold);p.setAttribute("aria-expanded",String(!fold));
+    nav.querySelectorAll(`a[data-a5in="${CSS.escape(g)}"]`).forEach(a=>a.classList.toggle("a5-hid",fold))})}
+function a5NavTog(p){const F=a5NavLoad(),g=p.dataset.a5g;F[g]=!p.classList.contains("a5-fold");if(!F[g])delete F[g];a5NavSave(F);
+  const nav=document.getElementById("tabs");const act=!!nav.querySelector(`a[data-a5in="${CSS.escape(g)}"][data-v="${CSS.escape(S.view||"")}"]`);if(F[g]&&act){p.classList.add("a5-fold");p.setAttribute("aria-expanded","false");nav.querySelectorAll(`a[data-a5in="${CSS.escape(g)}"]`).forEach(a=>a.classList.toggle("a5-hid",a.dataset.v!==S.view));return}a5Nav()}
+document.addEventListener("click",e=>{const p=e.target.closest&&e.target.closest("#tabs p.sg[data-a5g]");if(p){e.preventDefault();a5NavTog(p)}});
+document.addEventListener("keydown",e=>{const p=e.target&&e.target.matches&&e.target.matches("#tabs p.sg[data-a5g]")?e.target:null;if(p&&(e.key==="Enter"||e.key===" ")){e.preventDefault();a5NavTog(p)}});
+const _renderA5=render;render=function(){const r=_renderA5.apply(this,arguments);try{a5Nav();a5Close()}catch(_){}return r};Object.defineProperty(render,"force",{get(){return _renderA5.force},set(v){_renderA5.force=v}});
+try{a5Nav()}catch(_){}
+
+/*@@/act5*/
 boot();
 })();
 </script>
