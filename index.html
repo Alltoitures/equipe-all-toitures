@@ -10,6 +10,37 @@
 <script src="socle.js"></script>
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script>(function(){var r=document.documentElement;function ap(){var t="auto";try{t=localStorage.getItem("pilotage.theme")||"auto"}catch(e){}var d=t==="auto"?(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t;r.setAttribute("data-theme",d);r.dataset.pref=t;document.querySelectorAll("[data-theme-set]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.themeSet===t)})}window.__themeApply=ap;ap();try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",ap)}catch(e){}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-theme-set]");if(!b)return;try{localStorage.setItem("pilotage.theme",b.dataset.themeSet)}catch(_){}ap()});document.addEventListener("DOMContentLoaded",ap)})();</script>
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+
+/* ===== Accueil v2 ===== */
+.h2{display:flex;flex-direction:column;gap:18px}
+.h2-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.h2-hd h1{margin:0;font-size:28px;color:var(--ink)}.h2-hd p{margin:4px 0 0;color:var(--muted);font-size:14.5px}
+.h2-ac{display:flex;gap:8px;flex-wrap:wrap}
+.h2-k{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.h2k{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.h2k:hover{border-color:var(--accent)}.h2k:focus-visible{outline:2px solid var(--accent)}
+.h2k-l{font-size:13px;color:var(--muted)}.h2k b{font-size:26px;color:var(--ink);letter-spacing:-.01em}
+.h2k-s{font-size:12.5px;font-weight:700;color:var(--ink-2)}.h2k-s.ok{color:var(--ok)}.h2k-s.ko{color:var(--danger)}
+.h2-g{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;align-items:start}
+.h2col{display:flex;flex-direction:column;gap:14px}
+.h2p{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.h2r{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.h2p .hc-h+.h2r,.h2p .hc-h+p+.h2r{border-top:0}
+.h2rb{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer;width:100%}
+.h2rb:hover b{color:var(--accent-ink)}
+.h2t{width:46px;flex:none;font-weight:800;color:var(--accent-ink);font-size:14px}
+.h2c{flex:1;min-width:0;display:flex;flex-direction:column}.h2c b{font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis}.h2c small{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h2b{flex:none;font:inherit;font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none}
+.h2b:hover{border-color:var(--accent)}.h2b.pri{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+.h2i{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800}
+.h2i.r{background:var(--danger-bg);color:var(--danger)}.h2i.w{background:var(--warn-bg);color:var(--warn)}.h2i.b{background:var(--accent-soft);color:var(--accent-ink)}
+.h2tag{flex:none;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 8px}.h2tag.ok{background:var(--ok-bg);color:var(--ok)}.h2tag.ko{background:var(--danger-bg);color:var(--danger)}
+.h2w{display:grid;grid-template-columns:minmax(70px,auto) repeat(5,1fr);gap:6px 4px;align-items:center;margin-top:4px}
+.h2wd{text-align:center;font-size:12px;font-weight:700;color:var(--muted)}.h2wd.on{color:var(--accent-ink)}
+.h2wn{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;grid-column:1}
+.h2wb{color:#fff;font-size:12px;font-weight:700;border-radius:6px;padding:5px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+@media (max-width:1150px){.h2-g{grid-template-columns:1fr 1fr}.h2col{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.h2-k{grid-template-columns:1fr 1fr}.h2-g,.h2col{grid-template-columns:1fr;display:flex;flex-direction:column}.h2-hd h1{font-size:23px}}
 /* ===== Thème clair / sombre + logo ===== */
 .top .brand .logo{height:26px;color:var(--top-ink)}
 .brand .logo{color:var(--top-ink)}
@@ -6629,6 +6660,63 @@ const css=document.createElement("style");css.textContent=`
 @media(max-width:900px){.a2-inbox,.a2-2,.a2-why{grid-template-columns:1fr}.a2-k,.a2-g3{grid-template-columns:1fr 1fr}.a2-lst{max-height:none}}`;
 document.head.appendChild(css);
 })();
+
+/* ===== Accueil v2 (validé le 17/11) ===== */
+function homeGo(v,btn){setView(v);if(btn)setTimeout(()=>{const b=document.getElementById(btn);if(b)b.click()},80)}
+vHome=function(){const L=vis(),cfg=S.cfg;const A=all();
+  const mo=TODAY.slice(0,7),moLb=new Date(P(TODAY)).toLocaleDateString("fr-FR",{month:"long"});
+  const sign=L.filter(d=>d.rdv&&d.rdv.statut==="Accepté"&&String(d.rdv.dateAcceptation||"").slice(0,7)===mo);
+  const caS=sum(sign,d=>num(d.rdv.montant)),objM=num(cfg.objectifCA)/12,pS=objM?caS/objM:null;
+  const DV=[];S.devis.forEach((d,id)=>{if(d&&d.kind!=="facture"&&d.type!=="avoir")DV.push([id,d])});
+  const att=DV.filter(([,d])=>["Envoyé","Relancé"].includes(d.statut)),attHT=sum(att,([,d])=>dvCalc(d).ht);
+  const nRel=A.filter(d=>d.rdv&&["Devis envoyé","Relancé"].includes(d.rdv.statut)&&d.rdv.dateRelance&&d.rdv.dateRelance<=TODAY).length;
+  const open=L.filter(d=>d.facture&&d.facture.dateFacture).map(d=>faCalc(d)).filter(f=>f.reste>0.5);
+  const enc=sum(open,f=>f.reste),encR=sum(open.filter(f=>f.retard),f=>f.reste);
+  const y=String(TODAY).slice(0,4),sg=DV.filter(([,d])=>d.statut==="Signé"&&String(d.date||"").slice(0,4)===y).map(([,d])=>dvCalc(d)).filter(c=>c.mPct!=null&&c.cout>0);
+  const mg=sg.length?sum(sg,c=>c.marge)/Math.max(1,sum(sg,c=>c.ht)):null;
+  const jd=new Date(P(TODAY)).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  const today=A.filter(d=>d.rdv&&d.rdv.date===TODAY&&!["Refusé","Sans suite"].includes(d.rdv.statut)).sort((a,b)=>String(a.rdv.heure||"").localeCompare(String(b.rdv.heure||"")));
+  const C=A.filter(d=>d.chantier&&d.chantier.statut==="En cours");
+  const tr=alertList();const AO=[];if(S.ao)S.ao.forEach((a,id)=>{if(!a)return;const st=a.statut||"";if(st==="Détecté")AO.push({id,t:"AO à décider · "+(a.acheteur||""),d:(a.ville||"")+(a.dateLimite?" · remise "+fd(a.dateLimite).slice(0,5):"")});else if(["Go","En préparation"].includes(st)&&a.dateLimite&&daysBetween(TODAY,a.dateLimite)<=10&&a.dateLimite>=TODAY)AO.push({id,t:"AO "+(a.acheteur||"")+(a.ville?" · "+a.ville:""),d:"Dépôt le "+fd(a.dateLimite).slice(0,5)+(a.heureLimite?" à "+a.heureLimite:"")})});
+  const parts=[today.length?today.length+" rendez-vous":"aucun rendez-vous",(tr.length+AO.length)+" point"+(tr.length+AO.length>1?"s":"")+" à traiter"];
+  const mapU=d=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent([d.rdv.adresse,d.rdv.cp,d.rdv.ville].filter(Boolean).join(" "));
+  const kpi=(lb,v,sub,cls,go)=>`<button type="button" class="h2k" data-jgo="${go}"><span class="h2k-l">${lb}</span><b>${v}</b><span class="h2k-s ${cls||""}">${sub}</span></button>`;
+  const ic={r:"⚠",w:"•"};
+  const trRow=a=>`<div class="h2r"><span class="h2i ${a.sev==="r"?"r":"w"}">${a.sev==="r"?"!":"•"}</span><span class="h2c"><b>${a.t}</b><small>${esc(a.d)}</small></span><button type="button" class="h2b${a.sev==="r"?" pri":""}" data-open="${a.kind}" data-id="${esc(a.id)}">Ouvrir</button></div>`;
+  const aoRow=a=>`<div class="h2r"><span class="h2i b">AO</span><span class="h2c"><b>${esc(a.t)}</b><small>${esc(a.d)}</small></span><button type="button" class="h2b" data-a2open="${esc(a.id)}" data-jgo="ao">Ouvrir</button></div>`;
+  const rel=nRel?`<div class="h2r"><span class="h2i b">✉</span><span class="h2c"><b>${nRel} relance${nRel>1?"s":""} de devis à faire</b><small>Brouillon jusqu'à 5 000 € HT · appel au-delà</small></span><button type="button" class="h2b pri" data-jgo="rdv">Voir</button></div>`:"";
+  const trAll=rel+AO.map(aoRow).join("")+tr.slice(0,7).map(trRow).join("");
+  /* Équipes de la semaine */
+  const t0=P(TODAY),dow=(t0.getDay()+6)%7,mon=new Date(t0.getTime()-dow*864e5),days=[0,1,2,3,4].map(i=>iso(new Date(mon.getTime()+i*864e5)));
+  const W=A.filter(d=>d.chantier&&["En cours","Planifié"].includes(d.chantier.statut)&&d.chantier.dateDebut).map(d=>{const c=d.chantier,fin=num(c.joursEstimes)>0?addWD(c.dateDebut,c.joursEstimes):c.dateDebut;const ix=days.map((x,i)=>x>=c.dateDebut&&x<=fin?i:-1).filter(i=>i>=0);return{d,a:ix[0],b:ix[ix.length-1],eq:c.equipe||"Équipe à définir"}}).filter(o=>o.a!=null);
+  const pal=["#0c6ea8","#7e57c2","#1e7b3a","#c77700","#00838f"];
+  const wk=W.length?`<div class="h2w"><span></span>${["Lun","Mar","Mer","Jeu","Ven"].map((x,i)=>`<span class="h2wd${days[i]===TODAY?" on":""}">${x}</span>`).join("")}${W.slice(0,6).map((o,i)=>`<span class="h2wn" title="${esc(o.eq)}">${esc(o.eq)}</span><span class="h2wb" style="grid-column:${o.a+2}/${o.b+3};background:${pal[i%pal.length]}" data-aff="${esc(o.d.id)}">${esc(titleCase(String(o.d.rdv.client||"").replace(/^(m\.?|mr|mme|m\. et mme)\s+/i,"")))}</span>`).join("")}</div>`:`<p class="hc-e">Aucun chantier planifié cette semaine.</p>`;
+  main.innerHTML=`<div class="h2">
+  <div class="h2-hd"><div><h1>${new Date().getHours()<18?"Bonjour":"Bonsoir"} Aurélien</h1><p>${jd.charAt(0).toUpperCase()+jd.slice(1)} · ${parts.join(", ")}</p></div>
+    <div class="h2-ac"><button type="button" class="btn" data-hgo="rdv:add-rdv">+ Rendez-vous</button><button type="button" class="btn" data-hgo="etudes:et-new">+ Étude</button><button type="button" class="btn pri" data-hgo="devis:dv-new">+ Devis</button></div></div>
+  <div class="h2-k">
+    ${kpi("Chiffre signé · "+moLb,eur(caS),objM?`objectif ${keur(objM)} · ${Math.round(pS*100)} %`:`${sign.length} devis signé${sign.length>1?"s":""}`,objM?(pS>=1?"ok":pS>=.7?"":"ko"):"","affaires")}
+    ${kpi("Devis en attente",eur(attHT),`${att.length} devis · ${nRel} à relancer`,"","devis")}
+    ${kpi("À encaisser",eur(enc),encR?`dont ${eur(encR)} en retard`:"aucun retard",encR?"ko":"ok","facturation")}
+    ${kpi("Marge moyenne des devis signés",mg==null?"—":Math.round(mg*100)+" %",mg==null?"composition des ouvrages à renseigner":sg.length+" devis "+y,"","stats")}
+  </div>
+  <div class="h2-g">
+    <section class="h2p"><div class="hc-h"><h2>Aujourd'hui</h2><button type="button" class="hc-a" data-jgo="rdv">Tous les RDV</button></div>
+      ${today.length?today.map(d=>`<div class="h2r"><span class="h2t">${esc(d.rdv.heure||"—")}</span><span class="h2c"><b>${esc(d.rdv.statut==="À venir"||d.rdv.statut==="À appeler"?"Visite · ":"")}${esc(d.rdv.client||"")}${d.rdv.ville?", "+esc(titleCase(d.rdv.ville)):""}</b><small>${esc([d.rdv.type,d.rdv.statut].filter(Boolean).join(" · "))}</small></span>${d.rdv.adresse||d.rdv.ville?`<a class="h2b" href="${mapU(d)}" target="_blank" rel="noopener">Itinéraire</a>`:""}<button type="button" class="h2b" data-aff="${esc(d.id)}">Ouvrir</button></div>`).join(""):`<p class="hc-e">Aucun rendez-vous aujourd'hui.</p>`}
+    </section>
+    <section class="h2p"><div class="hc-h"><h2>À traiter</h2><button type="button" class="hc-a" data-notif>Tout voir</button></div>
+      ${trAll||`<p class="hc-e">Rien à traiter pour le moment.</p>`}
+    </section>
+    <div class="h2col">
+      <section class="h2p"><div class="hc-h"><h2>Chantiers en cours</h2><button type="button" class="hc-a" data-jgo="chantiers">Planning</button></div>
+        ${C.length?C.map(d=>{const r=Math.round(avRatio(d,S.appAv&&S.appAv.m&&S.appAv.m.get(d.id))*100),k=chCalc(d),late=k.fin&&k.fin<TODAY;return`<button type="button" class="h2r h2rb" data-aff="${esc(d.id)}"><span class="h2c"><b>${esc(d.rdv.client||"")}${d.rdv.ville?" · "+esc(titleCase(d.rdv.ville)):""}</b><small>${r} % réalisé</small></span><span class="h2tag ${late?"ko":"ok"}">${late?"fin dépassée":"dans les temps"}</span></button>`}).join(""):`<p class="hc-e">Aucun chantier en cours.</p>`}
+      </section>
+      <section class="h2p"><div class="hc-h"><h2>Équipes cette semaine</h2></div>${wk}</section>
+    </div>
+  </div></div>`;
+  appAvLoad().catch(()=>{});
+};
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hgo]");if(!b)return;const[v,id]=b.dataset.hgo.split(":");if(v==="devis"&&typeof dvNewOpen==="function"){setView("devis");setTimeout(()=>dvNewOpen(),80);return}homeGo(v,id)});
 
 boot();
 })();
