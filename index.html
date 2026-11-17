@@ -81,6 +81,20 @@
 .rh-add{justify-content:center;color:var(--accent-ink);font-weight:700;border-style:dashed}
 .rh-av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--accent);color:#04202C;flex:none}.rh-av.apprenti{background:#7e57c2;color:#fff}.rh-av.chef{background:#0c6ea8;color:#fff}.rh-av.bureau{background:var(--surface-2);color:var(--ink)}
 .fo-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}.fo-r select,.fo-r input{font:inherit;padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
+
+.et-tp{display:block;margin:6px 0 10px}.et-tm{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.et-tc{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;background:var(--surface)}
+.et-tc[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.et-tc small{color:var(--muted);font-size:12px}.et-tc a{font-size:12px;color:var(--accent-ink);font-weight:700;text-decoration:none;margin-top:4px}
+.et-tt{display:flex;flex-wrap:wrap;gap:6px}.et-tt button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:99px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--ink)}
+.et-tt button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}.et-tt i{width:14px;height:14px;border-radius:50%;display:block}
+.air-ov{position:fixed;inset:0;z-index:600;background:#000}#air-map{position:absolute;inset:0}
+.air-p{position:absolute;z-index:700;background:var(--surface);color:var(--ink);border-radius:12px;box-shadow:var(--shadow);padding:12px 14px}
+.air-top{top:12px;left:60px;right:12px;display:flex;align-items:center;gap:12px}.air-top span{flex:1;color:var(--muted);font-size:13px}
+.air-side{top:76px;right:12px;width:min(300px,calc(100vw - 24px))}.air-side h3{margin:0 0 6px}
+.air-k{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line);font-size:13.5px}
+.air-pt{background:#fff;border:2px solid #01A9E1;border-radius:50%}
+.air-lb{background:rgba(11,25,33,.85);color:#fff;font:700 11px system-ui;padding:2px 5px;border-radius:4px;white-space:nowrap;width:auto!important;height:auto!important}
+@media (max-width:700px){.air-side{top:auto;bottom:12px}}
 /* ===== Thème clair / sombre + logo ===== */
 .top .brand .logo{height:26px;color:var(--top-ink)}
 .brand .logo{color:var(--top-ink)}
@@ -1581,7 +1595,7 @@ const EX_MONTHS=["juil.","août","sept.","oct.","nov.","déc.","janv.","févr.",
 const S={cli:new Map(),cliQ:"",docs:new Map(),cfg:clone(DEF_CFG),view:"dashboard",grands:true,ex:curEx,rdvMonth:TODAY.slice(0,7),rdvSt:"",q:"",chSt:"actifs",faSt:"",faAllPaid:false,db:null,mode:"loading",drawer:null,bib:new Map(),bibQ:"",bibCat:"",bibSf:"",ouv:new Map(),ouvQ:"",ouvMode:"x",ouvSel:"",ouvMet:"",ouvSf:"",devis:new Map(),dv:null,dvDraft:null,dvDirty:false,dvQ:"",dvSt:"",ao:new Map(),aoF:"decider",aoQ:""};
 const svAoF=store("at.aoF");if(["decider","cours","clos","tous"].includes(svAoF))S.aoF=svAoF;
 const sv=store("at.grands");if(sv==="0")S.grands=false;
-const hv=location.hash.replace("#","");if(["dashboard","stats","rdv","clients","devis","affaires","chantiers","facturation","ao","etudes","entreprise","bibliotheque","ouvrages","reglages"].includes(hv))S.view=hv;
+const hv=location.hash.replace("#","");if(["equipe","dvparams","dashboard","stats","rdv","clients","devis","affaires","chantiers","facturation","ao","etudes","entreprise","bibliotheque","ouvrages","reglages"].includes(hv))S.view=hv;
 
 /* ---------- Calculs métier ---------- */
 const all=()=>[...S.docs.entries()].map(([id,d])=>Object.assign({id},d));
@@ -6953,6 +6967,61 @@ document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)retur
   if(b=t.closest("[data-fosave]")){const id=b.dataset.fosave,f=clone(S.fo.get(id));f.intitule=document.getElementById("fo-t").value;f.famille=document.getElementById("fo-fam").value;f.date=document.getElementById("fo-d").value||null;f.pour=[...document.querySelectorAll("[data-fopour]:checked")].map(x=>x.dataset.fopour);await S.db.collection("formations").doc(id).set(f);S.drawer=null;DR.innerHTML="";render();toast("Formation enregistrée");return}
   if(b=t.closest("[data-fodel]")){if(!b.dataset.armed){b.dataset.armed=1;b.textContent="Confirmer la suppression";return}await S.db.collection("formations").doc(b.dataset.fodel).delete();S.drawer=null;DR.innerHTML="";render();return}});
 document.addEventListener("change",async e=>{const x=e.target;if(!x.dataset||!x.dataset.fo)return;const id=x.dataset.fo,f=clone(S.fo.get(id));const k=x.dataset.fok;f[k]=k==="opco"?x.checked:k==="cout"?(x.value===""?null:parseFloat(x.value)):x.value;await S.db.collection("formations").doc(id).set(f)});
+
+/* ===== Études : mesure plein écran sur photo aérienne + choix de tuile ===== */
+const TEINTES=[["Rouge","#a8442e"],["Rouge nuancé","#9a4a35"],["Vieilli / flammé","#7d5440"],["Brun","#5c3b2c"],["Ardoisé","#3b3f44"],["Sablé / champagne","#b98b5e"]];
+function etTilePicker(){const e=S.et&&S.et.draft;if(!e)return;const sel=document.getElementById("e-couv_tuile");if(!sel||document.getElementById("et-tp"))return;
+  const cur=TUILES.find(t=>t.id===e.couv.tuile)||null,fabs=[...new Set(TUILES.map(t=>t.fab))],fab=S.etFab||(cur&&cur.fab)||fabs[0];
+  const box=document.createElement("div");box.id="et-tp";box.className="et-tp full";
+  box.innerHTML=`<p class="hc-d">1 · Marque</p><div class="os-chips sm">${fabs.map(f=>`<button type="button" data-etfab="${esc(f)}" aria-pressed="${f===fab}">${esc(f)}</button>`).join("")}</div>
+   <p class="hc-d">2 · Modèle</p><div class="et-tm">${TUILES.filter(t=>t.fab===fab).map(t=>`<button type="button" class="et-tc" data-ettuile="${esc(t.id)}" aria-pressed="${!!cur&&cur.id===t.id}"><b>${esc(t.nom.replace(/ Ste Foy$/,""))}</b><small>pureau ${t.pmin}–${t.pmax} mm${t.pente?" · pente mini "+t.pente+" %":""}</small><a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(t.fab+" tuile "+t.nom)}" target="_blank" rel="noopener" data-stop>Voir les photos ↗</a></button>`).join("")}</div>
+   <p class="hc-d">3 · Teinte</p><div class="et-tt">${TEINTES.map(([n,c])=>`<button type="button" data-etteinte="${esc(n)}" aria-pressed="${e.couv.teinte===n}"><i style="background:${c}"></i>${esc(n)}</button>`).join("")}</div><p class="hint">Teinte à confirmer sur le nuancier du fabricant.</p>`;
+  sel.closest(".f").insertAdjacentElement("afterend",box);sel.closest(".f").style.display="none"}
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest||S.view!=="etudes"||!S.et)return;let b;const d=S.et.draft;
+  if(t.closest("[data-stop]"))return;
+  if(b=t.closest("[data-etfab]")){S.etFab=b.dataset.etfab;const x=document.getElementById("et-tp");if(x)x.remove();etTilePicker();return}
+  if(b=t.closest("[data-ettuile]")){d.couv.tuile=b.dataset.ettuile;S.et.dirty=true;etDirty();const s=document.getElementById("e-couv_tuile");if(s){s.value=d.couv.tuile;s.dispatchEvent(new Event("change",{bubbles:true}))}document.querySelectorAll("[data-ettuile]").forEach(x=>x.setAttribute("aria-pressed",x===b));return}
+  if(b=t.closest("[data-etteinte]")){d.couv.teinte=b.dataset.etteinte;S.et.dirty=true;etDirty();document.querySelectorAll("[data-etteinte]").forEach(x=>x.setAttribute("aria-pressed",x===b));return}
+  if(t.closest("[data-etair]")){etAir();return}});
+/* --- Mesure sur photo aérienne (IGN) --- */
+function etLeaflet(){if(window.L)return Promise.resolve();return new Promise((ok,ko)=>{const c=document.createElement("link");c.rel="stylesheet";c.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";document.head.appendChild(c);const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+async function etAir(){const e=S.et.draft;const ov=document.createElement("div");ov.className="air-ov";ov.innerHTML=`<div id="air-map"></div>
+  <div class="air-p air-top"><b>Mesure sur la photo aérienne</b><span id="air-st">Chargement…</span><button type="button" class="btn sm" data-airclose>Fermer</button></div>
+  <div class="air-p air-side"><h3>Toiture</h3><p class="hint">Déplacez les points blancs pour suivre le bord du toit (débords compris). Cliquez sur le côté de l'<b>égout</b> (bas de pente).</p>
+   <div class="air-k"><span>Surface au sol</span><b id="air-sol">—</b></div><div class="air-k"><span>Égout</span><b id="air-eg">cliquez un côté</b></div><div class="air-k"><span>Pignon</span><b id="air-pg">—</b></div>
+   <div class="f"><label for="air-pt">Pente (%)</label><input id="air-pt" type="number" step="1" value="${esc(e.v.pt||"")}" placeholder="Ex. 45"></div>
+   <div class="air-k"><span>Surface de toiture</span><b id="air-toit">—</b></div>
+   <div class="aff-btns"><button type="button" class="btn pri" data-airok>Reporter dans l'étude</button></div><p class="hint">Photo IGN · bâtiment BD TOPO. Vérifiez toujours sur place.</p></div>`;document.body.appendChild(ov);
+  const st=t=>{const x=document.getElementById("air-st");if(x)x.textContent=t};
+  try{await etLeaflet()}catch(_){st("Carte indisponible (pas de connexion).");return}
+  const map=L.map("air-map",{zoomControl:true,maxZoom:21}).setView([45.66,4.77],18);
+  L.tileLayer("https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",{maxZoom:21,maxNativeZoom:20,attribution:"© IGN"}).addTo(map);
+  const adr=[e.adresse,e.cp,e.ville].filter(Boolean).join(" ");let ll=null;
+  if(adr){try{const g=await fetch("https://data.geopf.fr/geocodage/search?limit=1&q="+encodeURIComponent(adr)).then(r=>r.json());const f=g.features&&g.features[0];if(f){ll=[f.geometry.coordinates[1],f.geometry.coordinates[0]];map.setView(ll,20)}}catch(_){}}
+  if(!ll){st("Adresse introuvable : déplacez la carte sur le bâtiment puis cliquez dessus.")}
+  let pts=[],poly=null,mk=[],lab=[],eg=null,lines=[];
+  const draw=()=>{if(poly)poly.remove();mk.forEach(m=>m.remove());lab.forEach(m=>m.remove());lines.forEach(m=>m.remove());mk=[];lab=[];lines=[];if(pts.length<3)return;
+    poly=L.polygon(pts,{color:"#01A9E1",weight:2,fillOpacity:.15}).addTo(map);
+    pts.forEach((p,i)=>{const q=pts[(i+1)%pts.length],d=map.distance(p,q);const ln=L.polyline([p,q],{color:i===eg?"#f5b041":"#01A9E1",weight:i===eg?6:4,opacity:.9}).addTo(map);ln.on("click",()=>{eg=i;draw()});lines.push(ln);
+      lab.push(L.marker([(p[0]+q[0])/2,(p[1]+q[1])/2],{icon:L.divIcon({className:"air-lb",html:d.toFixed(2)+" m"}),interactive:false}).addTo(map));
+      const m=L.marker(p,{draggable:true,icon:L.divIcon({className:"air-pt",iconSize:[14,14]})}).addTo(map);m.on("drag",ev=>{const a=ev.target.getLatLng();pts[i]=[a.lat,a.lng];if(poly)poly.setLatLngs(pts)});m.on("dragend",()=>draw());mk.push(m)});
+    calc()};
+  const area=()=>{const R=6378137,lat0=pts.reduce((a,p)=>a+p[0],0)/pts.length*Math.PI/180;const xy=pts.map(p=>[p[1]*Math.PI/180*R*Math.cos(lat0),p[0]*Math.PI/180*R]);let s=0;xy.forEach((p,i)=>{const q=xy[(i+1)%xy.length];s+=p[0]*q[1]-q[0]*p[1]});return Math.abs(s)/2};
+  const calc=()=>{const a=area(),p=num(document.getElementById("air-pt").value)/100,k=Math.sqrt(1+p*p);document.getElementById("air-sol").textContent=f2(a)+" m²";document.getElementById("air-toit").textContent=p?f2(a*k)+" m²":"indiquez la pente";
+    if(eg!=null){const L1=map.distance(pts[eg],pts[(eg+1)%pts.length]),n=pts.length,a1=map.distance(pts[(eg+1)%n],pts[(eg+2)%n]),a2=map.distance(pts[(eg-1+n)%n],pts[eg]);document.getElementById("air-eg").textContent=L1.toFixed(2)+" m";document.getElementById("air-pg").textContent=((a1+a2)/2).toFixed(2)+" m"}};
+  const loadBat=async c=>{st("Recherche du bâtiment…");const d=0.0004,bb=[c[0]-d,c[1]-d,c[0]+d,c[1]+d].join(",");
+    try{const j=await fetch(`https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BDTOPO_V3:batiment&OUTPUTFORMAT=application/json&SRSNAME=EPSG:4326&BBOX=${bb},urn:ogc:def:crs:EPSG::4326&COUNT=40`).then(r=>r.json());
+      const ins=(pt,ring)=>{let x=pt[1],y=pt[0],o=false;for(let i=0,j2=ring.length-1;i<ring.length;j2=i++){const xi=ring[i][0],yi=ring[i][1],xj=ring[j2][0],yj=ring[j2][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))o=!o}return o};
+      let best=null;(j.features||[]).forEach(f=>{const g=f.geometry;const rings=g.type==="MultiPolygon"?g.coordinates.map(p=>p[0]):[g.coordinates[0]];rings.forEach(r=>{if(ins(c,r))best=r})});
+      if(!best&&j.features&&j.features[0]){const g=j.features[0].geometry;best=g.type==="MultiPolygon"?g.coordinates[0][0]:g.coordinates[0]}
+      if(best){pts=best.slice(0,-1).map(p=>[p[1],p[0]]);eg=null;draw();map.fitBounds(L.polygon(pts).getBounds(),{padding:[60,60]});st("Bâtiment trouvé : ajustez les points, puis cliquez le côté égout.")}else st("Aucun bâtiment ici : cliquez sur le toit.")}catch(_){st("Données bâtiment indisponibles.")}};
+  map.on("click",ev=>loadBat([ev.latlng.lat,ev.latlng.lng]));if(ll)loadBat(ll);
+  ov.addEventListener("input",ev=>{if(ev.target.id==="air-pt"&&pts.length>2)calc()});
+  ov.addEventListener("click",ev=>{if(ev.target.closest("[data-airclose]")){map.remove();ov.remove();return}
+    if(ev.target.closest("[data-airok]")){if(eg==null||pts.length<3){toast("Cliquez d'abord sur le côté égout du toit.");return}const n=pts.length,Le=map.distance(pts[eg],pts[(eg+1)%n]),Wo=(map.distance(pts[(eg+1)%n],pts[(eg+2)%n])+map.distance(pts[(eg-1+n)%n],pts[eg]))/2,p=num(document.getElementById("air-pt").value),k=Math.sqrt(1+(p/100)*(p/100));
+      e.mode="toit";e.v.Le=+Le.toFixed(2);if(p)e.v.pt=p;e.v.R=+((e.forme==="ap"||e.forme==="1t"||e.forme==="1tri"?Wo:Wo/2)*k).toFixed(2);if(e.forme==="4p")e.v.Lc=+Wo.toFixed(2);
+      e.air={sol:+area().toFixed(2),Le:e.v.Le,pignon:+Wo.toFixed(2),le:TODAY};S.et.dirty=true;map.remove();ov.remove();render.force=true;render();render.force=false;toast("Mesures reportées : égout "+f2(Le)+" m, rampant "+f2(e.v.R)+" m. Vérifiez puis enregistrez.")}})}
+const _vEtude0=vEtude;vEtude=function(){_vEtude0.apply(this,arguments);try{etTilePicker();const h=document.querySelector("main .phead .acts, main .et-acts, main .acts");if(h&&!document.querySelector("[data-etair]"))h.insertAdjacentHTML("afterbegin",'<button type="button" class="btn" data-etair>🛰 Mesurer sur photo aérienne</button>')}catch(err){console.warn(err)}};
 
 boot();
 })();
