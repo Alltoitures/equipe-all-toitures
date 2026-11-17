@@ -1960,7 +1960,7 @@ function rvAnalyse(inM,L){const M=S.rdvMonth,all_=M==="all";
   </section>`}
 const SC_TABS=[["todo","À traiter"],["call","À appeler"],["dvf","Devis à faire"],["att","En attente de réponse"],["sig","Signés"],["lost","Perdus"],["all","Toutes les fiches"]],SC_DVJ=7;
 const scLogs=(r,t)=>(Array.isArray(r.suivi)?r.suivi:[]).filter(x=>!t||x.t===t).sort((a,b)=>String(a.d).localeCompare(b.d));
-const SC_LB={appel:"appelé",mail:"relance mail",maj:"devis modifié"};const scLast=r=>{const L=scLogs(r);const x=L[L.length-1];return x?SC_LB[x.t]+" le "+fd(x.d).slice(0,5):""};
+const SC_LB={appel:"appelé",mail:"relance mail",maj:"devis modifié",envoi:"envoyé",offre:"offre envoyée"};const scLast=r=>{const L=scLogs(r);const x=L[L.length-1];return x?(SC_LB[x.t]||x.lib||x.t||"suivi")+" le "+fd(x.d).slice(0,5):""};
 function scInfo(d){const r=d.rdv||{},st=r.statut;let ref=null;
   if(st==="À appeler"){ref=d.demandeLe||d.createdAt;const j=ref?daysBetween(String(ref).slice(0,10),TODAY):0,ap=scLogs(r,"appel"),la=ap[ap.length-1];
     if(la){const k=daysBetween(la.d,TODAY);return{c:k<2?"g":"o",j,a:k<2?"Rappelé · RDV à fixer":"Rappeler (sans réponse ?)",s:ap.length+" appel"+(ap.length>1?"s":"")+", dernier le "+fd(la.d).slice(0,5)}}
