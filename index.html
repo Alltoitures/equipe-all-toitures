@@ -63,6 +63,18 @@
 .dp-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
 .dp-q{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin:8px 0}
 @media (max-width:760px){.dp-g{grid-template-columns:1fr}}
+
+.pj-tabs{margin:10px 0 16px}
+
+.pl2{margin:16px 0}.pl2-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.pl2-h h2{margin:0;font-size:18px}.pl2-h small{color:var(--muted);font-weight:600;font-size:13px}.pl2-nav{display:flex;gap:6px}
+.pl2-g{display:grid;grid-template-columns:minmax(90px,140px) repeat(var(--n),minmax(54px,1fr));gap:4px 2px;align-items:center;margin-top:10px;overflow-x:auto}
+.pl2-d{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);padding:4px 0;border-radius:8px}.pl2-d b{font-size:12px;color:var(--ink-2);text-transform:capitalize}.pl2-d small{font-size:11px}.pl2-d.on{background:var(--accent-soft)}.pl2-d.on b{color:var(--accent-ink)}
+.pl2-d.wk,.pl2-cell.wk{border-left:2px solid var(--line-2)}
+.pl2-c0{grid-column:1;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl2-cell{height:30px;border-radius:6px;background:var(--surface-2)}.pl2-cell.ov{outline:2px dashed var(--accent);background:var(--accent-soft)}
+.pl2-bar{grid-row:auto;align-self:center;height:28px;margin-top:-34px;position:relative;z-index:1;color:#fff;font-size:12px;font-weight:700;border-radius:6px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab}
+.pl2-bar.drag,.pl2-chip.drag{opacity:.5}
+.pl2-todo{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:14px;font-size:13px}.pl2-chip{background:#7e57c2;color:#fff;border-radius:6px;padding:5px 9px;font-weight:700;font-size:12px;cursor:grab}
 /* ===== Thème clair / sombre + logo ===== */
 .top .brand .logo{height:26px;color:var(--top-ink)}
 .brand .logo{color:var(--top-ink)}
@@ -6805,6 +6817,67 @@ function vDvParams(){const c=S.cfg||{};const thc=c.dvTheme||"";
   </div>`;
   document.getElementById("dp-save").onclick=()=>{const nc=clone(S.cfg||{});document.querySelectorAll("[data-dp]").forEach(x=>{const k=x.dataset.dp;let v=x.value;if(x.type==="number"||k==="dvTva"){if(v==="")return;v=parseFloat(String(v).replace(",","."));if(isNaN(v))return;if(k==="tauxAcompte"||k==="margeMin")v=v/100}nc[k]=v});const th=document.querySelector("[data-dpth][aria-pressed=true]");if(th)nc.dvTheme=th.dataset.dpth;saveCfg(nc)}}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-dpth]");if(!b)return;document.querySelectorAll("[data-dpth]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+
+/* ===== Fiche chantier 360° (onglets) ===== */
+vProjet=function(){const id=S.proj,d0=S.docs.get(id);if(!d0){S.proj=null;return vProjTab()}const d=Object.assign({id},d0),r=d.rdv||{},c=d.chantier||{};
+  if(!S.pjApp)pjAppLoad().then(()=>{if(S.proj===id&&!S.drawer)render()}).catch(()=>{});else pjSyncH(id);
+  if(!S.pw[id])pwLoad(id).catch(()=>{});
+  const M=pwModel(d),dv=M.dv,TD=pwTodo(d,M),W=M.W;
+  const ch=(M.A&&M.A.reference)||((/\b(CH-\d+)\b/.exec(String((d.dossierChantier&&(d.dossierChantier.nom||d.dossierChantier.url))||""))||[])[1])||"";
+  const objet=dv&&dv[1].objet?dv[1].objet:r.type||"";
+  const tel=r.tel?String(r.tel).replace(/[^\d+]/g,""):"";
+  const head=`<div class="pj-top"><button type="button" class="linkbtn" data-pjback>← Tous les chantiers</button>${W.busy?'<span class="pw-sync">Lecture de l\'application équipes…</span>':W.ok?`<button type="button" class="linkbtn pw-sync" data-pwact="reload">Actualiser</button>`:""}</div>
+  <header class="pw-hd"><div class="pw-ht"><small>${esc([d.affaire&&d.affaire.num,ch].filter(Boolean).join(" · ")||"Chantier")}</small>
+    <h1>Chantier ${esc(r.client||"")}</h1>
+    <p>${esc([r.ville&&titleCase(r.ville),objet].filter(Boolean).join(" · "))}</p></div>
+    <div class="pw-amt"><span>Montant</span><b>${eur(M.ht)} HT</b></div>
+    <div class="pw-acts">${d.dossierChantier&&d.dossierChantier.url?`<a class="btn sm" href="${esc(d.dossierChantier.url)}" target="_blank" rel="noopener">Dossier OneDrive</a>`:""}<button type="button" class="btn sm" data-pwact="bon">Bon d'intervention</button>${tel?`<a class="btn sm" href="tel:${esc(tel)}">Appeler ${esc(String(r.client||"le client").split(" ")[0])}</a>`:""}<button type="button" class="btn sm" data-pjaff>Planifier · statut</button>${dv?`<button type="button" class="btn sm" data-pjdv="${esc(dv[0])}">Devis ${esc(dv[1].num)}</button>`:""}</div></header>
+  ${pwSteps(d,M)}`;
+  const todo=TD.length?`<section class="pw-todo" aria-label="À faire"><h2>À faire <small>${TD.length}</small></h2>${TD.map(x=>`<div class="pw-ti${x.u?" u":""}"><span><b>${esc(x.t)}</b>${x.d?`<small>${esc(x.d)}</small>`:""}</span>${x.b?`<button type="button" class="btn sm" data-pwact="${x.b[1]}">${esc(x.b[0])}</button>`:""}</div>`).join("")}</section>`:"";
+  const T=M.trav,hp=M.hPrev?M.hR/M.hPrev:null,dm=M.mpProj!=null&&M.mpPrev!=null?M.mpProj-M.mpPrev:null;
+  const tL=`<div class="pw-tiles">${pwTile("travaux","L",S.pwL,"Travaux",Math.round(T.pct*100)+" %",T.src==="app"?T.f+" / "+T.n+" tâches":"avancement de la fiche",T.pct)}${pwTile("heures","L",S.pwL,"Heures",nf(M.hR,0)+" h",M.hPrev!=null?"sur "+nf(M.hPrev,0)+" h prévues":"prévu inconnu",hp,hp>1.1?"r":hp>0.9?"w":"")}</div>`;
+  const tR=`<div class="pw-tiles">${pwTile("marge","R",S.pwR,"Marge projetée",M.margeProj==null?"—":eur(M.margeProj),pwPc(M.mpProj)+(M.mpPrev!=null?" · prévu "+pwPc(M.mpPrev):"")+(dm!=null&&Math.abs(dm)>=0.005?` <span class="${dm<-0.03?"pj-bad":dm<0?"pj-mid":"pj-good"}">${dm>0?"+":""}${Math.round(dm*100)} pts</span>`:""),null)}${pwTile("achats","R",S.pwR,"Achats et facturation",pwPc(M.pEnc)+" encaissé",eur(M.enc)+" / "+eur(M.ttc)+" TTC",M.pEnc,"g")}</div>`;
+  const dL=S.pwL==="heures"?pwHeures(M):S.pwL==="travaux"?pwTravaux(M):"",dR=S.pwR==="achats"?pwAchats(d,M):S.pwR==="marge"?pwMarge(M):"";
+  const PT=[["ens","Vue d'ensemble"],["temps","Hypothèses et temps"],["cmd","Commandes"],["trav","Travaux"],["docs","Photos et documents"],["fin","Finances"]],tb=S.pjTab||"ens";
+  const fasL=(()=>{const out=[];if(dv&&S.fac)S.fac.forEach((f,j)=>{if(f&&f.devisId===dv[0])out.push([j,f])});return out})();
+  const finFa=`<div class="card"><h3>Facturation</h3>${fasL.length?fasL.map(([j,f])=>{const kc=dvCalc(f);return`<div class="oline"><span>${esc((FA_TYP[f.type]||"Facture")+" "+(f.num||"(brouillon)"))}<small>${esc(f.statut||"")}${f.date?" · "+fd(f.date):""}</small></span><b>${eur2(kc.ht)} HT</b></div>`}).join(""):'<p class="hint">Aucune facture pour ce chantier.</p>'}<div class="aff-btns"><button type="button" class="btn sm" data-pjaff>Facturer (acompte, situation, solde)</button></div></div>`;
+  const photos=d.dossierChantier&&d.dossierChantier.url?`<div class="card"><h3>Photos du chantier</h3><p class="hint">Les photos prises dans l'application équipes sont rangées dans « C - Photos (avant pendant après) » du dossier OneDrive.</p><a class="btn" href="${esc(d.dossierChantier.url)}" target="_blank" rel="noopener">Ouvrir les photos dans OneDrive ↗</a></div>`:"";
+  const body=tb==="temps"?pwHeures(M):tb==="cmd"?pwAchats(d,M):tb==="trav"?pwTravaux(M)+pwImp(M):tb==="docs"?photos+pwDocs(d,M):tb==="fin"?tR+pwMarge(M)+finFa:
+    `${todo}<div class="pw-cols"><div class="pw-col"><p class="pw-cl">Terrain</p>${tL}${pwImp(M)}</div><div class="pw-col"><p class="pw-cl">Argent</p>${tR}</div></div>${pwJournal(d)}`;
+  main.innerHTML=head+`<div class="dvt-bar pj-tabs" role="tablist">${PT.map(([k,l])=>`<button type="button" role="tab" data-pjtab="${k}" aria-selected="${k===tb}">${l}</button>`).join("")}</div>`+body};
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest||S.view!=="affaires"||!S.proj)return;const b=t.closest("[data-pjtab]");if(b){S.pjTab=b.dataset.pjtab;render();return}
+  const tl=t.closest("[data-pwtile]");if(tl&&!(S.drawer&&DR.contains(t))){e.stopImmediatePropagation();S.pjTab={travaux:"trav",heures:"temps",marge:"fin",achats:"cmd"}[tl.dataset.pwtile]||"ens";render()}},true);
+document.addEventListener("click",e=>{const t=e.target;if(t.closest&&t.closest("[data-pjback]"))S.pjTab="ens"},true);
+
+/* ===== Planning des équipes sur 2 semaines (glisser-déposer, météo) ===== */
+S.plOff=S.plOff||0;
+async function plMeteo(){if(S.plMet&&Date.now()-S.plMet.t<3*3600e3)return S.plMet.m;
+  try{const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=45.66&longitude=4.77&daily=weathercode,precipitation_probability_max,temperature_2m_max&timezone=Europe%2FParis&forecast_days=16");const j=await r.json();const m={};(j.daily&&j.daily.time||[]).forEach((d,i)=>m[d]={c:j.daily.weathercode[i],p:j.daily.precipitation_probability_max[i],t:j.daily.temperature_2m_max[i]});S.plMet={t:Date.now(),m};return m}catch(e){S.plMet={t:Date.now(),m:{}};return{}}}
+function plIc(w){if(!w)return"";const c=w.c;const i=c>=95?"⛈":c>=71&&c<=86?"❄":c>=51?"🌧":c>=45?"🌫":c>=2?"⛅":"☀";return`<span title="${w.p!=null?"Pluie "+w.p+" %":""}">${i}</span><small>${w.p!=null&&w.p>=40?w.p+" %":Math.round(w.t)+"°"}</small>`}
+function plHtml(){const t0=P(TODAY),dow=(t0.getDay()+6)%7,mon=new Date(t0.getTime()-dow*864e5+S.plOff*7*864e5);
+  const days=[];for(let w=0;w<2;w++)for(let i=0;i<5;i++)days.push(iso(new Date(mon.getTime()+(w*7+i)*864e5)));
+  const L=vis().filter(d=>d.chantier&&["À planifier","Planifié","En cours"].includes(d.chantier.statut));
+  const pl=L.filter(d=>d.chantier.dateDebut).map(d=>{const c=d.chantier,fin=num(c.joursEstimes)>0?addWD(c.dateDebut,c.joursEstimes):c.dateDebut;const ix=days.map((x,i)=>x>=c.dateDebut&&x<=fin?i:-1).filter(i=>i>=0);return{d,a:ix[0],b:ix[ix.length-1],fin}}).filter(o=>o.a!=null).sort((x,y)=>x.a-y.a);
+  const todo=L.filter(d=>!d.chantier.dateDebut);
+  const M=S.plMet&&S.plMet.m||{},pal={"Planifié":"#0c6ea8","En cours":"#c77700","À planifier":"#7e57c2"};
+  const nm=d=>esc(titleCase(String(d.rdv.client||"").replace(/^(m\.?|mr|mme|m\. et mme|mme et m\.)\s+/i,"")));
+  const lbl=d=>`${nm(d)}${d.rdv.ville?" · "+esc(titleCase(d.rdv.ville)):""}`;
+  const f1=new Date(P(days[0])).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}),f2=new Date(P(days[9])).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+  return`<section class="card pl2"><div class="pl2-h"><h2>Planning des équipes <small>${f1} – ${f2}</small></h2><div class="pl2-nav"><button type="button" class="btn sm" data-plnav="-1">‹</button><button type="button" class="btn sm" data-plnav="0">Aujourd'hui</button><button type="button" class="btn sm" data-plnav="1">›</button></div></div>
+   <p class="hint">Glissez un chantier sur un jour pour changer sa date de démarrage. Les chantiers à planifier sont en bas.</p>
+   <div class="pl2-g" style="--n:10"><span class="pl2-c0"></span>${days.map((x,i)=>{const dt=new Date(P(x));return`<span class="pl2-d${x===TODAY?" on":""}${i===5?" wk":""}"><b>${dt.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".","")} ${dt.getDate()}</b>${plIc(M[x])}</span>`}).join("")}
+   ${pl.map(o=>{const c=o.d.chantier;return`<span class="pl2-c0" title="${esc(c.equipe||"")}">${esc(c.equipe||"Équipe à définir")}</span>${days.map((x,i)=>`<span class="pl2-cell${i===5?" wk":""}" data-pldrop="${x}" data-plrow="${esc(o.d.id)}"></span>`).join("")}<span class="pl2-bar" draggable="true" data-pldrag="${esc(o.d.id)}" data-aff="${esc(o.d.id)}" style="grid-column:${o.a+2}/${o.b+3};background:${pal[c.statut]||"#0c6ea8"}" title="${esc((o.d.rdv.client||"")+" · "+c.statut+" · "+fd(c.dateDebut)+(o.fin?" → "+fd(o.fin):""))}">${lbl(o.d)}</span>`}).join("")||`<span class="pl2-c0"></span><span class="hc-e" style="grid-column:2/-1">Aucun chantier sur ces deux semaines.</span>`}
+   </div>
+   ${todo.length?`<div class="pl2-todo"><b>À planifier</b>${todo.map(d=>`<span class="pl2-chip" draggable="true" data-pldrag="${esc(d.id)}" title="Glisser sur un jour du planning">${lbl(d)}${num(d.chantier.joursEstimes)?" · "+nf(d.chantier.joursEstimes,1)+" j":""}</span>`).join("")}</div>`:""}
+  </section>`}
+const _vCh0=vCh;vCh=function(){_vCh0.apply(this,arguments);try{const h=document.querySelector("main .rv2-hero");if(h){h.insertAdjacentHTML("afterend",plHtml());if(!S.plMet)plMeteo().then(()=>{if(S.view==="chantiers"&&!S.drawer)render()})}}catch(e){console.warn(e)}};
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-plnav]");if(!b)return;const v=+b.dataset.plnav;S.plOff=v===0?0:S.plOff+v;render()});
+document.addEventListener("dragstart",e=>{const b=e.target.closest&&e.target.closest("[data-pldrag]");if(!b)return;e.dataTransfer.setData("text/plain",b.dataset.pldrag);e.dataTransfer.effectAllowed="move";b.classList.add("drag")});
+document.addEventListener("dragover",e=>{const c=e.target.closest&&e.target.closest("[data-pldrop]");if(c){e.preventDefault();document.querySelectorAll(".pl2-cell.ov").forEach(x=>x.classList.remove("ov"));c.classList.add("ov")}});
+document.addEventListener("drop",async e=>{const c=e.target.closest&&e.target.closest("[data-pldrop]");if(!c)return;e.preventDefault();const id=e.dataTransfer.getData("text/plain"),day=c.dataset.pldrop;if(!id||!day)return;const d0=S.docs.get(id);if(!d0||!d0.chantier)return;
+  const was=d0.chantier.dateDebut;if(was===day)return render();
+  await affSave(id,o=>{o.chantier=o.chantier||{};o.chantier.dateDebut=day;if(o.chantier.statut==="À planifier")o.chantier.statut="Planifié"},"Démarrage "+(was?"déplacé":"fixé")+" au "+fd(day),true);render()});
+document.addEventListener("dragend",()=>document.querySelectorAll(".drag,.ov").forEach(x=>x.classList.remove("drag","ov")));
 
 boot();
 })();
