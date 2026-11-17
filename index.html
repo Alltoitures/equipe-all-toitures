@@ -8,7 +8,32 @@
 <script src="msal-browser.min.js"></script>
 <script src="microsoft.js"></script>
 <script src="socle.js"></script>
-<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script>(function(){var r=document.documentElement;function ap(){var t="auto";try{t=localStorage.getItem("pilotage.theme")||"auto"}catch(e){}var d=t==="auto"?(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t;r.setAttribute("data-theme",d);r.dataset.pref=t;document.querySelectorAll("[data-theme-set]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.themeSet===t)})}window.__themeApply=ap;ap();try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",ap)}catch(e){}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-theme-set]");if(!b)return;try{localStorage.setItem("pilotage.theme",b.dataset.themeSet)}catch(_){}ap()});document.addEventListener("DOMContentLoaded",ap)})();</script>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* ===== Thème clair / sombre + logo ===== */
+.top .brand .logo{height:26px;color:var(--top-ink)}
+.brand .logo{color:var(--top-ink)}
+@media (max-width:420px){.top .brand .logo{height:20px}}
+.theme-sw{margin-top:auto;padding:14px 4px 4px;display:flex;gap:4px}
+.theme-sw button{all:unset;box-sizing:border-box;flex:1;text-align:center;padding:7px 2px;border-radius:8px;font-size:12px;white-space:nowrap;font-weight:700;color:var(--top-2);cursor:pointer;border:1px solid rgba(255,255,255,.14)}
+.theme-sw button:hover{color:var(--top-ink)}
+.theme-sw button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#04202C}
+.theme-sw button:focus-visible{outline:2px solid var(--accent)}
+:root[data-theme="light"]{--top:#FFFFFF;--top-ink:#0B1921;--top-2:#5B6B78}
+:root[data-theme="light"] .top{box-shadow:1px 0 0 var(--line),0 1px 0 var(--line)}
+:root[data-theme="light"] .side-nav a,:root[data-theme="light"] .side-nav .nt-b{color:#465665}
+:root[data-theme="light"] .side-nav .ic{stroke:#768593}
+:root[data-theme="light"] .side-nav a:hover,:root[data-theme="light"] .side-nav .nt-b:hover{background:#EEF2F7;color:#0B1921}
+:root[data-theme="light"] .side-nav a:hover .ic,:root[data-theme="light"] .side-nav .nt-b:hover .ic{stroke:#0B1921}
+:root[data-theme="light"] .side-nav a[aria-current="page"]{background:var(--accent);color:#04202C}
+:root[data-theme="light"] .side-nav a[aria-current="page"] .ic{stroke:#04202C}
+:root[data-theme="light"] .side-nav .sg{color:#0B1921}
+:root[data-theme="light"] .side-nav .sg~a{border-left-color:#DCE3EA}
+:root[data-theme="light"] .tabs a:hover,:root[data-theme="light"] .tabs a[aria-current="page"]{color:#0B1921}
+:root[data-theme="light"] .tabs .tsep{background:#DCE3EA}
+:root[data-theme="light"] .nt-mb,:root[data-theme="light"] .side-burger{color:#0B1921}
+:root[data-theme="light"] .theme-sw button{border-color:#DCE3EA}
+</style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1397,7 +1422,7 @@ body{padding-left:var(--side)}
         <a href="#entreprise" data-v="entreprise"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4M9 10h1M14 10h1M9 14h1M14 14h1"/></svg><span class="lt">Entreprise</span></a>
         <a href="#reglages" data-v="reglages"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span class="lt">Réglages</span></a>
       </div>
-    </nav>
+    <div class="theme-sw" role="group" aria-label="Apparence"><button type="button" data-theme-set="light" aria-pressed="false">☀ Clair</button><button type="button" data-theme-set="dark" aria-pressed="false">☾ Sombre</button><button type="button" data-theme-set="auto" aria-pressed="false">Auto</button></div></nav>
   </div>
 </header>
 <nav class="subtabs" id="subtabs" hidden></nav>
