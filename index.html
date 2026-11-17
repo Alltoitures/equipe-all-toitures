@@ -75,6 +75,12 @@
 .pl2-bar{align-self:center;height:28px;position:relative;z-index:1;color:#fff;font-size:12px;font-weight:700;border-radius:6px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab}
 .pl2-bar.drag,.pl2-chip.drag{opacity:.5}
 .pl2-todo{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:14px;font-size:13px}.pl2-chip{background:#7e57c2;color:#fff;border-radius:6px;padding:5px 9px;font-weight:700;font-size:12px;cursor:grab}
+
+.rh-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:12px}
+.rh-c{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}.rh-c:hover{border-color:var(--accent)}.rh-c:focus-visible{outline:2px solid var(--accent)}
+.rh-add{justify-content:center;color:var(--accent-ink);font-weight:700;border-style:dashed}
+.rh-av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--accent);color:#04202C;flex:none}.rh-av.apprenti{background:#7e57c2;color:#fff}.rh-av.chef{background:#0c6ea8;color:#fff}.rh-av.bureau{background:var(--surface-2);color:var(--ink)}
+.fo-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}.fo-r select,.fo-r input{font:inherit;padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink)}
 /* ===== Thème clair / sombre + logo ===== */
 .top .brand .logo{height:26px;color:var(--top-ink)}
 .brand .logo{color:var(--top-ink)}
@@ -1477,7 +1483,7 @@ body{padding-left:var(--side)}
       <a href="#etudes" data-v="etudes"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l18-18M7 21H3v-4M14 4l2 2M10 8l2 2M6 12l2 2"/></svg><span class="lt">Études et métrés</span></a>
       <a href="#ao" data-v="ao"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l8-3 8 3v16"/><path d="M9 21v-5h6v5M8 9h2M14 9h2M8 13h2M14 13h2"/></svg><span class="lt">Appels d'offres</span><span class="cnt" id="c-ao" hidden></span></a>
       <p class="sg">Chantiers</p>
-      <a href="#affaires" data-v="affaires"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg><span class="lt">Chantiers</span><span class="cnt" id="c-ch" hidden></span></a>
+      <a href="#affaires" data-v="affaires"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg><span class="lt">Chantiers</span><span class="cnt" id="c-ch" hidden></span></a><a href="#equipe" data-v="equipe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 11a3 3 0 1 0 0-6M21 20c0-2.5-2-4.3-4.5-4.8"/></svg><span class="lt">Équipe</span></a>
       <p class="sg">Facturation</p>
       <a href="#facturation" data-v="facturation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span class="lt">Factures</span><span class="cnt" id="c-fa" hidden></span></a>
       <p class="sg">Prix</p>
@@ -1653,7 +1659,7 @@ function render(){
   const note=document.getElementById("note");
   note.textContent=S.mode==="loading"?"Chargement des données…":S.mode==="local"?"Aperçu hors ligne : les modifications ne sont pas enregistrées.":"";
   badges();killCharts();
-  try{({dashboard:vHome,stats:vDash,rdv:vRdv,chantiers:vCh,facturation:vFa,etudes:vEtudes,entreprise:vEnt,bibliotheque:vBib,ouvrages:vOuv,devis:vDevis,clients:vClients,affaires:vAffaires,ao:vAO,reglages:vSet,dvparams:vDvParams}[S.view]||vDash)()}catch(err){main.innerHTML=`<div class="empty">Affichage impossible : ${esc(err.message)}</div>`;console.error(err)}
+  try{({dashboard:vHome,stats:vDash,rdv:vRdv,chantiers:vCh,facturation:vFa,etudes:vEtudes,entreprise:vEnt,bibliotheque:vBib,ouvrages:vOuv,devis:vDevis,clients:vClients,affaires:vAffaires,ao:vAO,reglages:vSet,dvparams:vDvParams,equipe:vEquipe}[S.view]||vDash)()}catch(err){main.innerHTML=`<div class="empty">Affichage impossible : ${esc(err.message)}</div>`;console.error(err)}
 }
 function badges(){let N=[];try{N=ntAll()}catch(_){}const V=ntVus(),nu=N.filter(n=>!V[n.key]),red=k=>new Set(nu.filter(n=>n.sev==="r"&&n.kind===k).map(n=>n.id)).size;
   const nR=red("rdv"),nC=red("ch"),nF=red("fa"),nA=red("ao");
@@ -5599,7 +5605,7 @@ document.addEventListener("click",e=>{if(S.view!=="ao"||!e.target.closest)return
 
 
 /* ---------- Navigation par grandes étapes ---------- */
-const NAV_G={affaires:"chantiers",dashboard:"accueil",stats:"accueil",rdv:"commercial",clients:"commercial",devis:"commercial",ao:"commercial",etudes:"chantiers",chantiers:"chantiers",facturation:"facturation",entreprise:"params",bibliotheque:"params",ouvrages:"params",reglages:"params",dvparams:"params"};
+const NAV_G={affaires:"chantiers",dashboard:"accueil",stats:"accueil",rdv:"commercial",clients:"commercial",devis:"commercial",ao:"commercial",etudes:"chantiers",chantiers:"chantiers",facturation:"facturation",entreprise:"params",bibliotheque:"params",ouvrages:"params",reglages:"params",dvparams:"params",equipe:"chantiers"};
 const NAV_FIRST={accueil:"dashboard",commercial:"rdv",chantiers:"affaires",facturation:"facturation",params:"entreprise"};
 (()=>{const b=document.getElementById("brand-home");const go=()=>{document.body.classList.remove("side-open");setView("dashboard");window.scrollTo(0,0)};b.addEventListener("click",go);b.addEventListener("keydown",e=>{if(e.key==="Enter")go()})})();
 document.getElementById("side-burger").addEventListener("click",()=>{const o=document.body.classList.toggle("side-open");document.getElementById("side-burger").setAttribute("aria-expanded",o)});
@@ -6853,7 +6859,7 @@ document.addEventListener("click",e=>{const t=e.target;if(t.closest&&t.closest("
 S.plOff=S.plOff||0;
 async function plMeteo(){if(S.plMet&&Date.now()-S.plMet.t<3*3600e3)return S.plMet.m;
   try{const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=45.66&longitude=4.77&daily=weathercode,precipitation_probability_max,temperature_2m_max&timezone=Europe%2FParis&forecast_days=16");const j=await r.json();const m={};(j.daily&&j.daily.time||[]).forEach((d,i)=>m[d]={c:j.daily.weathercode[i],p:j.daily.precipitation_probability_max[i],t:j.daily.temperature_2m_max[i]});S.plMet={t:Date.now(),m};return m}catch(e){S.plMet={t:Date.now(),m:{}};return{}}}
-function plIc(w){if(!w)return"";const c=w.c;const i=c>=95?"⛈":c>=71&&c<=86?"❄":c>=51?"🌧":c>=45?"🌫":c>=2?"⛅":"☀";return`<span title="${w.p!=null?"Pluie "+w.p+" %":""}">${i}</span><small>${w.p!=null&&w.p>=40?w.p+" %":Math.round(w.t)+"°"}</small>`}
+function plIc(w){if(!w)return"";const c=w.c;const i=c>=95?"⛈":(c>=71&&c<=77)||c===85||c===86?"❄":c>=51?"🌧":c>=45?"🌫":c>=2?"⛅":"☀";return`<span title="${w.p!=null?"Pluie "+w.p+" %":""}">${i}</span><small>${w.p!=null&&w.p>=40?w.p+" %":Math.round(w.t)+"°"}</small>`}
 function plHtml(){const t0=P(TODAY),dow=(t0.getDay()+6)%7,mon=new Date(t0.getTime()-dow*864e5+S.plOff*7*864e5);
   const days=[];for(let w=0;w<2;w++)for(let i=0;i<5;i++)days.push(iso(new Date(mon.getTime()+(w*7+i)*864e5)));
   const L=vis().filter(d=>d.chantier&&["À planifier","Planifié","En cours"].includes(d.chantier.statut));
@@ -6878,6 +6884,75 @@ document.addEventListener("drop",async e=>{const c=e.target.closest&&e.target.cl
   const was=d0.chantier.dateDebut;if(was===day)return render();
   await affSave(id,o=>{o.chantier=o.chantier||{};o.chantier.dateDebut=day;if(o.chantier.statut==="À planifier")o.chantier.statut="Planifié"},"Démarrage "+(was?"déplacé":"fixé")+" au "+fd(day),true);render()});
 document.addEventListener("dragend",()=>document.querySelectorAll(".drag,.ov").forEach(x=>x.classList.remove("drag","ov")));
+
+/* ===== Équipe / RH et plan de formation ===== */
+const RH_SEED=[["mickael","Mickael DOS ANJOS","Chef de chantier","chef"],["ankilou","Ankilou ASSANI","Ouvrier couvreur","ouvrier"],["eliott","Eliott LONGY","Ouvrier couvreur","ouvrier"],["tom","Tom MIROUF","Ouvrier couvreur","ouvrier"],["leopold","Léopold","Apprenti","apprenti"],["maxime","Maxime MAIGNAN","Apprenti","apprenti"],["hugo","Hugo","Apprenti","apprenti"],["adeline","Adeline BANACH","Assistante","bureau"]];
+const FO_SEED=[["Sécurité","Amiante sous-section 4"],["Sécurité","Travail en hauteur"],["Sécurité","Échafaudage R408 (montage)"],["Sécurité","Sauveteur secouriste du travail (SST)"],["Engins","CACES R486 (nacelle)"],["Métier","Zinguerie / travail du zinc"],["Métier","Couverture ardoise"],["Métier","Bac acier et panneaux"],["Encadrement","Chef d'équipe"],["Encadrement","Maître d'apprentissage / tuteur"]];
+const RH_CAT={chef:"Chef de chantier",ouvrier:"Ouvrier",apprenti:"Apprenti",bureau:"Bureau"},FO_ST=["À planifier","Demandée","Inscrit","Faite"];
+let rhSub=false;
+function rhLoad(){if(rhSub||!S.db)return;rhSub=true;
+  S.db.collection("rh").onSnapshot(s=>{S.rh=new Map(s.docs.map(d=>[d.id,clone(d.data())]));if(!S.rh.size&&!S.rhSeeded){S.rhSeeded=1;RH_SEED.forEach(([id,nom,poste,cat])=>S.db.collection("rh").doc(id).set({nom,poste,cat,docs:[],entretiens:{},competences:[],createdAt:TODAY}))}if(S.view==="equipe"&&!S.drawer)render()},e=>console.warn(e));
+  S.db.collection("formations").onSnapshot(s=>{S.fo=new Map(s.docs.map(d=>[d.id,clone(d.data())]));if(!S.fo.size&&!S.foSeeded){S.foSeeded=1;FO_SEED.forEach(([fam,t],i)=>S.db.collection("formations").doc("f"+(i+1)).set({famille:fam,intitule:t,pour:[],cout:null,opco:true,statut:"À planifier",date:null}))}if(S.view==="equipe"&&!S.drawer)render()},e=>console.warn(e))}
+function rhAlerts(p){const out=[];(p.docs||[]).forEach(x=>{if(!x.fin)return;const j=daysBetween(TODAY,x.fin);if(j<0)out.push({r:1,t:x.nom+" expiré"});else if(j<=60)out.push({r:0,t:x.nom+" expire le "+fd(x.fin)})});
+  const e=p.entretiens||{};if(e.proProchain&&e.proProchain<=TODAY)out.push({r:1,t:"Entretien professionnel à faire"});if(e.annProchain&&e.annProchain<=TODAY)out.push({r:0,t:"Entretien annuel à faire"});return out}
+function vEquipe(){rhLoad();const tab=S.rhTab||"collab";const P=[...(S.rh||new Map()).entries()].sort((a,b)=>["chef","ouvrier","apprenti","bureau"].indexOf(a[1].cat)-["chef","ouvrier","apprenti","bureau"].indexOf(b[1].cat)||String(a[1].nom).localeCompare(b[1].nom));
+  const F=[...(S.fo||new Map()).entries()];const nAl=P.reduce((n,[,p])=>n+rhAlerts(p).length,0);
+  const bar=`<div class="dvt-bar" role="tablist">${[["collab","Collaborateurs"],["form","Plan de formation"]].map(([k,l])=>`<button type="button" role="tab" data-rhtab="${k}" aria-selected="${k===tab}">${l}</button>`).join("")}</div>`;
+  if(S.rhOpen&&S.rh&&S.rh.has(S.rhOpen))return rhFiche(S.rhOpen);
+  let body;
+  if(tab==="form"){const cost=sum(F,([,f])=>num(f.cout)),done=F.filter(([,f])=>f.statut==="Faite").length;
+    const fams=[...new Set(F.map(([,f])=>f.famille||"Autre"))];
+    body=`<div class="h2-k" style="grid-template-columns:repeat(3,1fr)"><div class="h2k"><span class="h2k-l">Formations prévues</span><b>${F.length}</b><span class="h2k-s">${done} faite${done>1?"s":""}</span></div><div class="h2k"><span class="h2k-l">Coût estimé</span><b>${eur(cost)}</b><span class="h2k-s">avant prise en charge</span></div><div class="h2k"><span class="h2k-l">Prise en charge OPCO</span><b>Constructys</b><span class="h2k-s">${F.filter(([,f])=>f.opco).length} demande${F.filter(([,f])=>f.opco).length>1?"s":""} possible${F.filter(([,f])=>f.opco).length>1?"s":""}</span></div></div>
+    <div class="card" style="margin-top:14px"><div class="hc-h"><h2>Plan de formation ${new Date().getFullYear()+1}</h2><button type="button" class="btn sm pri" data-foadd>+ Formation</button></div>
+    ${fams.map(fm=>`<p class="hc-d">${esc(fm)}</p>${F.filter(([,f])=>(f.famille||"Autre")===fm).map(([id,f])=>`<div class="fo-r"><span class="h2c"><b>${esc(f.intitule)}</b><small>${(f.pour||[]).length?esc((f.pour||[]).map(x=>(S.rh&&S.rh.get(x)?S.rh.get(x).nom.split(" ")[0]:x)).join(", ")):"personnes à choisir"}${f.date?" · "+fd(f.date):""}</small></span>
+      <select data-fo="${esc(id)}" data-fok="statut" aria-label="Statut">${FO_ST.map(s=>`<option${s===f.statut?" selected":""}>${s}</option>`).join("")}</select>
+      <input type="number" data-fo="${esc(id)}" data-fok="cout" placeholder="Coût €" value="${f.cout==null?"":esc(f.cout)}" aria-label="Coût" style="width:90px">
+      <label class="ax-ck"><input type="checkbox" data-fo="${esc(id)}" data-fok="opco"${f.opco?" checked":""}> OPCO</label>
+      <button type="button" class="btn sm2" data-foed="${esc(id)}">Qui ?</button></div>`).join("")}`).join("")||'<p class="hc-e">Aucune formation.</p>'}</div>`}
+  else body=`<p class="hint">${P.length} collaborateur${P.length>1?"s":""}${nAl?` · <b style="color:var(--danger)">${nAl} alerte${nAl>1?"s":""}</b>`:""}. Les documents (CACES, SST, visite médicale…) sont suivis avec leur date de validité.</p><div class="rh-g">${P.map(([id,p])=>{const al=rhAlerts(p);const ini=String(p.nom||"?").split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase();
+    return`<button type="button" class="rh-c" data-rhopen="${esc(id)}"><span class="rh-av ${esc(p.cat||"")}">${esc(ini)}</span><span class="h2c"><b>${esc(p.nom)}</b><small>${esc(p.poste||RH_CAT[p.cat]||"")}</small></span>${al.length?`<span class="h2tag ${al.some(a=>a.r)?"ko":""}" style="${al.some(a=>a.r)?"":"background:var(--warn-bg);color:var(--warn)"}">${al.length} alerte${al.length>1?"s":""}</span>`:`<span class="h2tag ok">à jour</span>`}</button>`}).join("")}<button type="button" class="rh-c rh-add" data-rhnew>+ Ajouter un collaborateur</button></div>`;
+  main.innerHTML=`<div class="phead"><div><h1>Équipe</h1><p class="lede">Collaborateurs, documents, entretiens et plan de formation.</p></div></div>${bar}${body}`}
+function rhFiche(id){const p=S.rh.get(id),e=p.entretiens||{},al=rhAlerts(p);
+  const D=p.docs||[];const F=[...(S.fo||new Map()).entries()].filter(([,f])=>(f.pour||[]).includes(id));
+  main.innerHTML=`<div class="phead"><div><button type="button" class="linkbtn" data-rhback>← Équipe</button><h1 style="margin-top:4px">${esc(p.nom)}</h1><p class="lede">${esc(p.poste||"")} · ${esc(RH_CAT[p.cat]||"")}${p.entree?" · depuis le "+fd(p.entree):""}</p></div><div class="acts"><button type="button" class="btn pri" data-rhsave="${esc(id)}">Enregistrer</button></div></div>
+  ${al.length?`<p class="alertbox">${al.map(a=>esc(a.t)).join(" · ")}</p>`:""}
+  <div class="dp-g">
+   <section class="card"><h3>Informations</h3><div class="dp-f">
+    <div class="f"><label>Nom</label><input data-rhf="nom" value="${esc(p.nom||"")}"></div><div class="f"><label>Poste</label><input data-rhf="poste" value="${esc(p.poste||"")}"></div>
+    <div class="f"><label>Catégorie</label><select data-rhf="cat">${Object.entries(RH_CAT).map(([k,l])=>`<option value="${k}"${k===p.cat?" selected":""}>${l}</option>`).join("")}</select></div>
+    <div class="f"><label>Date d'entrée</label><input type="date" data-rhf="entree" value="${esc(p.entree||"")}"></div>
+    <div class="f"><label>Téléphone</label><input data-rhf="tel" value="${esc(p.tel||"")}"></div><div class="f"><label>Coût horaire chargé (€)</label><input type="number" step="any" data-rhf="coutH" value="${p.coutH==null?"":esc(p.coutH)}"></div></div>
+    <div class="f" style="margin-top:10px"><label>Compétences (séparées par des virgules)</label><input data-rhf="competences" value="${esc((p.competences||[]).join(", "))}" placeholder="tuile, ardoise, zinc, bac acier, charpente…"></div></section>
+   <section class="card"><h3>Entretiens</h3><div class="dp-f">
+    <div class="f"><label>Dernier entretien annuel</label><input type="date" data-rhe="annDernier" value="${esc(e.annDernier||"")}"></div><div class="f"><label>Prochain entretien annuel</label><input type="date" data-rhe="annProchain" value="${esc(e.annProchain||"")}"></div>
+    <div class="f"><label>Dernier entretien professionnel</label><input type="date" data-rhe="proDernier" value="${esc(e.proDernier||"")}"></div><div class="f"><label>Prochain entretien professionnel</label><input type="date" data-rhe="proProchain" value="${esc(e.proProchain||"")}"></div></div><p class="hint">Entretien professionnel obligatoire tous les 2 ans, bilan à 6 ans.</p></section>
+   <section class="card dp-w"><div class="hc-h"><h3>Documents et habilitations</h3><button type="button" class="btn sm" data-rhdocadd="${esc(id)}">+ Document</button></div>
+    ${D.length?D.map((x,i)=>{const j=x.fin?daysBetween(TODAY,x.fin):null;return`<div class="fo-r"><input data-rhd="${i}" data-rhdk="nom" value="${esc(x.nom||"")}" placeholder="Ex. CACES R486, SST, visite médicale" style="flex:1"><label class="sr">Valable jusqu'au</label><input type="date" data-rhd="${i}" data-rhdk="fin" value="${esc(x.fin||"")}"><span class="h2tag ${j==null?"":j<0?"ko":j<=60?"":"ok"}" style="${j!=null&&j>=0&&j<=60?"background:var(--warn-bg);color:var(--warn)":""}">${j==null?"sans échéance":j<0?"expiré":j<=60?"expire bientôt":"valide"}</span><button type="button" class="btn sm2" data-rhddel="${i}" aria-label="Retirer">✕</button></div>`}).join(""):'<p class="hc-e">Aucun document. Ajoutez CACES, SST, visite médicale, habilitations…</p>'}
+    <p class="hint">Les fichiers sont à ranger dans le dossier RH de OneDrive.</p></section>
+   <section class="card dp-w"><h3>Formations</h3>${F.length?F.map(([,f])=>`<div class="oline"><span>${esc(f.intitule)}<small>${esc(f.famille||"")}</small></span><b>${esc(f.statut)}${f.date?" · "+fd(f.date):""}</b></div>`).join(""):'<p class="hc-e">Aucune formation prévue. Ajoutez-le depuis le plan de formation.</p>'}</section>
+  </div>`}
+function rhCollect(id){const p=clone(S.rh.get(id));document.querySelectorAll("[data-rhf]").forEach(x=>{const k=x.dataset.rhf;let v=x.value;if(k==="competences")v=v.split(",").map(t=>t.trim()).filter(Boolean);else if(k==="coutH")v=v===""?null:parseFloat(v.replace(",","."));p[k]=v});
+  p.entretiens=p.entretiens||{};document.querySelectorAll("[data-rhe]").forEach(x=>p.entretiens[x.dataset.rhe]=x.value||null);
+  p.docs=p.docs||[];document.querySelectorAll("[data-rhd]").forEach(x=>{const i=+x.dataset.rhd;p.docs[i]=p.docs[i]||{};p.docs[i][x.dataset.rhdk]=x.value||null});p.updatedAt=new Date().toISOString();return p}
+document.addEventListener("click",async e=>{const t=e.target;if(!t.closest||S.view!=="equipe")return;let b;
+  if(b=t.closest("[data-rhtab]")){S.rhTab=b.dataset.rhtab;S.rhOpen=null;render();return}
+  if(b=t.closest("[data-rhopen]")){S.rhOpen=b.dataset.rhopen;render();return}
+  if(t.closest("[data-rhback]")){S.rhOpen=null;render();return}
+  if(t.closest("[data-rhnew]")){const id="p"+Date.now().toString(36);await S.db.collection("rh").doc(id).set({nom:"Nouveau collaborateur",poste:"",cat:"ouvrier",docs:[],entretiens:{},competences:[],createdAt:TODAY});S.rhOpen=id;render();return}
+  if(b=t.closest("[data-rhsave]")){const id=b.dataset.rhsave;try{await S.db.collection("rh").doc(id).set(rhCollect(id));toast("Fiche enregistrée")}catch(_){toast("Enregistrement impossible, réessayez.")}return}
+  if(b=t.closest("[data-rhdocadd]")){const id=b.dataset.rhdocadd,p=rhCollect(id);p.docs.push({nom:"",fin:null});S.rh.set(id,p);render();return}
+  if(b=t.closest("[data-rhddel]")){const id=S.rhOpen,p=rhCollect(id);p.docs.splice(+b.dataset.rhddel,1);S.rh.set(id,p);render();return}
+  if(t.closest("[data-foadd]")){const id="f"+Date.now().toString(36);await S.db.collection("formations").doc(id).set({famille:"Métier",intitule:"Nouvelle formation",pour:[],cout:null,opco:true,statut:"À planifier",date:null});return}
+  if(b=t.closest("[data-foed]")){const id=b.dataset.foed,f=S.fo.get(id);const P=[...S.rh.entries()];S.drawer={kind:"fo",id};
+    DR.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dh"><div><div class="k">Plan de formation</div><h2 id="dtitle">${esc(f.intitule)}</h2></div><button type="button" class="btn ghost x" data-close aria-label="Fermer">✕</button></div><div class="db">
+      <div class="f"><label>Intitulé</label><input id="fo-t" value="${esc(f.intitule)}"></div><div class="f"><label>Famille</label><input id="fo-fam" value="${esc(f.famille||"")}"></div><div class="f"><label>Date prévue</label><input id="fo-d" type="date" value="${esc(f.date||"")}"></div>
+      <p class="hc-d">Pour qui</p>${P.map(([pid,p])=>`<label class="ax-ck"><input type="checkbox" data-fopour="${esc(pid)}"${(f.pour||[]).includes(pid)?" checked":""}> ${esc(p.nom)}</label>`).join("")}
+      <div class="aff-btns"><button type="button" class="btn pri" data-fosave="${esc(id)}">Enregistrer</button><button type="button" class="btn ghost danger" data-fodel="${esc(id)}">Supprimer</button></div></div></aside>`;return}}
+ ,true);
+document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;let b;
+  if(b=t.closest("[data-fosave]")){const id=b.dataset.fosave,f=clone(S.fo.get(id));f.intitule=document.getElementById("fo-t").value;f.famille=document.getElementById("fo-fam").value;f.date=document.getElementById("fo-d").value||null;f.pour=[...document.querySelectorAll("[data-fopour]:checked")].map(x=>x.dataset.fopour);await S.db.collection("formations").doc(id).set(f);S.drawer=null;DR.innerHTML="";render();toast("Formation enregistrée");return}
+  if(b=t.closest("[data-fodel]")){if(!b.dataset.armed){b.dataset.armed=1;b.textContent="Confirmer la suppression";return}await S.db.collection("formations").doc(b.dataset.fodel).delete();S.drawer=null;DR.innerHTML="";render();return}});
+document.addEventListener("change",async e=>{const x=e.target;if(!x.dataset||!x.dataset.fo)return;const id=x.dataset.fo,f=clone(S.fo.get(id));const k=x.dataset.fok;f[k]=k==="opco"?x.checked:k==="cout"?(x.value===""?null:parseFloat(x.value)):x.value;await S.db.collection("formations").doc(id).set(f)});
 
 boot();
 })();
