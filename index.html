@@ -8669,11 +8669,11 @@ const _dvBlocksM2=dvBlocks;dvBlocks=function(d){const B=_dvBlocksM2.apply(this,a
 async function mq2Agenda(){if(S.mq2Ag&&S.mq2Ag.d===TODAY&&Date.now()-S.mq2Ag.t<10*60e3)return;S.mq2Ag={d:TODAY,t:Date.now(),L:S.mq2Ag&&S.mq2Ag.d===TODAY?S.mq2Ag.L:null,busy:true};
   try{const m=await odMcp();if(!m)throw 0;const r=await m.callTool("Microsoft 365","outlook_calendar_search",{query:"*",afterDateTime:TODAY+"T00:00:00",beforeDateTime:TODAY+"T23:59:59",limit:25,order:"oldest"});
     let t=odTxt(r);if(typeof t==="string"){try{t=JSON.parse(t)}catch(_){t=null}}const arr=Array.isArray(t)?t:t&&(t.events||t.value||t.results||t.items)||[];
-    S.mq2Ag.L=arr.filter(x=>x&&x.subject).map(x=>({s:x.subject,h:String((x.start&&(x.start.dateTime||x.start))||"").slice(11,16),loc:(x.location&&(x.location.displayName||x.location))||"",all:!!x.isAllDay}))}catch(_){S.mq2Ag.L=S.mq2Ag.L||[];S.mq2Ag.err=true}
+    S.mq2Ag.L=arr.filter(x=>x&&x.subject).map(x=>({s:x.subject,h:String((x.start&&(x.start.dateTime||x.start))||"").slice(11,16),loc:(x.location&&(x.location.displayName||x.location))||"",all:!!x.isAllDay}))}catch(er){S.mq2Ag.L=S.mq2Ag.L||[];S.mq2Ag.err=(er&&er.code)||true}
   S.mq2Ag.busy=false;if(S.view==="dashboard"&&!S.drawer)mq2AgPaint()}
 function mq2AgPaint(){const sec=[...document.querySelectorAll("main .h2p")].find(s=>/Aujourd/.test((s.querySelector("h2")||{}).textContent||""));if(!sec)return;
   const h=sec.querySelector(".hc-h");if(h&&!h.querySelector("[data-mq2ag]"))h.insertAdjacentHTML("beforeend",`<a class="hc-a" data-mq2ag href="https://outlook.office.com/calendar/view/day" target="_blank" rel="noopener">Agenda Outlook</a>`);
-  sec.querySelectorAll(".mq2-ol").forEach(x=>x.remove());const A=S.mq2Ag;if(!A||!A.L||!A.L.length)return;
+  sec.querySelectorAll(".mq2-ol").forEach(x=>x.remove());const A=S.mq2Ag;if(A&&A.err==="calendar_consent"&&h&&!h.querySelector("[data-mq2cal]"))h.insertAdjacentHTML("beforeend",`<button type="button" class="hc-a" data-mq2cal>Autoriser l'agenda</button>`);if(!A||!A.L||!A.L.length)return;
   const rdv=new Set([...sec.querySelectorAll(".h2r .h2c b")].map(x=>bibNorm(x.textContent)));
   const html=A.L.filter(x=>![...rdv].some(r=>r&&bibNorm(x.s).includes(r.split(",")[0]))).map(x=>`<div class="h2r mq2-ol"><span class="h2t">${esc(x.all?"journée":x.h||"—")}</span><span class="h2c"><b>${esc(x.s)}</b><small>${esc(x.loc||"Agenda Outlook")}</small></span>${x.loc?`<a class="h2b" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(x.loc)}" target="_blank" rel="noopener">Itinéraire</a>`:""}</div>`).join("");
   const e=sec.querySelector(".hc-e");if(html&&e)e.remove();sec.insertAdjacentHTML("beforeend",html);
@@ -8694,6 +8694,8 @@ document.addEventListener("drop",e=>{const v=e.dataTransfer&&e.dataTransfer.getD
 const _et3DvBannerM2=et3DvBanner;et3DvBanner=function(){_et3DvBannerM2.apply(this,arguments);try{const c=document.getElementById("et3-dvm");if(!c||c.dataset.mq2)return;c.dataset.mq2="1";const K=["S","fait","aret","egouts","rives","solin","noues"];
   c.querySelectorAll(".dvx-rl").forEach((r,i)=>{const lb=(r.querySelector("span")||{}).textContent||"";const k={"Surface toiture":"S","Faîtage":"fait","Arêtiers":"aret","Égouts":"egouts","Rives":"rives","Solins":"solin","Noues":"noues"}[lb];if(k){r.draggable=true;r.dataset.mq2qe=k;r.classList.add("mq2-dr");r.title="Glissez sur une ligne du devis pour lier sa quantité"}});
   const h=c.querySelector("h3");if(h&&!c.querySelector(".mq2-hint"))h.insertAdjacentHTML("afterend",'<p class="dvx-h2 mq2-hint">Glissez une mesure sur une ligne pour lier sa quantité.</p>')}catch(_){}};
+
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-mq2cal]")&&window.msCalendarConnect)window.msCalendarConnect()});
 
 /*@@/mq2*/
 /*@@et4*/
@@ -8790,7 +8792,9 @@ const _vProjetE4=vProjet;vProjet=function(){if(S.pjTab!=="toit")return _vProjetE
 /* ===== Chantier : photos de l'appli équipes (maquettes 40, 44) et heures par ouvrage (maquette 42) ===== */
 S.chxPh=S.chxPh||{};S.chxTT=S.chxTT||{};
 async function chxPhLoad(id){const c=S.chxPh[id];if(c&&(c.busy||Date.now()-c.t<15*60e3))return;S.chxPh[id]={t:Date.now(),busy:true,L:c&&c.L||[]};
-  try{S.chxPh[id].L=typeof window.equipesPhotos==="function"?await window.equipesPhotos(id,60):[]}catch(e){S.chxPh[id].err=true}S.chxPh[id].busy=false;if(S.view==="affaires"&&S.proj===id&&!S.drawer)render()}
+  try{const L=typeof window.equipesPhotos==="function"?await window.equipesPhotos(id,60):[];const ids=L.filter(p=>!p.url&&p.od).map(p=>p.od);
+    if(ids.length){try{const m=await odMcp();if(m){const r=await m.callTool("Microsoft 365","onedrive_thumbs",{driveId:OD_DRIVE,ids});let o=r&&r.payload;if(!o||typeof o!=="object"){try{o=JSON.parse(odTxt(r))}catch(_){o={}}}L.forEach(p=>{if(!p.url&&p.od&&o[p.od])p.url=o[p.od]})}}catch(_){S.chxPh[id].odErr=true}}
+    S.chxPh[id].L=L}catch(e){S.chxPh[id].err=true}S.chxPh[id].busy=false;if(S.view==="affaires"&&S.proj===id&&!S.drawer)render()}
 async function chxTTLoad(id){const c=S.chxTT[id];if(c&&(c.busy||Date.now()-c.t<5*60e3))return;S.chxTT[id]={t:Date.now(),busy:true,L:c&&c.L||[]};
   try{S.chxTT[id].L=await sbSql(`select t.numero as n, t.libelle as l, coalesce(t.est_groupe,false) as g, coalesce(t.fait,false) as f, t.quantite as q, t.unite as u, coalesce((select sum(tt.heures) from public.temps_taches tt where tt.tache_id=t.id),0) as h, (select string_agg(distinct m.prenom, ', ') from public.temps_taches tt join public.membres m on m.id=tt.membre_id where tt.tache_id=t.id) as qui from public.taches t join public.chantiers c on c.id=t.chantier_id where c.pilotage_id=${sqlS(id)} order by t.ordre`)}catch(_){S.chxTT[id].err=true}
   S.chxTT[id].busy=false;if(S.view==="affaires"&&S.proj===id&&S.pjTab==="temps"&&!S.drawer)render()}

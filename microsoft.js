@@ -54,7 +54,33 @@
   var segs = function (p) { return p.split("/").filter(Boolean).map(encodeURIComponent).join("/"); };
   function b64ToBytes(b64) { var s = atob(b64), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
+  async function tokenCal(interactive) {
+    await init();
+    if (!pca) throw err("unavailable", "Microsoft 365 n'est pas encore relié à l'application.");
+    var acc = account(), sc = ["Calendars.Read"];
+    if (acc) { try { return (await pca.acquireTokenSilent({ scopes: sc, account: acc })).accessToken; } catch (e) {} }
+    if (interactive) { await pca.acquireTokenRedirect({ scopes: SCOPES.concat(sc), account: acc || undefined, redirectStartPage: location.href.split("#")[0] }); return new Promise(function () {}); }
+    throw err("calendar_consent", "Autorisez la lecture de l'agenda Outlook.");
+  }
+  window.msCalendarConnect = function () { return tokenCal(true); };
   var tools = {
+    outlook_calendar_search: async function (a) {
+      var t = await tokenCal(false), d0 = String(a.afterDateTime || new Date().toISOString().slice(0, 10) + "T00:00:00"), d1 = String(a.beforeDateTime || d0.slice(0, 10) + "T23:59:59");
+      var r = await fetch(G + "/me/calendarView?startDateTime=" + encodeURIComponent(d0) + "&endDateTime=" + encodeURIComponent(d1) + "&$top=" + (a.limit || 25) + "&$orderby=start/dateTime&$select=subject,start,end,location,isAllDay,webLink", { headers: { Authorization: "Bearer " + t, Prefer: 'outlook.timezone="Europe/Paris"' } });
+      var j = null; try { j = await r.json(); } catch (_) {}
+      if (!r.ok) throw err("graph_" + r.status, (j && j.error && j.error.message) || "Agenda indisponible");
+      var ev = (j.value || []).map(function (x) { return { subject: x.subject, start: x.start, end: x.end, location: x.location, isAllDay: x.isAllDay, webLink: x.webLink }; });
+      return { payload: ev, content: [{ type: "text", text: JSON.stringify(ev) }] };
+    },
+    onedrive_thumbs: async function (a) {
+      var ids = (a.ids || []).slice(0, 60), out = {};
+      for (var i = 0; i < ids.length; i += 20) {
+        var reqs = ids.slice(i, i + 20).map(function (id, k) { return { id: String(k), method: "GET", url: "/drives/" + a.driveId + "/items/" + id + "/thumbnails/0/medium" }; });
+        var b = await g("/$batch", { method: "POST", json: { requests: reqs } });
+        (b.responses || []).forEach(function (r) { var id = ids[i + Number(r.id)]; if (r.status === 200 && r.body && r.body.url) out[id] = r.body.url; });
+      }
+      return { payload: out, content: [{ type: "text", text: JSON.stringify(out) }] };
+    },
     outlook_create_draft: async function (a) {
       var m = await g("/me/messages", { method: "POST", json: {
         subject: a.subject || "",
