@@ -111,6 +111,12 @@
     var txt = JSON.stringify(j || []);
     return { payload: { result: txt }, content: [{ type: "text", text: txt }] };
   }
+  window.equipesPhotos = async function (pid, limit) {
+    if (!pontEq) { await equipesSql("select 1 as ok"); }
+    var r = await fetch(pontEq.url + "/functions/v1/pilotage-photos", { method: "POST", headers: { apikey: EQ_KEY, Authorization: "Bearer " + EQ_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ jeton: pontEq.jeton, pilotage_id: pid, limit: limit || 24 }) });
+    if (!r.ok) { var e = new Error("Photos indisponibles"); e.code = "photos_" + r.status; throw e; }
+    var j = await r.json(); return j.photos || [];
+  };
   var mcp = {
     callTool: async function (server, tool, args) {
       if (server === "Supabase" && tool === "execute_sql" && args && args.project_id === "mvuwaujybchrwhocxtlk") return equipesSql(args.query);
