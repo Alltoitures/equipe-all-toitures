@@ -750,6 +750,61 @@ table:has(tr[data-dvo]) tr>:last-child{position:sticky;right:0;background:var(--
 table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 
 /*@@/act5*/
+/*@@dvz*/
+/* lignes aérées et marge par ligne */
+@container dvl (min-width:701px){
+ #dv-form.dvx.dvz .dv-head.dvc,#dv-form.dvx.dvz .dv-row.dvc{grid-template-columns:20px 46px minmax(0,1fr) 58px 50px 84px 66px 54px 100px!important;column-gap:6px}
+ #dv-form.dvx.dvz .dv-row.dvc.dv-g>.dv-gt{grid-column:3/6!important}
+ #dv-form.dvx.dvz .dv-row.dvc.dv-g>.dv-gtva{grid-column:6/7;grid-row:1;justify-self:end}
+ #dv-form.dvx.dvz .dv-row.dvc.dv-g>.dv-sub{grid-column:7/10;grid-row:1}
+}
+#dv-form.dvx.dvz .dv-row>.dvz-c,#dv-form.dvx.dvz .dv-head>.dvz-mh{order:7}
+#dv-form.dvx.dvz .dv-row>.dv-tva,#dv-form.dvx.dvz .dv-head>span:nth-child(7){order:8;visibility:visible!important;width:auto!important;padding:revert}
+#dv-form.dvx.dvz .dv-row>.dv-tot,#dv-form.dvx.dvz .dv-head>span:nth-child(8),#dv-form.dvx.dvz .dv-row>.dv-sub{order:9}
+#dv-form.dvx.dvz .dv-row>.dv-qa,#dv-form.dvx.dvz .dv-row>.dv-gtb,#dv-form.dvx.dvz .dv-row>.dv-det{order:10}
+/* en-tête bleu, figé sous la barre du devis */
+#dv-form.dvx.dvz #dv-lines .dv-head{position:sticky;top:var(--dvz-top,72px);z-index:12;background:#5A9FE6;color:#fff;border-radius:10px 10px 0 0;padding:14px 8px;margin:0 0 6px;font-size:14px;font-weight:600;letter-spacing:.01em;text-transform:none;box-shadow:0 6px 14px -10px rgba(11,25,33,.45);align-items:center}
+#dv-form.dvx.dvz #dv-lines .dv-head>*{color:#fff!important}
+#dv-form.dvx.dvz #dv-lines .dv-head .dv-fold{font-size:15px}
+/* lignes */
+#dv-form.dvx.dvz .dv-row.dv-o{padding:14px 8px;min-height:60px;align-items:center;border-bottom:1px solid var(--line);font-size:15px}
+#dv-form.dvx.dvz .dv-row.dv-o .dvi{font-size:15px}
+#dv-form.dvx.dvz .dv-row.dv-o .dv-n{font-size:14px;color:var(--ink-2,#4b5a65)}
+#dv-form.dvx.dvz .dv-row.dv-o .dv-tot{font-weight:600}
+.dvz-mg{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;width:100%;font-size:14px}
+.dvz-mg b{font-weight:500;color:var(--muted)}
+.dvz-mg.ok b{color:#1E7B34}.dvz-mg.mid b{color:#8A6100}
+.dvz-mg.ko b{color:#B42318}
+.dvz-mg i{font-style:normal;color:#F2B33D;font-size:15px;line-height:1}
+.dvz-mg.ko i{color:#E5484D}
+/* titres : bandeaux clairs, sous-total à droite */
+#dv-form.dvx.dvz .dv-g{padding:12px 8px;align-items:center;border-bottom:0;margin-top:6px}
+#dv-form.dvx.dvz .dv-g.dv-l1{background:#D3E1F1!important;color:#16324A}
+#dv-form.dvx.dvz .dv-g.dv-l1 .dvi,#dv-form.dvx.dvz .dv-g.dv-l1 .dv-n,#dv-form.dvx.dvz .dv-g.dv-l1 .dv-fold{color:#16324A!important;-webkit-text-fill-color:#16324A;font-weight:500;text-transform:none;letter-spacing:0}
+#dv-form.dvx.dvz .dv-g.dv-l1 .dv-gt .dvi{font-size:20px!important;text-transform:uppercase;letter-spacing:.01em!important}
+#dv-form.dvx.dvz .dv-g.dv-l1 .dv-n{font-size:16px}
+#dv-form.dvx.dvz .dv-g.dv-l2,#dv-form.dvx.dvz .dv-g.dv-l3{background:#EDF2F7!important;box-shadow:inset 4px 0 0 #D3E1F1}
+#dv-form.dvx.dvz .dv-g.dv-l2 .dvi,#dv-form.dvx.dvz .dv-g.dv-l2 .dv-n,#dv-form.dvx.dvz .dv-g.dv-l3 .dvi,#dv-form.dvx.dvz .dv-g.dv-l3 .dv-n{color:#16324A!important;-webkit-text-fill-color:#16324A;font-weight:500}
+#dv-form.dvx.dvz .dv-g.dv-l2 .dv-gt .dvi{font-size:18px!important;letter-spacing:0!important}
+#dv-form.dvx.dvz .dv-g.dv-l3 .dv-gt .dvi{font-size:16px!important;letter-spacing:0!important}
+#dv-form.dvx.dvz .dv-g .dv-gtva{opacity:.75}
+#dv-form.dvx.dvz .dv-g .dv-sub{display:flex;align-items:center;justify-content:flex-end;gap:4px;white-space:nowrap}
+#dv-form.dvx.dvz .dv-g .dv-sub::before{content:"Sous-total :";font-size:12.5px;color:#4b5a65}
+#dv-form.dvx.dvz .dv-g .dv-sub .dvi{font-weight:700!important;font-size:15px!important;color:#16324A!important;-webkit-text-fill-color:#16324A;max-width:96px;padding-left:2px;padding-right:2px}
+#dv-form.dvx.dvz .dv-g .dv-sub::after{content:"€";font-weight:700;color:#16324A}
+#dv-form.dvx.dvz .dv-g.dv-l1:hover .dvi:not([disabled]){border-color:rgba(22,50,74,.2)}
+[data-theme="dark"] #dv-form.dvx.dvz #dv-lines .dv-head{background:#2D6BAA}
+[data-theme="dark"] #dv-form.dvx.dvz .dv-g.dv-l1{background:rgba(90,159,230,.24)!important}
+[data-theme="dark"] #dv-form.dvx.dvz .dv-g.dv-l2,[data-theme="dark"] #dv-form.dvx.dvz .dv-g.dv-l3{background:rgba(90,159,230,.12)!important}
+[data-theme="dark"] #dv-form.dvx.dvz .dv-g .dvi,[data-theme="dark"] #dv-form.dvx.dvz .dv-g .dv-n,[data-theme="dark"] #dv-form.dvx.dvz .dv-g .dv-fold,[data-theme="dark"] #dv-form.dvx.dvz .dv-g .dv-sub::after{color:#E6EEF5!important;-webkit-text-fill-color:#E6EEF5}
+[data-theme="dark"] #dv-form.dvx.dvz .dv-g .dv-sub::before{color:#A9B7C3}
+#dv-form.dvx.dvz .dv-row.dv-o input.dvi[type=number],#dv-form.dvx.dvz .dv-row.dv-o select.dvi{padding-left:3px!important;padding-right:3px!important;font-size:14.5px;-moz-appearance:textfield;min-width:0}
+#dv-form.dvx.dvz .dv-row input.dvi[type=number]::-webkit-inner-spin-button,#dv-form.dvx.dvz .dv-row input.dvi[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#dv-form.dvx.dvz .dv-g .dv-sub .dvi{max-width:120px!important;text-align:right}
+#dv-form.dvx.dvz .dv-row.dv-o select.dvi[data-lk="u"]{text-align:center;text-align-last:center;padding-left:6px!important}
+#dv-form.dvx.dvz .dv-head>span:nth-child(4){text-align:center}
+
+/*@@/dvz*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -8985,6 +9040,22 @@ const _renderA5=render;render=function(){const r=_renderA5.apply(this,arguments)
 try{a5Nav()}catch(_){}
 
 /*@@/act5*/
+/*@@dvz*/
+/* ===== Lignes du devis aérées, marge par ligne, en-tête figé (modèle du 17/11) ===== */
+function dvzPct(m){return m==null?"—":nf(m*100,1).replace(/\.0$/,"")+" %"}
+function dvzMg(l){const m=dvLineM(l);const lo=m==null||m<MARGE_MIN();const t=m==null?"Coût non renseigné : marge inconnue":m<MARGE_MIN()?"Marge sous le minimum ("+Math.round(MARGE_MIN()*100)+" %)":m<MARGE_CIBLE?"Marge correcte":"Marge dans la cible";
+  return`<span class="dvz-mg${m==null?" nc":m<MARGE_MIN()?" ko":m<MARGE_CIBLE?" mid":" ok"}" title="${esc(t)}"><b>${dvzPct(m)}</b>${lo?'<i aria-hidden="true">⚠</i>':""}</span>`}
+function dvzPaint(){const f=document.querySelector("#dv-form.dvx");if(!f||isFa())return;f.classList.add("dvz");const L=(S.dvDraft&&S.dvDraft.lignes)||[];
+  const h=f.querySelector("#dv-lines .dv-head");if(h&&!h.querySelector(".dvz-mh")){const sp=[...h.children];const pu=sp.find(x=>/PU HT/i.test(x.textContent));if(pu)pu.textContent="Prix U. HT";h.insertAdjacentHTML("beforeend",'<span class="dvz-mh r">Marge</span>')}
+  f.querySelectorAll("#dv-lines .dv-row.dv-o[data-ri]").forEach(r=>{const l=L[+r.dataset.ri];if(!l)return;let c=r.querySelector(":scope>.dvz-c");if(!c){c=document.createElement("span");c.className="dvz-c r";const tva=r.querySelector(":scope>.dv-tva");tva?tva.before(c):r.appendChild(c)}const html=l.tx?"":dvzMg(l);if(c.innerHTML!==html)c.innerHTML=html});
+  dvzTop()}
+function dvzTop(){const b=document.querySelector(".phead.dv-bar");const v=b?Math.round(b.getBoundingClientRect().height):0;document.documentElement.style.setProperty("--dvz-top",v+"px")}
+addEventListener("resize",()=>{try{dvzTop()}catch(_){}});
+const _dvLinesZ=dvLines;dvLines=function(){_dvLinesZ.apply(this,arguments);try{dvzPaint()}catch(e){console.warn(e)}};
+const _dvOutZ=dvOut;dvOut=function(){const r=_dvOutZ.apply(this,arguments);try{dvzPaint()}catch(_){}return r};
+const _dvEditZ=dvEdit;dvEdit=function(){_dvEditZ.apply(this,arguments);try{dvzPaint()}catch(_){}};
+
+/*@@/dvz*/
 boot();
 })();
 </script>
