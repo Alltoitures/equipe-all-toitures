@@ -711,6 +711,7 @@
 .chx-cb{display:block;width:120px;height:6px;border-radius:4px;background:#e7ecf0;overflow:hidden}.chx-cb b{display:block;height:100%;background:#29B6F6}.chx-cb b.ko{background:#E53935}
 .chx-tt td.ko{color:#C62828;font-weight:800}.chx-tt td.ok{color:#1E7B34;font-weight:700}
 .chx-hd{margin:10px 0}.chx-hd summary{cursor:pointer;font-weight:700;color:#0c6ea8}
+.chx-tt .mu{color:var(--muted);font-size:12.5px}
 
 /*@@/chx2*/
 </style></head><body>
@@ -8812,8 +8813,8 @@ document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[da
 const _chxTempsP=chxTemps;chxTemps=function(d,M){chxTTLoad(d.id);let h=_chxTempsP.apply(this,arguments);try{const C=S.chxTT[d.id]||{},T=C.L||[];if(!T.length)return h;
   const dv=M.dv,L=dv?dv[1].lignes||[]:[],N=dv?dvNums(L):[];const prevOf=n=>{const i=N.indexOf(String(n));if(i<0)return null;const l=L[i];if(!l||l.t==="g"){let s=0,lv=l?l.lvl||1:1;for(let j=i+1;j<L.length&&!(L[j].t==="g"&&(L[j].lvl||1)<=lv);j++){const x=L[j];if(x.t!=="g"&&x.s&&num(x.s.h))s+=num(x.s.h)*num(x.q)}return s||null}return l.s&&num(l.s.h)?num(l.s.h)*num(l.q):null};
   const rows=T.map(t=>{const pv=prevOf(t.n),ps=num(t.h);if(t.g)return`<tr class="chx-tg"><td colspan="6">${esc(String(t.l||"").toUpperCase())}</td></tr>`;
-    const av=t.f?1:0,ec=pv!=null?(t.f?ps-pv:ps>pv?ps-pv:null):null,pc=pv?Math.min(100,Math.round(ps/pv*100)):ps?100:0;
-    return`<tr><td><b>${esc(t.l||"")}</b><small>${esc(t.qui||"—")}</small></td><td class="r">${pv!=null?nf(pv,0)+" h":"—"}</td><td class="r">${nf(ps,ps%1?1:0)} h</td><td><i class="chx-cb"><b style="width:${pc}%" class="${pv!=null&&ps>pv?"ko":""}"></b></i></td><td class="r">${Math.round(av*100)} %</td><td class="r ${ec>0.5?"ko":ec!=null?"ok":""}">${ec==null?"—":ec>0.5?"+"+nf(ec,0)+" h":ec<-0.5?nf(ec,0)+" h":"ok"}</td></tr>`}).join("");
+    const av=t.f?1:0,ec=pv!=null&&ps>0?(t.f?ps-pv:ps>pv?ps-pv:null):null,pc=pv?Math.min(100,Math.round(ps/pv*100)):ps?100:0;
+    return`<tr><td><b>${esc(t.l||"")}</b><small>${esc(t.qui||"—")}</small></td><td class="r">${pv!=null?nf(pv,0)+" h":"—"}</td><td class="r">${ps>0?nf(ps,ps%1?1:0)+" h":'<span class="mu">non saisi</span>'}</td><td><i class="chx-cb"><b style="width:${pc}%" class="${pv!=null&&ps>pv?"ko":""}"></b></i></td><td class="r">${Math.round(av*100)} %</td><td class="r ${ec>0.5?"ko":ec!=null?"ok":""}">${ec==null?"—":ec>0.5?"+"+nf(ec,0)+" h":ec<-0.5?nf(ec,0)+" h":"ok"}</td></tr>`}).join("");
   const tbl=`<section class="fa3card" style="margin-bottom:12px"><div class="ob-scroll"><table class="fa3t chx-tt"><thead><tr><th>Ouvrage · équipe</th><th class="r">Prévu</th><th class="r">Passé</th><th>Consommé</th><th class="r">Avancement</th><th class="r">Écart projeté</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   const ph=pwHeures(M),k=h.indexOf(ph);h=k>=0?h.slice(0,k)+tbl+`<details class="chx-hd"><summary>Heures par personne et par jour</summary>${ph}</details>`+h.slice(k+ph.length):h+tbl;}catch(e){console.warn(e)}return h};
 
