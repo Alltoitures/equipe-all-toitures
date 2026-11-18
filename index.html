@@ -1060,6 +1060,52 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .rhc-r b{font-size:22px;font-weight:800;color:var(--ink)}
 .rhc-r small{font-size:12px;color:var(--muted)}
 .rhc-r .hl{background:#0C3A5B}.rhc-r .hl span{color:#BFD9EE}.rhc-r .hl b{color:#fff}.rhc-r .hl small{color:#D6E6F3}
+.fo-g{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1000px){.fo-g{grid-template-columns:1fr}}
+.fo-g .card{margin:0}
+.fo-side{display:flex;flex-direction:column;gap:18px}
+.fo-fam2{margin:18px 0 4px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fo-r{display:grid;grid-template-columns:28px minmax(0,1fr) 150px 150px;gap:12px;align-items:center;min-height:52px;padding:6px 8px;border-top:1px solid var(--line);border-radius:8px}
+.fo-r.on{background:var(--accent-soft)}
+.fo-cb{width:22px;height:22px;cursor:pointer;accent-color:#0A7CC9}
+.fo-t b{font-size:14.5px;font-weight:600;color:var(--ink)}
+.fo-t small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.fo-ob{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;background:#FDECEA;color:#9B1C14;font-size:10.5px;font-weight:700;margin-left:8px;vertical-align:2px}
+.fo-add{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.fo-add #fo-nn{flex:1}.fo-add select{width:170px}
+.fo-k{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.fo-k div{display:flex;flex-direction:column;gap:2px;padding:12px 14px;background:var(--surface-2);border-radius:12px}
+.fo-k span{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.fo-k b{font-size:22px;font-weight:800}.fo-k b.ko{color:#B3261E}
+@media (max-width:700px){.fo-r{grid-template-columns:28px 1fr}.fo-r select,.fo-r input[type=date]{grid-column:2}}
+.fo-vt{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fo-vt button{all:unset;cursor:pointer;height:38px;padding:0 14px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.fo-vt button[aria-pressed=true]{background:#0C3A5B;color:#fff}
+.fo-vt button:focus-visible{outline:2px solid var(--accent)}
+.fo-lg{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin:4px 0 14px;font-size:13px;color:var(--ink-2)}
+.fo-lg span{display:inline-flex;align-items:center;gap:8px}
+.fo-lg i{width:16px;height:16px;border-radius:4px;display:inline-block;border:2px solid #C5D0DB;box-sizing:border-box;background:var(--surface)}
+.fo-lg i.on{background:#0A7CC9;border-color:#0A7CC9}.fo-lg i.ins{background:#E08A12;border-color:#E08A12}.fo-lg i.fait{background:#1C7C45;border-color:#1C7C45}
+.fo-lg i.ob{width:8px;height:8px;border-radius:50%;border:0;background:#B3261E}
+.fo-mx{padding:8px}
+.fo-mx table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
+.fo-mx thead th{vertical-align:bottom;padding:10px 6px;border-bottom:1px solid var(--line);font-size:12px;font-weight:600;color:var(--ink-2);text-align:center;line-height:1.25;min-width:74px}
+.fo-mx thead tr.fm th{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:0;padding-bottom:2px}
+.fo-mx th.nm,.fo-mx td.nm{text-align:left;padding-left:12px;min-width:220px}
+.fo-mx td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
+.fo-mx tbody tr:hover td{background:var(--surface-2)}
+.fo-mx .sep{border-left:1px solid var(--line)}
+.fo-mx .ob{display:block;width:8px;height:8px;border-radius:50%;background:#B3261E;margin:4px auto 0}
+.fo-mx tr.t td{font-weight:700;background:var(--surface-2);border-bottom:0}
+.fo-c{width:30px;height:30px;border-radius:7px;border:2px solid #C5D0DB;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;vertical-align:middle}
+.fo-c:hover{border-color:#0A7CC9}
+.fo-c:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fo-c.on{background:#0A7CC9;border-color:#0A7CC9}.fo-c.ins{background:#E08A12;border-color:#E08A12}.fo-c.fait{background:#1C7C45;border-color:#1C7C45}
+.fo-c.on::after,.fo-c.ins::after,.fo-c.fait::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg);margin-top:-3px}
+.fo-who{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px}
+.fo-who b{display:block;color:var(--ink);font-size:14px}.fo-who small{display:block;font-size:12px;color:var(--muted)}
+.fo-who:hover b{text-decoration:underline}
+.fo-who:focus-visible{outline:2px solid var(--accent)}
 
 /*@@/entg*/
 </style></head><body>
@@ -9677,7 +9723,7 @@ entPage=function(){const L=rhSalRows();if(S.entTab==="sal"&&L){const sec=documen
   _entPage0();if(S.entTab!=="sal"||!L)return;const bd=document.querySelector("#ent-form .ent-body");if(!bd)return;bd.querySelectorAll(":scope > section.sec").forEach(x=>x.remove());bd.insertAdjacentHTML("beforeend",entSalTab());
   bd.querySelectorAll("[data-entfiche]").forEach(b=>b.onclick=()=>{S.rhOpen=b.dataset.entfiche;S.rhFt="cout";setView("equipe")});
   const nc=bd.querySelector("[data-entnewc]");if(nc)nc.onclick=()=>{S.rhOpen=null;S.rhTab="collab";setView("equipe")};
-  bd.querySelectorAll("[data-entcpt]").forEach(b=>b.addEventListener("change",ev=>{ev.stopPropagation();const v=b.checked;rhPut(b.dataset.entcpt,p=>{p.compte=v},v?"Compté dans le coût de revient":"Retiré du coût de revient")}))};
+  bd.querySelectorAll("[data-entcpt]").forEach(b=>b.addEventListener("change",ev=>{ev.stopPropagation();const v=b.checked;rhPut(b.dataset.entcpt,p=>{p.compte=v},v?"Compté dans le coût de revient":"Retiré du coût de revient");vEnt()}))};
 /* Fiche collaborateur › Coût */
 const _rhFiche2C=rhFiche2;
 rhFiche2=function(id){const r=_rhFiche2C(id);try{if((S.rhFt||"ens")==="cout")rhCoutTab(id)}catch(e){console.error(e)}return r};
@@ -9703,6 +9749,54 @@ window.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closes
   const cm=parseFloat(document.getElementById("rhc-cm").value.replace(",","."));const hs=parseFloat(document.getElementById("rhc-hs").value.replace(",","."));const cpt=document.querySelector('[data-rhc="compte"]').checked;
   const nv=isNaN(cm)?null:cm;if(nv!==(p.coutM==null?null:num(p.coutM))){p.coutHist=(p.coutHist||[]).filter(x=>x.d!==curYM);if(nv!=null)p.coutHist.push({d:curYM,v:nv,src:"saisie"});p.coutEstime=false}
   p.coutM=nv;p.hSem=isNaN(hs)?null:hs;p.compte=cpt;const c=rhCostOf(p);if(c.cp!=null)p.coutH=Math.round(c.cp*100)/100},true);
+
+/* Formations : à cocher par collaborateur + vue « Qui fait quoi » (18/11) */
+const FO_ORD=["Sécurité","Conduite d'engins","Métier","Encadrement"],FO_S=["envisagée","à planifier","inscrit","faite"],FO_SL={"envisagée":"Envisagée","à planifier":"À planifier","inscrit":"Inscrit","faite":"Faite"};
+const foReal=()=>[...(S.fo||new Map()).entries()].filter(([,f])=>!(f.intitule==="Nouvelle formation"&&!(f.pour||[]).length)).sort((a,b)=>((FO_ORD.indexOf(a[1].famille)+1||9)-(FO_ORD.indexOf(b[1].famille)+1||9))||a[0].localeCompare(b[0],undefined,{numeric:true}));
+const foSt=(f,id)=>(f.etat&&f.etat[id]&&f.etat[id].s)||(f.statut==="faite"?"faite":f.statut)||"envisagée";
+async function foSave(fid,fn,msg){const f=clone(S.fo.get(fid));fn(f);S.fo.set(fid,f);render.force=true;try{render()}finally{render.force=false}try{await S.db.collection("formations").doc(fid).set(f);if(msg)toast(msg)}catch(_){toast("Enregistrement impossible, réessayez.")}}
+function foToggle(fid,id){foSave(fid,f=>{const P=new Set(f.pour||[]);if(P.has(id)){P.delete(id);if(f.etat)delete f.etat[id]}else{P.add(id);f.etat=f.etat||{};f.etat[id]={s:f.statut&&f.statut!=="faite"?f.statut:"envisagée"}}f.pour=[...P]})}
+const _rhFiche2F=rhFiche2;
+rhFiche2=function(id){const r=_rhFiche2F(id);try{const t=[...main.querySelectorAll('[data-rhft="comp"]')];t.forEach(b=>b.textContent="Formations");if((S.rhFt||"ens")==="comp")rhFoTab(id)}catch(e){console.error(e)}return r};
+function rhFoTab(id){const p=S.rh.get(id),F=foReal(),comp=[...main.querySelectorAll(".card")].find(c=>/Formations et compétences/.test((c.querySelector("h3")||{}).textContent||""));if(!comp)return;
+  const mine=F.filter(([,f])=>(f.pour||[]).includes(id)),cnt=s=>mine.filter(([,f])=>foSt(f,id)===s).length,first=(p.nom||"").split(" ")[0];
+  const fams=[...new Set(F.map(([,f])=>f.famille))];
+  const rows=fams.map(fm=>`<div class="fo-fam2">${esc(fm)}</div>`+F.filter(([,f])=>f.famille===fm).map(([fid,f])=>{const on=(f.pour||[]).includes(id),st=foSt(f,id),e=(f.etat&&f.etat[id])||{};
+    return`<div class="fo-r${on?" on":""}"><input type="checkbox" class="fo-cb" data-fotg="${esc(fid)}" ${on?"checked":""} aria-label="${esc(f.intitule)} : à faire pour ${esc(first)}"><div class="fo-t"><b>${esc(f.intitule)}${f.obligatoire?'<span class="fo-ob">obligatoire</span>':""}</b>${f.sous?`<small>${esc(f.sous)}</small>`:""}</div>
+      ${on?`<select class="ein" data-fost="${esc(fid)}" aria-label="Statut">${FO_S.map(x=>`<option value="${x}" ${x===st?"selected":""}>${FO_SL[x]}</option>`).join("")}</select><input class="ein" type="date" data-fodt="${esc(fid)}" value="${esc(e.date||"")}" aria-label="Date">`:"<span></span><span></span>"}</div>`}).join("")).join("");
+  const w=document.createElement("div");w.className="fo-g";
+  w.innerHTML=`<section class="card"><div class="hc-h"><h3>Formations à faire</h3><span class="hc-a">Cochez celles qu'il doit suivre</span></div>${rows}
+    <div class="fo-add"><input class="ein" id="fo-nn" placeholder="Autre formation pour ${esc(first)} (ajoutée aussi au plan de formation)" aria-label="Nouvelle formation"><select class="ein" id="fo-nf" aria-label="Famille">${FO_ORD.map(x=>`<option>${esc(x)}</option>`).join("")}</select><button type="button" class="btn" id="fo-na">Ajouter</button></div></section>
+    <div class="fo-side"><section class="card"><h3>Son plan</h3><div class="fo-k"><div><span>À faire</span><b>${mine.filter(([,f])=>foSt(f,id)!=="faite").length}</b></div><div><span>Dont obligatoires</span><b class="ko">${mine.filter(([,f])=>f.obligatoire&&foSt(f,id)!=="faite").length}</b></div><div><span>Inscrit</span><b>${cnt("inscrit")}</b></div><div><span>Faites</span><b>${cnt("faite")}</b></div></div>
+      <button type="button" class="linkbtn" data-fogoplan style="margin-top:12px">Voir le plan de toute l'équipe ›</button></section></div>`;
+  comp.parentNode.insertBefore(w,comp);w.querySelector(".fo-side").appendChild(comp);const h=comp.querySelector("h3");if(h)h.textContent="Compétences";comp.querySelectorAll(".rh-af").forEach(x=>x.remove());
+  w.querySelectorAll("[data-fotg]").forEach(b=>b.addEventListener("change",ev=>{ev.stopPropagation();foToggle(b.dataset.fotg,id)}));
+  w.querySelectorAll("[data-fost]").forEach(b=>b.addEventListener("change",ev=>{ev.stopPropagation();const v=b.value;foSave(b.dataset.fost,f=>{f.etat=f.etat||{};f.etat[id]=Object.assign({},f.etat[id],{s:v})},"Statut enregistré")}));
+  w.querySelectorAll("[data-fodt]").forEach(b=>b.addEventListener("change",ev=>{ev.stopPropagation();const v=b.value||null;foSave(b.dataset.fodt,f=>{f.etat=f.etat||{};f.etat[id]=Object.assign({s:"à planifier"},f.etat[id],{date:v})},"Date enregistrée")}));
+  const add=()=>{const t=(document.getElementById("fo-nn").value||"").trim();if(!t)return;const fid="f"+Date.now().toString(36),f={famille:document.getElementById("fo-nf").value,intitule:t,pour:[id],etat:{[id]:{s:"envisagée"}},cout:null,opco:true,statut:"envisagée",date:null,v2:true};S.fo.set(fid,f);foSave(fid,()=>{},"Formation ajoutée")};
+  document.getElementById("fo-na").onclick=add;document.getElementById("fo-nn").onkeydown=ev=>{if(ev.key==="Enter"){ev.preventDefault();add()}};
+  const gp=w.querySelector("[data-fogoplan]");if(gp)gp.onclick=()=>{S.foV="mat";setView("formations")}}
+const _vFoM=vFormations;
+vFormations=function(){_vFoM();try{foMatrix()}catch(e){console.error(e)}};
+function foMatrix(){const v=S.foV||"mat",hd=main.querySelector(".phead");if(!hd)return;const acts=hd.querySelector(".acts");
+  if(acts&&!acts.querySelector(".fo-vt"))acts.insertAdjacentHTML("afterbegin",`<div class="fo-vt" role="group" aria-label="Affichage"><button type="button" data-fov="mat" aria-pressed="${v==="mat"}">Qui fait quoi</button><button type="button" data-fov="list" aria-pressed="${v==="list"}">Liste des formations</button></div>`);
+  main.querySelectorAll("[data-fov]").forEach(b=>b.onclick=()=>{S.foV=b.dataset.fov;render()});
+  if(v!=="mat")return;
+  const F=foReal(),P=[...(S.rh||new Map()).entries()].filter(([,p])=>p.cat!=="bureau"&&!p.sortie).sort((a,b)=>RH_ORD.indexOf(a[1].cat)-RH_ORD.indexOf(b[1].cat));
+  const fams=[...new Set(F.map(([,f])=>f.famille))],FF=fams.flatMap(fm=>F.filter(([,f])=>f.famille===fm).map(x=>[...x,fm]));
+  const short=t=>t.split(" · ")[0].replace(/^Montage \/ démontage d'échafaudage/,"Échafaudage").replace(/^Chef d'équipe.*/,"Chef d'équipe").replace(/^Maître d'apprentissage.*/,"Tuteur").replace(/sauveteur secouriste du travail/,"").trim();
+  const cell=(fid,f,id,nm)=>{const on=(f.pour||[]).includes(id),st=on?foSt(f,id):"";return`<td class=""><button type="button" class="fo-c${on?(st==="faite"?" fait":st==="inscrit"?" ins":" on"):""}" data-fomx="${esc(fid)}|${esc(id)}" aria-pressed="${on}" aria-label="${esc(nm)}, ${esc(f.intitule)}${on?" : "+FO_SL[st]:""}"></button></td>`};
+  const firstOf=new Set(fams.map(fm=>(F.find(([,g])=>g.famille===fm)||[])[0]));
+  const body=`<div class="fo-lg"><span><i class="on"></i>À faire</span><span><i class="ins"></i>Inscrit</span><span><i class="fait"></i>Faite</span><span><i></i>Pas prévue · un clic pour l'ajouter</span><span><i class="ob"></i>Obligatoire</span></div>
+  <div class="card fo-mx"><div class="tblw" style="border:0"><table><thead><tr class="fm"><th class="nm"></th>${fams.map(fm=>`<th colspan="${F.filter(([,f])=>f.famille===fm).length}" class="sep">${esc(fm)}</th>`).join("")}<th class="sep"></th></tr>
+    <tr><th class="nm">Collaborateur</th>${FF.map(([fid,f])=>`<th class="${firstOf.has(fid)?"sep":""}" title="${esc(f.intitule)}">${esc(short(f.intitule))}${f.obligatoire?'<span class="ob"></span>':""}</th>`).join("")}<th class="sep">À faire</th></tr></thead><tbody>
+    ${P.map(([id,p])=>{const n=F.filter(([,f])=>(f.pour||[]).includes(id)&&foSt(f,id)!=="faite").length;return`<tr><td class="nm"><button type="button" class="fo-who" data-rhopen2="${esc(id)}">${rhAv(id,p,32)}<span><b>${esc(p.nom)}</b><small>${esc((p.poste||"").split(" (")[0])}</small></span></button></td>${FF.map(([fid,f])=>cell(fid,f,id,p.nom).replace('<td class="','<td class="'+(firstOf.has(fid)?"sep ":""))).join("")}<td class="sep"><b>${n}</b></td></tr>`}).join("")}
+    <tr class="t"><td class="nm">Personnes à former</td>${FF.map(([fid,f])=>`<td class="${firstOf.has(fid)?"sep":""}">${(f.pour||[]).filter(x=>P.some(([id])=>id===x)&&foSt(f,x)!=="faite").length}</td>`).join("")}<td class="sep">${P.reduce((a,[id])=>a+F.filter(([,f])=>(f.pour||[]).includes(id)&&foSt(f,id)!=="faite").length,0)}</td></tr>
+    <tr class="t"><td class="nm">Coût estimé</td>${FF.map(([fid,f])=>`<td class="${firstOf.has(fid)?"sep":""}">${f.cout?eur(f.cout):"—"}</td>`).join("")}<td class="sep">${(()=>{const c=sum(F,([,f])=>num(f.cout));return c?eur(c):"—"})()}</td></tr></tbody></table></div></div>
+  <p class="hint">Un clic sur une case coche ou décoche la formation pour cette personne. Le statut (inscrit, faite, date) se règle sur sa fiche, onglet Formations.</p>`;
+  [...main.children].forEach(c=>{if(!c.classList.contains("phead"))c.remove()});main.insertAdjacentHTML("beforeend",body);
+  main.querySelectorAll("[data-fomx]").forEach(b=>b.onclick=()=>{const[fid,id]=b.dataset.fomx.split("|");foToggle(fid,id)});
+  main.querySelectorAll("[data-rhopen2]").forEach(b=>b.onclick=()=>{S.rhOpen=b.dataset.rhopen2;S.rhFt="comp";setView("equipe")})}
 
 /*@@/entg*/
 boot();
