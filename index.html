@@ -928,67 +928,112 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 
 /*@@/dos*/
 /*@@entg*/
-.entgrid.eg-grid{grid-template-columns:minmax(0,1fr) 320px}
-@media (max-width:1150px){.entgrid.eg-grid{grid-template-columns:1fr}}
-.eg-top{display:flex;align-items:center;gap:28px;flex-wrap:wrap;padding:4px 4px 16px;border-bottom:1px solid var(--line);margin-bottom:12px}
-.eg-top div{display:flex;flex-direction:column;gap:2px}
-.eg-top b{font-size:22px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-.eg-top span{font-size:12px;color:var(--muted)}
-.eg-top .btn{margin-left:auto}
-.eg-list{display:flex;flex-direction:column;gap:8px}
-.eg{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
-.eg.open{border-color:var(--accent)}
-.eg-h{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:16px 30px minmax(150px,1fr) minmax(60px,160px) 44px 84px 120px;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;font-family:var(--font)}
-.eg-h:hover{background:var(--surface-2)}
-.eg-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.eg-chev{font-size:18px;color:var(--muted);transition:transform .15s;display:inline-block}
-.eg.open .eg-chev{transform:rotate(90deg)}
-.eg-ic{width:30px;height:30px;border-radius:8px;background:var(--accent-soft);display:inline-flex;align-items:center;justify-content:center;font-size:15px}
-.eg-t{display:flex;flex-direction:column;min-width:0}
-.eg-t b{font-size:15px;color:var(--ink)}
-.eg-t small{font-size:12px;color:var(--muted)}
-.eg-bar{height:6px;border-radius:4px;background:var(--surface-2);overflow:hidden}
-.eg-bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
-.eg-pc,.eg-h1{font-size:12.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
-.eg-sum{text-align:right;font-weight:800;font-size:15.5px;color:var(--ink);font-variant-numeric:tabular-nums}
-.eg-sum small{font-weight:500;font-size:11px;color:var(--muted);margin-left:3px}
-.eg-b{display:none;border-top:1px solid var(--line);padding:6px 12px 12px;background:var(--bg)}
-.eg.open .eg-b{display:block}
-.eg-r{display:grid;grid-template-columns:minmax(140px,1fr) 170px 138px 138px 92px 34px;gap:8px;align-items:center;padding:7px 4px;border-bottom:1px solid var(--line)}
-.eg-r:last-of-type{border-bottom:0}
-.eg-th{padding:4px 4px 2px;border-bottom:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
-.eg-th .r{text-align:right}
-.eg-r.ger{grid-template-columns:1fr 100px}
-.eg-c.gf{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
-.eg-c.gf label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.eg-c.gf .ein{width:120px;text-align:right}
-.eg-c.gf span{padding-bottom:8px;color:var(--muted)}
-.eg-mb{all:unset;cursor:pointer;width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
-.eg-mb:hover,.eg-r.more .eg-mb{background:var(--surface-2);color:var(--ink)}
-.eg-mb:focus-visible{outline:2px solid var(--accent)}
-.eg-more{display:none;grid-column:1/-1;align-items:center;gap:14px;padding:6px 2px 2px;font-size:13px;color:var(--muted)}
-.eg-r.more .eg-more{display:flex}
-.eg-more label{display:flex;align-items:center;gap:8px}
-.eg-more select{width:auto;min-width:170px}
-.eg-more .btn{margin-left:auto;color:var(--danger)}
-.eg-r.off .eg-c.lib,.eg-r.off .eg-c.mt{opacity:.55}
-.eg-c{min-width:0}
-.eg-c .ein{width:100%;box-sizing:border-box}
-.eg-c.mt{display:flex;align-items:center;gap:6px}
-.eg-c.mt .ein{text-align:right;flex:1}
-.eg-c.mt select.ein{flex:0 0 70px;text-align:left}
-.eg-u{font-size:12px;color:var(--muted)}
-.eg-c.ms{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.eg-c.ac{display:flex;gap:6px;align-items:center}
-.eg-tag{display:inline-block;white-space:nowrap;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:999px}
-.eg-tag.up{background:var(--s-blue-bg);color:var(--s-blue-fg)}
-.eg-tag.end{background:var(--s-gray-bg);color:var(--s-gray-fg)}
-.eg-add{all:unset;cursor:pointer;margin:10px 4px 0;font-size:13px;font-weight:600;color:var(--accent-ink,var(--accent))}
-.eg-add:hover{text-decoration:underline}
-.eg-new{display:flex;gap:8px;margin-top:14px;max-width:420px}
-.eg-new .ein{flex:1}
-@media (max-width:900px){.eg-h{grid-template-columns:16px 30px 1fr 110px}.eg-bar,.eg-pc,.eg-h1{display:none}
-  .eg-r{grid-template-columns:1fr 1fr 34px}.eg-c.lib{grid-column:1/-1}.eg-th{display:none}}
+.ent-ttl{flex:1;min-width:0}
+.ent-ttl .lede{margin:4px 0 0}
+.ent-tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin:0 0 18px;overflow-x:auto}
+.ent-tabs button{all:unset;cursor:pointer;height:44px;padding:0 2px;font-weight:600;font-size:14px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.ent-tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.ent-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ent-body{display:flex;flex-direction:column;gap:18px}
+.ent-body>.sec{margin:0}
+.ent-c{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0}
+.ent-c h2{margin:0;font-size:16px;font-weight:700}
+.ent-sub{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.ent-sh{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.ent-sh h2{flex:1;font-size:17px}
+.ent-sh small{font-size:12.5px;color:var(--muted)}
+.ent-sh .btn{height:34px}
+.ent-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:1100px){.ent-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ent-k{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ent-k span{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.ent-k b{font-size:27px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.ent-k small{font-size:12.5px;color:var(--muted)}
+.ent-k.hero{background:#0C3A5B;border-color:#0C3A5B}
+.ent-k.hero span{color:#BFD9EE}.ent-k.hero b{color:#fff}.ent-k.hero small{color:#D6E6F3}
+.ent-split .ent-sh{margin-bottom:10px}
+.ent-stack{display:flex;gap:2px;height:22px;border-radius:8px;overflow:hidden}
+.ent-stack i{display:block;height:100%;min-width:3px}
+.ent-lg{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px}
+.ent-lg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.ent-lg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.ent-2{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(280px,1fr);gap:18px;align-items:start}
+@media (max-width:1100px){.ent-2{grid-template-columns:1fr}}
+.ent-side{display:flex;flex-direction:column;gap:18px}
+.ent-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ent-g{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;font-family:var(--font)}
+.ent-g:hover{border-color:var(--accent)}
+.ent-g:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ent-gh{display:flex;align-items:center;gap:10px}
+.ent-gh b{flex:1;font-size:15px;color:var(--ink)}
+.ent-ic{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink,var(--accent));display:inline-flex;align-items:center;justify-content:center;flex:none}
+.ent-ic.lg{width:44px;height:44px;border-radius:12px}
+.ent-gt{font-size:18px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ent-gt small{font-size:11.5px;font-weight:500;color:var(--muted);margin-left:3px}
+.ent-bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;display:block}
+.ent-bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.ent-meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.ent-li{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--ink-2);padding-top:6px;border-top:1px solid var(--line)}
+.ent-li span:last-child{font-weight:600;color:var(--ink);white-space:nowrap}
+.ent-chip{align-self:flex-start;display:inline-flex;align-items:center;min-height:24px;padding:2px 9px;border-radius:12px;font-size:11.5px;font-weight:600}
+.ent-chip.up{background:#FFF3E0;color:#7A4100}.ent-chip.dn{background:#E6F4EA;color:#1C6B3A}
+.ent-new{align-items:center;justify-content:center;border-style:dashed;color:var(--accent-ink,var(--accent));font-weight:600;font-size:14px;min-height:120px}
+.ent-tl{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.ent-tl b{color:var(--ink)}
+.ent-tl:first-of-type{margin-top:8px}
+.ent-tl .up,.ent-r .up{color:#B3261E;font-weight:700}.ent-tl .dn{color:#1C6B3A;font-weight:700}
+.ent-chk{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.ent-chk:first-of-type{margin-top:8px}
+.ent-chk .dot{width:8px;height:8px;border-radius:50%;background:#E08A12;margin-top:6px;flex:none}
+.ent-chg{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1000px){.ent-chg{grid-template-columns:1fr}}
+.ent-gl{padding:10px;display:flex;flex-direction:column;gap:2px}
+.ent-gl>button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:10px;font-size:14px;color:var(--ink-2)}
+.ent-gl>button span{flex:1}
+.ent-gl>button b{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ent-gl>button:hover{background:var(--surface-2)}
+.ent-gl>button.on{background:var(--accent-soft);color:var(--accent-ink,var(--accent));font-weight:700}
+.ent-gl>button:focus-visible{outline:2px solid var(--accent)}
+.ent-gtot{display:flex;justify-content:space-between;padding:12px 12px 6px;margin-top:6px;border-top:1px solid var(--line);font-weight:700}
+.ent-ng{display:flex;flex-direction:column;gap:6px;padding:8px 4px 4px}
+.ent-dh{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ent-dh h2{flex:1;font-size:22px;font-weight:800}
+.ent-dh .btn{height:36px}
+.ent-st{display:flex;flex-wrap:wrap;gap:14px 36px;padding:14px 18px;background:var(--surface-2);border-radius:12px;margin-bottom:6px}
+.ent-st div{display:flex;flex-direction:column;gap:2px}
+.ent-st span{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.ent-st b{font-size:21px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.ent-ss{display:flex;align-items:center;gap:10px;margin:18px 0 6px;font-size:12.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+.ent-ss small{font-size:12px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0}
+.ent-tg{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;margin:18px 0 6px;font-size:12.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+.ent-tg:focus-visible{outline:2px solid var(--accent)}
+.ent-r{display:grid;grid-template-columns:minmax(170px,1fr) 96px 84px 124px 124px 92px 34px;gap:8px;align-items:center;padding:8px 6px;border-top:1px solid var(--line)}
+.ent-r .ein{width:100%;box-sizing:border-box;min-width:0}
+.ent-r .ein.r,.ent-add .ein.r,.ent-gf .ein.r{text-align:right}
+.ent-th{border-top:0;padding:0 6px 4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.ent-th .r{text-align:right}
+.ent-r.off>.ein{opacity:.6}
+.ent-mo{text-align:right;font-weight:700;font-size:14.5px;font-variant-numeric:tabular-nums}
+.ent-tag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.ent-tag.up{background:var(--s-blue-bg);color:var(--s-blue-fg)}.ent-tag.end{background:var(--s-gray-bg);color:var(--s-gray-fg)}
+.ent-mb{all:unset;cursor:pointer;width:34px;height:34px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
+.ent-mb:hover,.ent-r.more .ent-mb{background:var(--surface-2);color:var(--ink)}
+.ent-mb:focus-visible{outline:2px solid var(--accent)}
+.ent-opt{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 12px;background:var(--surface-2);border-radius:10px;font-size:13px;color:var(--ink-2)}
+.ent-opt label{display:flex;align-items:center;gap:8px}
+.ent-opt select{width:auto;min-width:180px}
+.ent-opt .danger{margin-left:auto;color:var(--danger)}
+.ent-add{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.ent-add .ein{flex:1}.ent-add .ein.r{flex:0 0 160px}
+.ent-gf{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:16px}
+.ent-gf label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ent-gf .ein{width:150px}
+.ent-gf>span{padding-bottom:10px;color:var(--muted);font-size:16px}
+.ent-gf>b{padding-bottom:8px;font-size:20px;font-weight:800}
+.ent-bt .t td{font-weight:800;background:var(--surface-2)}
+.ent-bt .pi{color:var(--accent-ink,var(--accent));font-weight:600}
+.ent-empty p{max-width:680px;font-size:14px;color:var(--ink-2);margin:8px 0 0}
+@media (max-width:900px){.ent-r{grid-template-columns:1fr 1fr 36px}.ent-r>.ein:first-child{grid-column:1/-1}.ent-th{display:none}.ent-mo{text-align:left}}
 
 /*@@/entg*/
 </style></head><body>
@@ -9480,61 +9525,102 @@ document.addEventListener("keydown",e=>{if(!document.querySelector(".dos-fs"))re
 
 /*@@/dos*/
 /*@@entg*/
-/* Charges fixes regroupées par famille (18/11) */
-const ENTG_IC={"Gérant":"👤","Local":"🏢","Administratif":"🗂","Véhicules":"🚚","Matériel":"🛠","Assurances":"🛡","Emprunts":"🏦","Énergie et télécom":"⚡","Autre":"•"};
-function entgOpen(){try{return JSON.parse(localStorage.getItem("pilotage.entfold")||"null")}catch(_){return null}}
-function entgSetOpen(o){try{localStorage.setItem("pilotage.entfold",JSON.stringify(o))}catch(_){}}
+/* Page Entreprise en onglets (maquette validée 18/11) */
+const ENT_IC={"Gérant":'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',"Local":'<path d="M4 21V5l8-2 8 2v16M9 21v-5h6v5"/>',"Véhicules":'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',"Administratif":'<path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',"Assurances":'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/>',"Emprunts":'<path d="M3 10l9-6 9 6M5 10v9M19 10v9M9 10v9M15 10v9M3 21h18"/>',"Matériel":'<path d="M14 6l4 4-9 9H5v-4z"/><path d="M13 7l4 4"/>',"Énergie et télécom":'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'};
+const ENT_ICD='<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8"/>';
+const entIc=(k,s)=>`<svg width="${s||18}" height="${s||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ENT_IC[k]||ENT_ICD}</svg>`;
+const ENT_SEG=["#0A7CC9","#3B97D8","#6DB2E3","#94C6EB","#B5D7F1","#CFE4F6","#E08A12","#F2B65E","#9AA8B5"];
+const ENT_TABS=[["vue","Vue d'ensemble"],["ch","Charges"],["sal","Salariés"],["bil","Bilans"],["hyp","Hypothèses"]];
+const entMo=ym=>{const[y,m]=ym.split("-");return["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."][+m-1]+" "+y};
 const _vEntG=vEnt;
-vEnt=function(){_vEntG();try{entgRender()}catch(e){console.error(e)}};
-function entgRender(){const E=S.entDraft;if(!E)return;const R=entCalc(E);
-  const grid=main.querySelector(".entf .entgrid");if(!grid)return;const card=grid.children[0],side=grid.children[1];
-  const n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
-  const ni=(path,val,o)=>{o=o||{};return`<input class="ein${o.w?" "+o.w:""}" data-n="${path}" type="${o.t||"number"}" ${o.t?"":'step="any" inputmode="decimal"'} value="${esc(val==null?"":val)}" aria-label="${esc(o.al||path)}" ${o.ph?`placeholder="${esc(o.ph)}"`:""}>`};
-  const cats=[...new Set([...CAT_CH,...R.ch.map(c=>c.cat||"Autre"),...(S.entgNew||[])])];
-  const sel=(path,val,opts,al)=>`<select class="ein" data-n="${path}" aria-label="${esc(al)}">${opts.map(o=>`<option ${String(o)===String(val)?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
-  const G={};R.ch.forEach((c,i)=>{const k=c.cat||"Autre";(G[k]=G[k]||[]).push([c,i])});(S.entgNew||[]).forEach(k=>{G[k]=G[k]||[]});
+vEnt=function(){_vEntG();try{entPage()}catch(e){console.error(e)}};
+function entGroups(E,R){const G={};R.ch.forEach((c,i)=>{const k=c.cat||"Autre";(G[k]=G[k]||[]).push([c,i])});(S.entgNew||[]).forEach(k=>{G[k]=G[k]||[]});
   const tot=k=>(G[k]||[]).reduce((a,[c])=>a+(c.actif?c.mens:0),0);
-  let keys=Object.keys(G).sort((a,b)=>tot(b)-tot(a));
-  const struct=R.struct||1,op=entgOpen()||{};
-  const head=(k,sum,nb,extra)=>{const pc=sum/struct*100;return`<button type="button" class="eg-h" data-egt="${esc(k)}" aria-expanded="${!!op[k]}">
-    <span class="eg-chev" aria-hidden="true">›</span><span class="eg-ic" aria-hidden="true">${ENTG_IC[k]||"•"}</span>
-    <span class="eg-t"><b>${esc(k)}</b><small>${nb}${extra||""}</small></span>
-    <span class="eg-bar" aria-hidden="true"><i style="width:${Math.min(100,pc)}%"></i></span>
-    <span class="eg-pc">${Math.round(pc)} %</span><span class="eg-h1">${R.hM?n2(sum/R.hM)+" €/h":"—"}</span><span class="eg-sum">${eur(sum)}<small>/ mois</small></span></button>`};
-  const row=(c,i)=>{const st=c.actif?eur(c.mens):`<span class="eg-tag ${c.debut&&c.debut>curYM?"up":"end"}">${c.debut&&c.debut>curYM?"dès "+(([y,m])=>["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."][+m-1]+" "+y)(c.debut.split("-")):"terminée"}</span>`;
-    return`<div class="eg-r${c.actif?"":" off"}">
-      <div class="eg-c lib">${ni(`charges.${i}.lib`,c.lib,{t:"text",al:"Poste",ph:"Libellé"})}</div>
-      <div class="eg-c mt">${ni(`charges.${i}.montant`,c.montant,{al:"Montant"})}${sel(`charges.${i}.per`,c.per||"mois",["mois","an"],"Périodicité")}</div>
-      <div class="eg-c dt">${ni(`charges.${i}.debut`,c.debut,{t:"month",al:"Début"})}</div>
-      <div class="eg-c dt">${ni(`charges.${i}.fin`,c.fin,{t:"month",al:"Fin (dernier mois payé)"})}</div>
-      <div class="eg-c ms">${st}</div>
-      <div class="eg-c ac"><button type="button" class="eg-mb" data-egm aria-label="Plus d'options pour ${esc(c.lib||"cette charge")}" aria-expanded="false">⋯</button></div>
-      <div class="eg-more"><label>Déplacer vers ${sel(`charges.${i}.cat`,c.cat||"Autre",cats,"Groupe")}</label><button type="button" class="btn ghost" data-rmc="${i}">Supprimer cette charge</button></div></div>`};
-  const thead=`<div class="eg-r eg-th" aria-hidden="true"><span>Poste</span><span>Montant</span><span>Début</span><span>Fin (dernier mois)</span><span class="r">Par mois</span><span></span></div>`;
-  const g=E.gerant||(E.gerant={});
-  const gerBlk=`<div class="eg${op["Gérant"]?" open":""}">${head("Gérant",R.gerM,"rémunération et IK")}
-    <div class="eg-b"><div class="eg-r ger"><div class="eg-c gf"><label>Rémunération nette ${ni("gerant.net",g.net,{al:"Rémunération nette"})}</label><span>×</span><label>Coef. TNS ${ni("gerant.coef",g.coef,{al:"Coefficient TNS"})}</label><span>+</span><label>Indemnités km ${ni("gerant.ik",g.ik,{al:"Indemnités kilométriques"})}</label></div><div class="eg-c ms">${eur(R.gerM)}</div></div></div></div>`;
-  const blocks=keys.map(k=>{const L=G[k],a=L.filter(([c])=>c.actif).length,o=L.length-a,s=tot(k);
-    L.sort((x,y)=>(y[0].actif-x[0].actif)||(y[0].mens-x[0].mens));
-    return`<div class="eg${op[k]?" open":""}">${head(k,s,`${a} poste${a>1?"s":""}`,o?` · ${o} à venir ou terminée${o>1?"s":""}`:"")}
-      <div class="eg-b">${L.length?thead:""}${L.map(([c,i])=>row(c,i)).join("")||'<p class="hint" style="margin:8px 4px">Aucune charge dans ce groupe.</p>'}
-      <button type="button" class="eg-add" data-egadd="${esc(k)}">+ Ajouter dans ${esc(k)}</button></div></div>`}).join("");
-  const allOpen=["Gérant",...keys].every(k=>op[k]);
-  card.innerHTML=`<div class="eg-top"><div><b>${eur(R.struct)}</b><span>de structure par mois</span></div><div><b>${eur(R.struct*12)}</b><span>par an</span></div><div><b>${R.hM?n2(R.struct/R.hM)+" €":"—"}</b><span>par heure productive</span></div>
-    <button type="button" class="btn" id="eg-all">${allOpen?"Tout replier":"Tout déplier"}</button></div>
-    <div class="eg-list">${gerBlk}${blocks}</div>
-    <div class="eg-new"><input class="ein" id="eg-nn" type="text" placeholder="Nom du nouveau groupe" aria-label="Nom du nouveau groupe"><button type="button" class="btn" id="eg-nb">+ Nouveau groupe</button></div>`;
-  const T=entTimeline(E);
-  if(side){if(T.length){side.innerHTML=`<h3>Évolution prévue</h3><p class="hint">Charges qui démarrent ou se terminent dans les mois à venir.</p><div class="tl">${T.map(t=>`<div class="tl-r"><div class="tl-d">${ymLabel(t.ym)}</div><div class="tl-b"><div>${t.ev.map(esc).join("<br>")}</div><div class="sm">structure ${eur(t.struct)} / mois · <b>${t.cr==null?"—":n2(t.cr)+" €/h"}</b> <span class="${t.d<0?"good":"late"}">${t.d<0?"":"+"}${eur(t.d)}</span></div></div></div>`).join("")}</div>`}else side.remove()}
-  grid.classList.add("eg-grid");
-  card.querySelectorAll("[data-egt]").forEach(b=>b.onclick=()=>{const o=entgOpen()||{},k=b.dataset.egt;o[k]=!o[k];entgSetOpen(o);b.parentElement.classList.toggle("open",!!o[k]);b.setAttribute("aria-expanded",!!o[k]);const all=document.getElementById("eg-all");if(all)all.textContent=["Gérant",...keys].every(x=>o[x])?"Tout replier":"Tout déplier"});
-  document.getElementById("eg-all").onclick=()=>{const o={},v=!allOpen;["Gérant",...keys].forEach(k=>o[k]=v);entgSetOpen(o);vEnt()};
-  card.querySelectorAll("[data-egadd]").forEach(b=>b.onclick=()=>{const k=b.dataset.egadd;E.charges.push({cat:k,lib:"",montant:null,per:"mois"});S.entDirty=true;const o=entgOpen()||{};o[k]=true;entgSetOpen(o);S.entgFocus=E.charges.length-1;vEnt()});
-  card.querySelectorAll("[data-egm]").forEach(b=>b.onclick=()=>{const r=b.closest(".eg-r"),o=!r.classList.contains("more");r.classList.toggle("more",o);b.setAttribute("aria-expanded",o)});
-  card.querySelectorAll("[data-rmc]").forEach(b=>b.onclick=()=>{const c=E.charges[+b.dataset.rmc];if((c.lib||c.montant)&&!confirm(`Retirer « ${c.lib||"cette charge"} » ?`))return;E.charges.splice(+b.dataset.rmc,1);S.entDirty=true;vEnt()});
-  const nb=()=>{const v=(document.getElementById("eg-nn").value||"").trim();if(!v)return;S.entgNew=[...new Set([...(S.entgNew||[]),v])];const o=entgOpen()||{};o[v]=true;entgSetOpen(o);E.charges.push({cat:v,lib:"",montant:null,per:"mois"});S.entDirty=true;S.entgFocus=E.charges.length-1;vEnt()};
-  document.getElementById("eg-nb").onclick=nb;document.getElementById("eg-nn").onkeydown=ev=>{if(ev.key==="Enter"){ev.preventDefault();nb()}};
-  if(S.entgFocus!=null){const el=card.querySelector(`[data-n="charges.${S.entgFocus}.lib"]`);S.entgFocus=null;if(el){el.focus();el.scrollIntoView({block:"center"})}}
+  const L=Object.keys(G).map(k=>({k,L:G[k],t:tot(k)}));L.push({k:"Gérant",L:[],t:R.gerM,ger:true});return L.sort((a,b)=>b.t-a.t)}
+function entChecks(E){const out=[];(E.salaries||[]).forEach(s=>{if(s.actif!==false&&s.estime)out.push(`Coût de ${s.nom||"un salarié"} estimé : à remplacer par un bulletin réel`);if(s.actif!==false&&!num(s.cout))out.push(`Coût employeur de ${s.nom||"un salarié"} non saisi`)});
+  if(S.rh&&S.rh.size){const norm=t=>String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();const have=(E.salaries||[]).map(s=>norm(s.nom));const miss=[];
+    S.rh.forEach(p=>{if(/sous-trait/i.test(p.contrat||"")||p.actif===false||p.sortie)return;const toks=norm(p.nom).split(/\s+/).filter(x=>x.length>2);if(!toks.length)return;if(!have.some(h=>toks.every(t=>h.includes(t))))miss.push(p.nom)});
+    if(miss.length)out.push(`${miss.join(" et ")} ${miss.length>1?"ne sont pas comptés":"n'est pas compté"} dans les salaires`)}
+  return out}
+function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=document.getElementById("ent-form");if(!form)return;
+  if(!S.entRhT&&typeof rhLoad==="function"){S.entRhT=1;try{rhLoad()}catch(_){}let n=0;const t=setInterval(()=>{n++;if(S.rh&&S.rh.size){clearInterval(t);if(S.view==="entreprise"&&!S.entDirty&&document.getElementById("ent-form"))vEnt()}else if(n>15)clearInterval(t)},800)}
+  const n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const ni=(path,val,o)=>{o=o||{};return`<input class="ein${o.c?" "+o.c:""}" data-n="${path}" type="${o.t||"number"}" ${o.t?"":'step="any" inputmode="decimal"'} value="${esc(val==null?"":val)}" aria-label="${esc(o.al||path)}" ${o.ph?`placeholder="${esc(o.ph)}"`:""}>`};
+  const secs=[...form.querySelectorAll(":scope > section.sec")],hyp=secs[0],sal=secs[1];
+  const tab=S.entTab||"vue",G=entGroups(E,R),struct=R.struct||1,hM=R.hM||0;
+  if(!S.entGrp||!G.some(g=>g.k===S.entGrp))S.entGrp=G[0]&&G[0].k;
+  const head=main.querySelector(".phead");if(head){const h1=head.querySelector("h1");if(h1&&!head.querySelector(".ent-ttl")){const w=document.createElement("div");w.className="ent-ttl";h1.parentNode.insertBefore(w,h1);w.appendChild(h1);const p=head.querySelector(".lede");if(p){p.textContent="Ce que coûte une heure de chantier, et d'où viennent les charges. "+ymLabel(curYM)+".";w.appendChild(p)}}}
+  main.querySelector(".kpis")?.remove();
+  const nav=`<nav class="ent-tabs" aria-label="Rubriques">${ENT_TABS.map(([k,l])=>`<button type="button" data-entt="${k}" class="${tab===k?"on":""}" aria-current="${tab===k}">${l}</button>`).join("")}</nav>`;
+  let body="";
+  if(tab==="vue"){const tot=R.tot||1,segs=[["Salaires",R.mo,"#0C3A5B"]];G.forEach((g,i)=>{if(g.t>0)segs.push([g.k,g.t,ENT_SEG[Math.min(i,ENT_SEG.length-1)]])});
+    const T=entTimeline(E),chk=entChecks(E);
+    body=`<section class="ent-kpis" aria-label="Résultats">
+      <div class="ent-k hero"><span>Coût de revient d'une heure</span><b>${R.cr==null?"—":n2(R.cr)+" €"}</b><small>${n2(R.moH)} € de main-d'œuvre + ${n2(R.stH)} € de structure</small></div>
+      <div class="ent-k"><span>Prix de vente d'une heure</span><b>${R.tv==null?"—":n2(R.tv)+" €"}</b><small>avec ${Math.round(R.marge*100)} % de marge sur le prix</small></div>
+      <div class="ent-k"><span>Coût total par mois</span><b>${eur(R.tot)}</b><small>${eur(R.mo)} de salaires · ${eur(R.struct)} de structure</small></div>
+      <div class="ent-k"><span>Point mort</span><b>${eur(R.tot*12)}</b><small>de main-d'œuvre à facturer par an, hors matériaux</small></div></section>
+    <section class="ent-c ent-split"><div class="ent-sh"><h2>Où part l'argent chaque mois</h2><small>${eur(R.tot)} · ${Math.round(hM)} h productives</small></div>
+      <div class="ent-stack" aria-hidden="true">${segs.map(s=>`<i style="flex:${s[1]};background:${s[2]}" title="${esc(s[0])}"></i>`).join("")}</div>
+      <div class="ent-lg">${segs.map(s=>`<span><i style="background:${s[2]}"></i>${esc(s[0])} ${Math.round(s[1]/tot*100)} %</span>`).join("")}</div></section>
+    <div class="ent-2">
+      <section><div class="ent-sh"><h2>Charges de structure par groupe</h2><small>${eur(R.struct)} / mois · ${hM?n2(R.struct/hM):"—"} € / h</small><button type="button" class="btn" data-entgo="">+ Ajouter une charge</button></div>
+        <div class="ent-cards">${G.map(g=>{const act=g.L.filter(([c])=>c.actif).sort((a,b)=>b[0].mens-a[0].mens),fut=g.L.filter(([c])=>c.debut&&c.debut>curYM),end=g.L.filter(([c])=>c.fin&&c.fin>=curYM&&c.fin<=ymAdd(curYM,12));
+          const tops=g.ger?[[`${eur(num(E.gerant.net))} net × ${String(E.gerant.coef||1).replace(".",",")} (TNS)`,num(E.gerant.net)*num(E.gerant.coef||1)],["Indemnités kilométriques",num(E.gerant.ik)]].filter(x=>x[1]):act.slice(0,2).map(([c])=>[c.lib+(c.fin?` (fin ${entMo(c.fin)})`:""),c.mens]);
+          const chips=[];if(fut.length)chips.push(`<span class="ent-chip up">${fut.map(([c])=>`+ ${eur(c.per==="an"?num(c.montant)/12:num(c.montant))} en ${entMo(c.debut)}`).join(" · ")}</span>`);if(end.length)chips.push(`<span class="ent-chip dn">${end.map(([c])=>`− ${eur(c.mens)} après ${entMo(c.fin)}`).join(" · ")}</span>`);
+          return`<button type="button" class="ent-g" data-entgo="${esc(g.k)}"><span class="ent-gh"><span class="ent-ic">${entIc(g.k)}</span><b>${esc(g.k)}</b><span class="ent-gt">${eur(g.t)}<small>/ mois</small></span></span>
+            <span class="ent-bar"><i style="width:${Math.min(100,g.t/(G[0].t||1)*100)}%"></i></span>
+            <span class="ent-meta"><span>${g.ger?"rémunération":act.length+" poste"+(act.length>1?"s":"")} · ${Math.round(g.t/struct*100)} %</span><span>${hM?n2(g.t/hM):"—"} €/h</span></span>
+            ${tops.map(t=>`<span class="ent-li"><span>${esc(t[0])}</span><span>${eur(t[1])}</span></span>`).join("")}${chips.join("")}</button>`}).join("")}
+          <button type="button" class="ent-g ent-new" data-entnew>+ Nouveau groupe</button></div></section>
+      <aside class="ent-side">
+        ${T.length?`<section class="ent-c"><h2>Évolution prévue</h2><p class="ent-sub">Ce qui change dans les mois à venir</p>${T.map(t=>`<div class="ent-tl"><b>${entMo(t.ym)}</b><div>${t.ev.map(esc).join("<br>")}<br><span class="${t.d<0?"dn":"up"}">${t.d<0?"−":"+"} ${eur(Math.abs(t.d))}</span> · ${t.cr==null?"—":n2(t.cr)+" €/h"}</div></div>`).join("")}</section>`:""}
+        <section class="ent-c"><h2>À compléter</h2>${chk.length?chk.map(x=>`<div class="ent-chk"><span class="dot"></span><span>${esc(x)}</span></div>`).join(""):'<p class="ent-sub">Rien à signaler.</p>'}</section>
+      </aside></div>`}
+  else if(tab==="ch"){const g=G.find(x=>x.k===S.entGrp)||G[0],k=g.k,cats=[...new Set([...CAT_CH,...G.filter(x=>!x.ger).map(x=>x.k)])];
+    const sel=(path,val,opts,al,c)=>`<select class="ein${c?" "+c:""}" data-n="${path}" aria-label="${esc(al)}">${opts.map(o=>`<option ${String(o)===String(val)?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
+    const row=([c,i])=>`<div class="ent-r${c.actif?"":" off"}${S.entMore===i?" more":""}">
+      ${ni(`charges.${i}.lib`,c.lib,{t:"text",al:"Poste",ph:"Libellé"})}${ni(`charges.${i}.montant`,c.montant,{al:"Montant",c:"r"})}${sel(`charges.${i}.per`,c.per||"mois",["mois","an"],"Périodicité")}
+      ${ni(`charges.${i}.debut`,c.debut,{t:"month",al:"Début"})}${ni(`charges.${i}.fin`,c.fin,{t:"month",al:"Fin (dernier mois payé)"})}
+      <span class="ent-mo">${c.actif?eur(c.mens):`<span class="ent-tag ${c.debut&&c.debut>curYM?"up":"end"}">${c.debut&&c.debut>curYM?"dès "+entMo(c.debut):"terminée"}</span>`}</span>
+      <button type="button" class="ent-mb" data-entmore="${i}" aria-expanded="${S.entMore===i}" aria-label="Options pour ${esc(c.lib||"cette charge")}">⋯</button>
+      ${S.entMore===i?`<div class="ent-opt"><span>Options de « ${esc(c.lib||"cette charge")} » :</span><label>Déplacer vers ${sel(`charges.${i}.cat`,c.cat||"Autre",cats,"Groupe")}</label><button type="button" class="btn ghost danger" data-rmc="${i}">Supprimer</button></div>`:""}</div>`;
+    const th=`<div class="ent-r ent-th" aria-hidden="true"><span>Poste</span><span class="r">Montant</span><span>Périodicité</span><span>Début</span><span>Fin (dernier mois)</span><span class="r">Par mois</span><span></span></div>`;
+    const cur=g.L.filter(([c])=>c.actif).sort((a,b)=>b[0].mens-a[0].mens),fut=g.L.filter(([c])=>!c.actif&&c.debut&&c.debut>curYM),old=g.L.filter(([c])=>!c.actif&&!(c.debut&&c.debut>curYM));
+    const bil=(E.bilans||[]).slice(-1)[0],bv=bil&&bil.groupes&&bil.groupes[k];
+    let det;
+    if(g.ger){const ge=E.gerant;det=`<div class="ent-gf"><label>Rémunération nette / mois${ni("gerant.net",ge.net,{al:"Rémunération nette",c:"r"})}</label><span>×</span><label>Coefficient TNS${ni("gerant.coef",ge.coef,{al:"Coefficient TNS",c:"r"})}</label><span>+</span><label>Indemnités km / mois${ni("gerant.ik",ge.ik,{al:"Indemnités kilométriques",c:"r"})}</label><span>=</span><b>${eur(R.gerM)}</b></div>`}
+    else det=`${cur.length?`<h3 class="ent-ss">En cours <small>${cur.length} poste${cur.length>1?"s":""}</small></h3>${th}${cur.map(row).join("")}`:'<p class="ent-sub" style="margin:14px 0">Aucune charge en cours dans ce groupe.</p>'}
+      ${fut.length?`<h3 class="ent-ss">À venir <small>${fut.length} poste${fut.length>1?"s":""}</small></h3>${fut.map(row).join("")}`:""}
+      ${old.length?`<button type="button" class="ent-ss ent-tg" data-entold aria-expanded="${!!S.entOld}">Terminées <small>${old.length} poste${old.length>1?"s":""} · ${S.entOld?"masquer":"afficher"}</small></button>${S.entOld?old.map(row).join(""):""}`:""}
+      <div class="ent-add"><input class="ein" id="ent-nl" type="text" placeholder="Nouvelle charge dans ${esc(k)} : libellé" aria-label="Libellé de la nouvelle charge"><input class="ein r" id="ent-nm" type="number" step="any" inputmode="decimal" placeholder="Montant / mois" aria-label="Montant mensuel de la nouvelle charge"><button type="button" class="btn pri" id="ent-na">Ajouter</button></div>`;
+    body=`<div class="ent-chg"><nav class="ent-c ent-gl" aria-label="Groupes de charges">${G.map(x=>`<button type="button" data-entgrp="${esc(x.k)}" class="${x.k===k?"on":""}" aria-current="${x.k===k}"><span>${esc(x.k)}</span><b>${eur(x.t)}</b></button>`).join("")}
+        <div class="ent-gtot"><span>Total structure</span><b>${eur(R.struct)}</b></div>
+        <div class="ent-ng"><input class="ein" id="eg-nn" type="text" placeholder="Nom du groupe" aria-label="Nom du nouveau groupe"><button type="button" class="btn" id="eg-nb">+ Nouveau groupe</button></div></nav>
+      <section class="ent-c ent-det"><div class="ent-dh"><span class="ent-ic lg">${entIc(k,22)}</span><h2>${esc(k)}</h2>${g.ger?"":`<button type="button" class="btn" data-entren>Renommer</button>`}</div>
+        <div class="ent-st"><div><span>Par mois</span><b>${eur(g.t)}</b></div><div><span>Par an</span><b>${eur(g.t*12)}</b></div><div><span>Par heure de chantier</span><b>${hM?n2(g.t/hM)+" €":"—"}</b></div><div><span>Part de la structure</span><b>${Math.round(g.t/struct*100)} %</b></div>${bil?`<div><span>Bilan ${esc(bil.ex)}</span><b>${bv==null?"—":eur(bv/12)}</b></div>`:""}</div>
+        ${det}</section></div>`}
+  else if(tab==="bil"){const B=E.bilans||[];
+    const L=[["ca","Chiffre d'affaires",1],["achats","Achats de matériaux"],["st","Sous-traitance"],["mb","Marge brute",1],["ext","Charges externes"],["sal","Salaires et charges sociales"],["ger","Rémunération du gérant"],["imp","Impôts et taxes"],["amort","Amortissements"],["rex","Résultat d'exploitation",1],["rnet","Résultat net",1]];
+    const pil={ext:(R.struct-R.gerM)*12,sal:R.mo*12,ger:R.gerM*12};
+    body=B.length?`<section class="ent-c"><div class="ent-sh"><h2>Compte de résultat simplifié</h2><small>montants annuels HT</small></div><div class="tblw" style="border:0"><table class="tbl static ent-bt"><thead><tr><th>Poste</th>${B.map(b=>`<th class="r">${esc(b.ex)}</th>`).join("")}<th class="r">Évolution</th><th class="r pi">Pilotage (×12)</th></tr></thead><tbody>
+      ${L.map(([key,l,t])=>{const v=B.map(b=>b[key]),a=v[0],z=v[v.length-1],ev=a&&z!=null&&B.length>1?(z-a)/Math.abs(a)*100:null;return`<tr class="${t?"t":""}"><td>${l}</td>${v.map(x=>`<td class="r">${x==null?"—":eur(x)}</td>`).join("")}<td class="r">${ev==null?"—":(ev>0?"+":"")+Math.round(ev)+" %"}</td><td class="r pi">${pil[key]!=null?eur(pil[key]):key==="achats"||key==="st"?"par chantier":"—"}</td></tr>`}).join("")}
+      </tbody></table></div>${B.slice(-1)[0].notes?`<p class="ent-sub" style="margin-top:12px">${esc(B.slice(-1)[0].notes)}</p>`:""}</section>`
+      :`<section class="ent-c ent-empty"><h2>Bilans sur 3 ans</h2><p>Vos trois derniers bilans seront lus ici : compte de résultat des trois exercices comparé à ce que prévoit le Pilotage, coût réel d'une heure et charges à corriger.</p><p class="ent-sub">Envoyez les PDF de l'expert-comptable à Claude dans la discussion : ils seront analysés et reportés ici.</p></section>`}
+  form.innerHTML=nav+`<div class="ent-body" data-tab="${tab}">${body}</div>`;
+  const bd=form.querySelector(".ent-body");
+  if(tab==="sal"&&sal)bd.appendChild(sal);if(tab==="hyp"&&hyp)bd.appendChild(hyp);
+  const go=(t,g)=>{S.entTab=t;if(g!=null)S.entGrp=g;S.entMore=null;vEnt();window.scrollTo(0,0)};
+  form.querySelectorAll("[data-entt]").forEach(b=>b.onclick=()=>go(b.dataset.entt));
+  form.querySelectorAll("[data-entgo]").forEach(b=>b.onclick=()=>{go("ch",b.dataset.entgo||undefined);if(b.dataset.entgo===""){const el=document.getElementById("ent-nl");el&&el.focus()}});
+  form.querySelectorAll("[data-entgrp]").forEach(b=>b.onclick=()=>{S.entGrp=b.dataset.entgrp;S.entMore=null;vEnt()});
+  form.querySelectorAll("[data-entmore]").forEach(b=>b.onclick=()=>{const i=+b.dataset.entmore;S.entMore=S.entMore===i?null:i;vEnt()});
+  const ol=form.querySelector("[data-entold]");if(ol)ol.onclick=()=>{S.entOld=!S.entOld;vEnt()};
+  form.querySelectorAll("[data-rmc]").forEach(b=>b.onclick=()=>{const c=E.charges[+b.dataset.rmc];if((c.lib||c.montant)&&!confirm(`Supprimer « ${c.lib||"cette charge"} » ?`))return;E.charges.splice(+b.dataset.rmc,1);S.entMore=null;S.entDirty=true;vEnt()});
+  const nw=form.querySelector("[data-entnew]");if(nw)nw.onclick=()=>{go("ch");const el=document.getElementById("eg-nn");el&&el.focus()};
+  const nb=document.getElementById("eg-nb");if(nb){const f=()=>{const v=(document.getElementById("eg-nn").value||"").trim();if(!v)return;S.entgNew=[...new Set([...(S.entgNew||[]),v])];S.entGrp=v;vEnt();const el=document.getElementById("ent-nl");el&&el.focus()};nb.onclick=f;document.getElementById("eg-nn").onkeydown=ev=>{if(ev.key==="Enter"){ev.preventDefault();f()}}}
+  const na=document.getElementById("ent-na");if(na){const f=()=>{const l=(document.getElementById("ent-nl").value||"").trim(),m=document.getElementById("ent-nm").value;if(!l&&!m)return;E.charges.push({cat:S.entGrp,lib:l,montant:m===""?null:parseFloat(m),per:"mois"});S.entDirty=true;vEnt();const el=document.getElementById("ent-nl");el&&el.focus()};na.onclick=f;["ent-nl","ent-nm"].forEach(id=>document.getElementById(id).onkeydown=ev=>{if(ev.key==="Enter"){ev.preventDefault();f()}})}
+  const rn=form.querySelector("[data-entren]");if(rn)rn.onclick=()=>{const o=S.entGrp,v=(prompt("Nouveau nom du groupe",o)||"").trim();if(!v||v===o)return;E.charges.forEach(c=>{if((c.cat||"Autre")===o)c.cat=v});S.entgNew=(S.entgNew||[]).map(x=>x===o?v:x);S.entGrp=v;S.entDirty=true;vEnt()};
   const ds=document.getElementById("ent-dirty");if(ds)ds.textContent=S.entDirty?"Modifications non enregistrées":"";
 }
 
