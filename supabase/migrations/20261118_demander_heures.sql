@@ -1,0 +1,2 @@
+-- Bouton « Demander les heures » (Pilotage et Gestion › Heures) : voir public.heures_manquantes et public.demander_heures,
+-- appliqués sur le projet le 18/11/2026 (migration « demande_heures_manquantes »). La notification part par la fonction notifier (type demandes_heures).
