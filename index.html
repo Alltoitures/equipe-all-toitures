@@ -811,6 +811,18 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 #dv-form.dvx.dvz .dv-row.dv-o>.dv-n{text-align:center;justify-content:center}
 
 /*@@/dvz*/
+/*@@rhh*/
+.rhh{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0}
+.rhh-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.rhh-h h3{margin:0;font-size:16px}.rhh-h small{color:var(--muted)}
+.rhh-r{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.rhh-r>b{min-width:90px}
+.rhh-j{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.rhh-j i{font-style:normal;font-size:12.5px;padding:3px 8px;border-radius:999px;background:rgba(229,72,77,.1);color:#B42318}
+.rhh-nn{font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:3px 8px}
+.rhh-ok{margin:4px 0 0;color:#1E7B34;font-weight:600}
+
+/*@@/rhh*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -9062,6 +9074,32 @@ const _dvOutZ=dvOut;dvOut=function(){const r=_dvOutZ.apply(this,arguments);try{d
 const _dvEditZ=dvEdit;dvEdit=function(){_dvEditZ.apply(this,arguments);try{dvzPaint()}catch(_){}};
 
 /*@@/dvz*/
+/*@@rhh*/
+/* ===== Équipe : heures non saisies et bouton « Demander les heures » (notification sur le téléphone de chacun) ===== */
+S.rhH=S.rhH||null;
+const rhhJ=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric"}).replace(".","");
+async function rhhLoad(force){if(!force&&S.rhH&&(S.rhH.busy||Date.now()-S.rhH.t<120000))return;S.rhH=Object.assign({},S.rhH||{},{busy:true});
+  try{const R=await sbSql("select public.heures_manquantes() as r");const r=R&&R[0]&&R[0].r;S.rhH={t:Date.now(),ok:!!r,d:r||null}}catch(e){S.rhH={t:Date.now(),ok:false,err:true}}
+  if((S.view==="equipe"||S.view==="presences")&&!S.drawer)rhhPaint()}
+function rhhCard(){const H=S.rhH;if(!H||H.busy&&!H.d)return`<section class="rhh"><p class="dvx-h2">Lecture des heures dans l'application équipes…</p></section>`;
+  if(!H.ok)return`<section class="rhh"><p class="dvx-h2">Heures de l'application équipes indisponibles pour le moment.</p></section>`;
+  const M=H.d.membres||[],man=M.filter(m=>m.jours.length),aj=M.filter(m=>!m.jours.length);
+  const rows=man.map(m=>`<div class="rhh-r"><b>${esc(m.prenom)}</b><span class="rhh-j">${m.jours.map(d=>`<i>${esc(rhhJ(d))}</i>`).join("")}</span>${m.notifiable?`<button type="button" class="btn sm" data-rhhask="${esc(m.membre_id)}">Lui demander</button>`:`<span class="rhh-nn" title="Notifications non activées sur son téléphone : à prévenir autrement">pas de notifications</span>`}</div>`).join("");
+  return`<section class="rhh"><div class="rhh-h"><div><h3>Heures non saisies</h3><small>du ${esc(rhhJ(H.d.du))} au ${esc(rhhJ(H.d.au))} · application équipes</small></div>${man.length?`<button type="button" class="btn pri" data-rhhask="">📣 Demander les heures</button>`:""}</div>
+  ${man.length?rows:`<p class="rhh-ok">Tout le monde est à jour.</p>`}${aj.length&&man.length?`<p class="dvx-h2">À jour : ${aj.map(m=>esc(m.prenom)).join(", ")}</p>`:""}</section>`}
+function rhhPaint(){const ph=document.querySelector("main .phead");if(!ph||!(S.view==="equipe"||S.view==="presences"))return;document.querySelectorAll("main .rhh").forEach(x=>x.remove());
+  const k=document.querySelector("main .h2-k");(k||ph).insertAdjacentHTML("afterend",rhhCard())}
+async function rhhAsk(id,btn){if(btn)btn.disabled=true;
+  try{const R=await sbSql(`select public.demander_heures(${id?`array[${sqlS(id)}]::uuid[]`:"null::uuid[]"},'pilotage') as r`);const r=R&&R[0]&&R[0].r;if(!r)throw new Error("vide");
+    const ok=(r.relances||[]).filter(x=>x.notifiable),sans=(r.relances||[]).filter(x=>!x.notifiable);
+    toast(ok.length?`Demande envoyée à ${ok.map(x=>x.prenom).join(", ")}.${sans.length?` À prévenir autrement : ${sans.map(x=>x.prenom).join(", ")}.`:""}`:sans.length?`Aucune notification possible : prévenez ${sans.map(x=>x.prenom).join(", ")} autrement.`:"Tout le monde est à jour.")}
+  catch(e){const m=String((e&&(e.message||e.code))||e);toast(/deja_envoye/.test(m)?"Une demande vient déjà de partir : réessayez dans 2 minutes.":"Envoi impossible pour le moment, réessayez.")}
+  finally{if(btn)btn.disabled=false;setTimeout(()=>rhhLoad(true),4000)}}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-rhhask]");if(!b)return;e.preventDefault();e.stopPropagation();rhhAsk(b.dataset.rhhask||null,b)});
+const _vEquipeH=vEquipe;vEquipe=function(){const r=_vEquipeH.apply(this,arguments);try{if((S.rhTab||"collab")==="collab"){rhhLoad();rhhPaint()}}catch(e){console.warn(e)}return r};
+const _vPresencesH=vPresences;vPresences=function(){const r=_vPresencesH.apply(this,arguments);try{rhhLoad();rhhPaint()}catch(e){console.warn(e)}return r};
+
+/*@@/rhh*/
 boot();
 })();
 </script>
