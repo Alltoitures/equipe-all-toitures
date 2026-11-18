@@ -1121,6 +1121,22 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .ent-fvt b{font-size:18px}
 
 /*@@/entg*/
+/*@@xpf*/
+.xp-dup{margin:12px 0;padding:12px 14px;border:1px solid #F2D8A7;background:#FFF8EC;border-radius:12px;display:flex;flex-direction:column;gap:8px;color:#5C3A00}
+.xp-dup>b{font-size:14px}
+.xp-dr{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid #F2D8A7;border-radius:10px;padding:8px 10px}
+.xp-dr span{flex:1;min-width:0;font-size:13.5px;color:var(--ink);font-weight:600}
+.xp-dr small{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:2px}
+.xp-dup .xp-dn{font-size:12px;color:#7A4100}
+.ouv-dups{margin:0 0 14px;padding:10px 14px;border:1px solid #F2D8A7;background:#FFF8EC;border-radius:12px;color:#5C3A00}
+.ouv-dups summary{cursor:pointer;font-weight:700;font-size:14px}
+.ouv-dl{display:flex;flex-direction:column;gap:6px;margin:10px 0 6px}
+.ouv-dp{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);gap:10px;align-items:center;background:var(--surface);border-radius:8px;padding:6px 10px;font-size:13px}
+.ouv-dp span{text-align:center;color:var(--muted);font-weight:600}
+.ouv-dp .linkbtn{text-align:left;white-space:normal}
+.ouv-dups>small{font-size:12px}
+
+/*@@/xpf*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -9820,6 +9836,48 @@ function foMatrix(){const v=S.foV||"mat",hd=main.querySelector(".phead");if(!hd)
   main.querySelectorAll("[data-rhopen2]").forEach(b=>b.onclick=()=>{S.rhOpen=b.dataset.rhopen2;S.rhFt="comp";setView("equipe")})}
 
 /*@@/entg*/
+/*@@xpf*/
+/* Ouvrages : remplissage depuis les ouvrages existants + détection des doublons (18/11) */
+const XP_STOP=new Set("de du des la le les un une et en a au aux d l s pour avec sur dans par compris y fourniture fournitures pose mise place ml m2 m mm cm ref n type metre metres minute minutes environ tous chaque".split(" "));
+const XP_SYN={dev:"developpe",developpement:"developpe",dv:"developpe",lyonnais:"lyonnaise",dr:"demi",ronde:"demi",ardoises:"ardoise",tuile:"tuile",faitiere:"faitage",velux:"fenetre"};
+function xpClean(q){return bibNorm(q).replace(/\d+(?:[.,]\d+)?\s*(?:min|mn|minutes?|h|heures?)\b(?:\s*(?:par|au|le|la)\s+\w+)?/g," ").replace(/\b(?:au|par)\s+(?:metre|m2|ml)(?:\s+(?:carre|lineaire))?\b/g," ").replace(/\bd(\d{2})\b/g," $1 ")}
+function xpTok(s){return[...new Set(xpClean(s).replace(/[’']/g," ").split(/[^a-z0-9]+/).filter(w=>w&&!XP_STOP.has(w)).map(w=>{w=w.length>4?w.replace(/(es|s|x)$/,""):w;return XP_SYN[w]||w}))]}
+function xpScore(a,b){const A=xpTok(a),B=new Set(xpTok(b));if(!A.length||!B.size)return 0;let c=0;A.forEach(w=>{if(B.has(w))c++});return 0.65*c/A.length+0.35*2*c/(A.length+B.size)}
+function xpRank(q,excl){if(!q||!S.ouv)return[];return[...S.ouv.entries()].filter(([id])=>id!==excl).map(([id,o])=>({id,o,s:xpScore(q,o.nom)})).filter(x=>x.s>=0.3).sort((a,b)=>b.s-a.s)}
+xpSim=function(q){return xpRank(q).slice(0,4)};
+const xpPct=s=>Math.round(s*100)+" %";
+function xpUnit(q){const t=bibNorm(q);if(/m2|m²|metre carre|au metre carre/.test(t))return"M2";if(/\bml\b|metre lineaire|au metre|par metre/.test(t))return"ML";if(/forfait/.test(t))return"FT";if(/\bunite\b|a la piece|par piece|l'unite/.test(t))return"U";return null}
+function xpTime(q){const t=bibNorm(q).replace(",",".");let m=t.match(/(\d+(?:\.\d+)?)\s*(?:min|mn|minutes?)\b/);if(m)return Math.round(parseFloat(m[1])/60*1000)/1000;m=t.match(/(\d+(?:\.\d+)?)\s*h(?:eures?)?\b/);if(m)return parseFloat(m[1]);return null}
+function xpMet(q){const t=bibNorm(q),F=ouvFams(),pick=m=>F.includes(m)?m:null;
+  return(/depose|evacuation/.test(t)&&pick("Dépose et évacuation"))||(/velux|fenetre de toit|chassis/.test(t)&&pick("Fenêtres de toit"))||(/zinc|gouttiere|descente|naissance|noue|cheneau|solin|abergement/.test(t)&&pick("Zinguerie"))||(/panne|chevron|charpente|volige|semelle|poteau/.test(t)&&pick("Charpente"))||(/ossature|osb/.test(t)&&pick("Ossature bois"))||(/benne|echafaudage|garde-corps|sapine|monte-charge/.test(t)&&pick("Mise en place chantier"))||S.ouvMet||pick("Couverture")||F[0]}
+const xpNom=q=>{let s=q.replace(/,?\s*\d+(?:[.,]\d+)?\s*(?:min|mn|minutes?|h|heures?)\b(?:\s*(?:par|au|le|la)\s+[\wàâéèêîôûç]+)?/gi,"").replace(/,?\s*\b(?:au|par)\s+(?:m[eè]tre|m2|m²|ml)(?:\s+(?:carr[ée]|lin[ée]aire))?(?![\wàâéèêîôûç])/gi,"").replace(/\s+/g," ").replace(/[\s,;.-]+$/,"").trim();return s.charAt(0).toUpperCase()+s.slice(1)};
+function xpLocal(){const X=S.xp,q=(X.txt||"").trim();if(q.length<5)return;const R=xpRank(q),best=R[0],u=xpUnit(q),h=xpTime(q);let o,rq=[];
+  if(best&&best.s>=0.35){o=clone(best.o);delete o.updatedAt;delete o.val;o.nom=xpNom(q);if(u)o.u=u;if(h!=null)o.h=h;o.comp=o.comp||[];
+    rq.push(`Composition reprise de « ${best.o.nom.slice(0,90)} » (ressemblance ${xpPct(best.s)}) : vérifiez les articles, les quantités et le temps.`);if(h!=null)rq.push("Temps de pose lu dans votre description.")}
+  else{o={nom:xpNom(q),desc:"",u:u||"U",met:xpMet(q),sf:"",h:h||0,comp:[]};const T=xpTok(q);
+    [...S.bib.entries()].map(([id,a])=>{const n=new Set(xpTok(a.des+" "+(a.cat||"")));let sc=0;T.forEach(w=>{if(n.has(w))sc+=w.length>4?2:1});return{id,sc}}).filter(x=>x.sc>=2).sort((a,b)=>b.sc-a.sc).slice(0,3).forEach(x=>o.comp.push({bib:x.id,q:1}));
+    rq.push(o.comp.length?"Aucun ouvrage proche : articles proposés d'après les mots de la description. Vérifiez-les et ajustez les quantités.":"Aucun ouvrage ni article proche : ajoutez les articles avec la recherche ci-dessous.")}
+  X.o=o;X.st=o.comp.map(()=>({}));X.rq=rq;X.err=null;X.src=best&&best.s>=0.35?best.id:null;xpDraw()}
+const _xpRun0=xpRun;
+xpRun=async function(){let s=null;try{s=await aerSample()}catch(_){}if(s){await _xpRun0();const X=S.xp;if(X&&!X.o&&X.err){X.err=null;xpLocal()}return}xpLocal()};
+function xpDupHTML(q,excl,min){const R=xpRank(q,excl).filter(x=>x.s>=min).slice(0,3);if(!R.length)return"";
+  return`<div class="xp-dup" role="status"><b>⚠ ${R.length>1?"Des ouvrages très proches existent déjà":"Un ouvrage très proche existe déjà"}</b>${R.map(x=>`<div class="xp-dr"><span>${esc(x.o.nom.slice(0,110))}<small>${esc(x.o.u||"")} · ${esc(x.o.met||"")} · ressemblance ${xpPct(x.s)}</small></span><button type="button" class="btn sm" data-xpopen="${esc(x.id)}">Ouvrir</button>${S.xp&&!S.xp.o?`<button type="button" class="btn sm" data-xpdup="${esc(x.id)}">Partir de celui-ci</button>`:""}</div>`).join("")}<small class="xp-dn">Pour éviter un doublon, ouvrez l'existant et modifiez-le. Sinon, continuez.</small></div>`}
+const _xpDraw0=xpDraw;
+xpDraw=function(){_xpDraw0();const X=S.xp;if(!X)return;let ai=S.aerS;const h=DR.querySelector("#dtitle");
+  if(!ai&&h&&!X.o)h.textContent="Décrivez-le, le Pilotage prépare la fiche";
+  const af=DR.querySelector(".xp-af span");if(af&&!ai)af.textContent="Écrivez comme vous parlez (matériaux, unité, temps de pose) : la fiche part de votre ouvrage le plus proche.";
+  if(!X.o){const s=DR.querySelector("#xp-sim");if(s){s.insertAdjacentHTML("beforebegin",`<div id="xp-dupw">${xpDupHTML(X.txt,null,0.8)}</div>`)}}
+  else{const l=DR.querySelector(".xp-l1");if(l){const d=xpDupHTML(X.o.nom||"",null,0.85);if(d)l.insertAdjacentHTML("afterbegin",d)}}};
+let xpDupT;document.addEventListener("input",e=>{if(!S.drawer||S.drawer.kind!=="xp"||!S.xp||e.target.id!=="xp-txt")return;clearTimeout(xpDupT);xpDupT=setTimeout(()=>{const w=document.getElementById("xp-dupw");if(w)w.innerHTML=xpDupHTML(S.xp.txt,null,0.8)},260)});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-xpopen]");if(!b)return;e.stopPropagation();const id=b.dataset.xpopen;S.xp=null;closeDrawer();ouvOpen(id)},true);
+/* Doublons possibles dans la liste des ouvrages */
+function ouvDups(){const L=[...S.ouv.entries()],P=[];for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const s=Math.min(xpScore(L[i][1].nom,L[j][1].nom),xpScore(L[j][1].nom,L[i][1].nom));if(s>=0.9&&normU(L[i][1].u)===normU(L[j][1].u))P.push({a:L[i],b:L[j],s})}return P.sort((x,y)=>y.s-x.s)}
+const _vOuvD=vOuv;
+vOuv=function(){const r=_vOuvD.apply(this,arguments);try{if(!S.ouv||!S.ouv.size)return r;const P=ouvDups();if(!P.length)return r;const hd=main.querySelector(".phead")||main.firstElementChild;if(!hd||main.querySelector(".ouv-dups"))return r;
+  hd.insertAdjacentHTML("afterend",`<details class="ouv-dups"${S.ouvDupOpen?" open":""}><summary>⚠ ${P.length} paire${P.length>1?"s":""} d'ouvrages en double possible : à vérifier</summary><div class="ouv-dl">${P.slice(0,30).map(p=>`<div class="ouv-dp"><button type="button" class="linkbtn" data-ouvdo="${esc(p.a[0])}">${esc(p.a[1].nom.slice(0,90))}</button><span>≈ ${xpPct(p.s)}</span><button type="button" class="linkbtn" data-ouvdo="${esc(p.b[0])}">${esc(p.b[1].nom.slice(0,90))}</button></div>`).join("")}</div><small>Ouvrez les deux fiches, gardez la bonne et supprimez l'autre si c'est un vrai doublon.</small></details>`);
+  const d=main.querySelector(".ouv-dups");d.addEventListener("toggle",()=>{S.ouvDupOpen=d.open});d.querySelectorAll("[data-ouvdo]").forEach(b=>b.onclick=()=>ouvOpen(b.dataset.ouvdo))}catch(e){console.error(e)}return r};
+
+/*@@/xpf*/
 boot();
 })();
 </script>
