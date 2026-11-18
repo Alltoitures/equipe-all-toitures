@@ -1047,7 +1047,7 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .rhc-side{display:flex;flex-direction:column;gap:18px}
 .rhc-side .card,.rhc{margin:0}
 .rhc-h{display:flex;align-items:center;gap:12px}.rhc-h h3{flex:1;margin:0}
-.rhc-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:14px}
+.rhc-f{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:14px}
 .rhc-f .f{display:flex;flex-direction:column;gap:6px}
 .rhc-f input{height:46px;font-size:17px;font-weight:700;text-align:right}
 .rhc-f small{font-size:12px;color:var(--muted)}
@@ -9713,25 +9713,30 @@ function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=docum
 
 /* Salariés repris de Collaborateurs + onglet Coût de la fiche (18/11) */
 const RH_ORD=["chef","ouvrier","apprenti","bureau"];
-function rhSalRows(){if(!S.rh||!S.rh.size)return null;return[...S.rh.entries()].sort((a,b)=>RH_ORD.indexOf(a[1].cat)-RH_ORD.indexOf(b[1].cat)).map(([id,p])=>{const cpt=p.compte!==false&&!p.sortie;return{rhId:id,nom:p.nom||id,poste:p.poste||"",contrat:p.contrat||"",cat:p.cat,apprenti:p.cat==="apprenti",hSem:p.hSem,cout:p.coutM,estime:!!p.coutEstime,compte:cpt,actif:cpt&&!!num(p.coutM)}})}
+function rhRendAuto(p){if(p.cat!=='apprenti')return 100;const e=p.entree?new Date(p.entree):null;if(!e||isNaN(e))return 75;return(Date.now()-e)/(365.25*864e5)<1?50:75}
+const rhRend=p=>p.rendement!=null&&p.rendement!==''?num(p.rendement):rhRendAuto(p);
+function rhSalRows(){if(!S.rh||!S.rh.size)return null;return[...S.rh.entries()].sort((a,b)=>RH_ORD.indexOf(a[1].cat)-RH_ORD.indexOf(b[1].cat)).map(([id,p])=>{const cpt=p.compte!==false&&!p.sortie;return{rhId:id,nom:p.nom||id,poste:p.poste||"",contrat:p.contrat||"",cat:p.cat,apprenti:p.cat==="apprenti",hSem:p.hSem,cout:p.coutM,estime:!!p.coutEstime,rend:rhRend(p),compte:cpt,actif:cpt&&!!num(p.coutM)}})}
 const _entCalc0=entCalc;
-entCalc=function(E,ym){if(!S.rh&&typeof rhLoad==="function"){try{rhLoad()}catch(_){}}const L=rhSalRows();return _entCalc0(L?Object.assign({},E,{salaries:L}):E,ym)};
+entCalc=function(E,ym){if(!S.rh&&typeof rhLoad==="function"){try{rhLoad()}catch(_){}}const L=rhSalRows();const R=_entCalc0(L?Object.assign({},E,{salaries:L}):E,ym);
+  if(L){R.rows.forEach(r=>{const f=(r.rend==null?100:r.rend)/100;r.prodBrut=r.prodM;r.prodM*=f;r.prod*=f;r.coutH=r.prod>0?num(r.cout)*12/r.prod:null});
+    R.hM=R.act.reduce((a,r)=>a+r.prodM,0);R.cr=R.hM>0?R.tot/R.hM:null;R.tv=R.cr!=null&&R.marge<1?R.cr/(1-R.marge):null;R.moH=R.hM?R.mo/R.hM:null;R.stH=R.hM?R.struct/R.hM:null}
+  return R};
 const _entChecks0=entChecks;
 entChecks=function(E){const L=rhSalRows();if(!L)return _entChecks0(E);const out=[],miss=L.filter(r=>r.compte&&!num(r.cout)).map(r=>r.nom);
   if(miss.length)out.push(`Coût employeur à saisir pour ${miss.join(" et ")} : le coût d'une heure reste provisoire`);
   L.filter(r=>r.compte&&r.estime&&num(r.cout)).forEach(r=>out.push(`Coût de ${r.nom} estimé : à remplacer par un bulletin réel`));return out};
 function rhCostOf(p){const E=S.ent||ENT_DEF,r=_entCalc0({params:E.params||ENT_DEF.params,salaries:[{nom:"x",apprenti:p.cat==="apprenti",hSem:p.hSem,cout:p.coutM,actif:true}],charges:[],gerant:{}}).rows[0];
-  const h=num(p.hSem)||(p.cat==="apprenti"?35:40),paidM=h*52/12;return{prodM:r.prodM,cq:num(p.coutM)?r.coutH:null,cp:num(p.coutM)?num(p.coutM)/paidM:null,paidM}}
+  const h=num(p.hSem)||(p.cat==="apprenti"?35:40),paidM=h*52/12,f=rhRend(p)/100,pm=r.prodM*f;return{prodM:pm,prodBrut:r.prodM,rend:rhRend(p),cq:num(p.coutM)&&pm>0?num(p.coutM)/pm:null,cp:num(p.coutM)?num(p.coutM)/paidM:null,paidM}}
 function entSalTab(){const L=rhSalRows().filter(r=>!(S.rh.get(r.rhId)||{}).sortie),R=entCalc(S.entDraft),n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
   const miss=L.filter(r=>r.compte&&!num(r.cout)),byId=new Map(R.rows.map(r=>[r.rhId,r]));
   return`${miss.length?`<div class="ent-warn"><b>${miss.length} coût${miss.length>1?"s":""} à saisir</b> (${miss.map(r=>esc(r.nom)).join(", ")}) : le coût d'une heure reste provisoire tant qu'${miss.length>1?"ils manquent":"il manque"}.<button type="button" class="btn" data-entfiche="${esc(miss[0].rhId)}">Compléter</button></div>`:""}
   <section class="ent-c"><div class="ent-sh"><h2>Salariés comptés dans le coût de revient</h2><small>Repris automatiquement d'Équipe › Collaborateurs</small><button type="button" class="btn" data-entnewc>+ Nouveau collaborateur</button></div>
-  <div class="tblw" style="border:0"><table class="tbl static ent-sal"><thead><tr><th>Collaborateur</th><th>Contrat</th><th class="r">h / sem.</th><th class="r">Coût employeur / mois</th><th class="r">h productives / mois</th><th class="r">Coût / h productive</th><th>Compté</th><th></th></tr></thead><tbody>
-  ${L.map(r=>{const c=byId.get(r.rhId)||{},has=!!num(r.cout),p=S.rh.get(r.rhId);return`<tr class="${r.compte?"":"off"}"><td><span class="ent-who">${rhAv(r.rhId,p,34)}<span><b>${esc(r.nom)}</b><small>${esc(r.poste)}</small></span></span></td><td>${esc((r.contrat||"").split(/[ (]/)[0]||"—")}</td><td class="r">${r.hSem||"—"}</td>
+  <div class="tblw" style="border:0"><table class="tbl static ent-sal"><thead><tr><th>Collaborateur</th><th>Contrat</th><th class="r">h / sem.</th><th class="r">Rendement</th><th class="r">Coût employeur / mois</th><th class="r">h productives / mois</th><th class="r">Coût / h productive</th><th>Compté</th><th></th></tr></thead><tbody>
+  ${L.map(r=>{const c=byId.get(r.rhId)||{},has=!!num(r.cout),p=S.rh.get(r.rhId);return`<tr class="${r.compte?"":"off"}"><td><span class="ent-who">${rhAv(r.rhId,p,34)}<span><b>${esc(r.nom)}</b><small>${esc(r.poste)}</small></span></span></td><td>${esc((r.contrat||"").split(/[ (]/)[0]||"—")}</td><td class="r">${r.hSem||"—"}</td><td class="r">${r.rend<100?`<span class="ent-tag warn">${r.rend} %</span>`:"100 %"}</td>
     <td class="r">${!r.compte&&!has?'<span class="ent-tag end">non compté</span>':has?`<b>${eur(r.cout)}</b>${r.estime?' <span class="ent-tag warn">estimé</span>':""}`:'<span class="ent-tag warn">à saisir</span>'}</td>
     <td class="r">${has&&r.compte?Math.round(c.prodM)+" h":"—"}</td><td class="r">${has&&r.compte?`<b>${n2(c.coutH)} €</b>`:"—"}</td>
     <td><input type="checkbox" data-entcpt="${esc(r.rhId)}" ${r.compte?"checked":""} aria-label="Compter ${esc(r.nom)} dans le coût de revient"></td><td class="r"><button type="button" class="linkbtn" data-entfiche="${esc(r.rhId)}">Fiche ›</button></td></tr>`}).join("")}
-  </tbody><tfoot><tr><td colspan="3">Total des ${R.act.length} coût${R.act.length>1?"s":""} connu${R.act.length>1?"s":""}</td><td class="r">${eur(R.mo)}</td><td class="r">${Math.round(R.hM)} h</td><td class="r">${n2(R.moH)} €</td><td colspan="2"></td></tr></tfoot></table></div></section>
+  </tbody><tfoot><tr><td colspan="4">Total des ${R.act.length} coût${R.act.length>1?"s":""} connu${R.act.length>1?"s":""}</td><td class="r">${eur(R.mo)}</td><td class="r">${Math.round(R.hM)} h</td><td class="r">${n2(R.moH)} €</td><td colspan="2"></td></tr></tfoot></table></div></section>
   <p class="ent-sub">On ne saisit plus rien ici : le coût employeur et les heures se règlent sur la fiche de chaque collaborateur (onglet Coût). Une arrivée ou un départ se fait une seule fois, dans Collaborateurs.</p>`}
 const _entPage0=entPage;
 entPage=function(){const L=rhSalRows();if(S.entTab==="sal"&&L){const sec=document.querySelector("#ent-form > section.sec:nth-of-type(2)");if(sec)sec.remove()}
@@ -9749,21 +9754,22 @@ function rhCoutTab(id){const p=S.rh.get(id);if(!p)return;const cards=[...main.qu
   w.innerHTML=`<section class="card rhc"><div class="rhc-h"><h3>Ce qu'il coûte à l'entreprise</h3>${p.coutEstime?'<span class="rh-pl w">estimé</span>':H[0]?`<span class="rh-pl ok">${H[0].src==="bulletin"?"bulletin de ":"mis à jour en "}${esc(entMo(H[0].d))}</span>`:""}</div>
     <p class="hint">Deux chiffres suffisent : le reste se calcule tout seul et alimente le coût d'une heure de chantier (page Entreprise).</p>
     <div class="rhc-f"><div class="f"><label for="rhc-cm">Coût employeur par mois (€)</label><input id="rhc-cm" data-rhc="coutM" type="number" step="any" inputmode="decimal" value="${p.coutM==null?"":esc(p.coutM)}"><small>Le « coût global » en bas du bulletin de paie</small></div>
+      <div class="f"><label for="rhc-rd">Rendement (%)</label><input id="rhc-rd" data-rhc="rendement" type="number" step="5" min="0" max="100" inputmode="numeric" value="${p.rendement==null||p.rendement===""?"":esc(p.rendement)}" placeholder="${rhRendAuto(p)}"><small>${p.cat==="apprenti"?"Vide = automatique : 50 % la 1re année, 75 % ensuite":"Part d'une heure vendable (100 % pour un compagnon)"}</small></div>
       <div class="f"><label for="rhc-hs">Heures par semaine</label><input id="rhc-hs" data-rhc="hSem" type="number" step="0.5" inputmode="decimal" value="${p.hSem==null?"":esc(p.hSem)}"><small>D'après le contrat</small></div></div>
     <label class="rhc-sw"><input type="checkbox" data-rhc="compte" ${cpt?"checked":""}><span><b>Compté dans le coût de revient</b><small>À désactiver pour un sous-traitant déjà compté dans les charges, ou après un départ</small></span></label>
-    <div class="rhc-r"><div><span>Heures productives</span><b id="rhc-h">${Math.round(C.prodM)} h</b><small>par mois, hors congés, fériés et trajets</small></div><div><span>Par heure payée</span><b id="rhc-p">${C.cp==null?"—":n2(C.cp)+" €"}</b><small id="rhc-ps">${C.cp==null?"coût à saisir":`${eur(p.coutM)} ÷ ${Math.round(C.paidM)} h payées`}</small></div><div class="hl"><span>Par heure productive</span><b id="rhc-q">${C.cq==null?"—":n2(C.cq)+" €"}</b><small>ce qui compte pour les devis</small></div></div></section>
+    <div class="rhc-r"><div><span>Heures productives</span><b id="rhc-h">${Math.round(C.prodM)} h</b><small id="rhc-hn">par mois, hors congés, fériés et trajets${C.rend<100?` · rendement ${C.rend} % appliqué`:""}</small></div><div><span>Par heure payée</span><b id="rhc-p">${C.cp==null?"—":n2(C.cp)+" €"}</b><small id="rhc-ps">${C.cp==null?"coût à saisir":`${eur(p.coutM)} ÷ ${Math.round(C.paidM)} h payées`}</small></div><div class="hl"><span>Par heure productive</span><b id="rhc-q">${C.cq==null?"—":n2(C.cq)+" €"}</b><small>ce qui compte pour les devis</small></div></div></section>
     <div class="rhc-side"><section class="card"><h3>Sur l'exercice</h3><p class="hint">Depuis le 1er juillet, d'après les heures saisies dans l'application</p>
       <div class="air-k"><span>Heures sur chantier</span><b>${nf(hEx,0)} h</b></div><div class="air-k"><span>Coût de ces heures</span><b>${C.cq!=null?eur(hEx*C.cq):"coût à saisir"}</b></div>
       <div class="dp-f" style="margin-top:10px"><div class="f"><label>Congés restants (jours)</label><input type="number" step="0.5" data-rhf2="conges" value="${p.conges==null?"":esc(p.conges)}"></div></div></section>
      <section class="card"><h3>Historique du coût</h3><p class="hint">Une ligne à chaque changement, pour suivre les augmentations</p>${H.length?H.map(x=>`<div class="air-k"><span>${esc(entMo(x.d))}${x.src==="bulletin"?" · bulletin":""}</span><b>${eur(x.v)} / mois</b></div>`).join(""):'<p class="hc-e">Aucun montant enregistré.</p>'}</section></div>`;
   cc.replaceWith(w);if(info)w.after(info);
-  const upd=()=>{const q=Object.assign({},p,{coutM:parseFloat(w.querySelector("#rhc-cm").value.replace(",","."))||null,hSem:parseFloat(w.querySelector("#rhc-hs").value.replace(",","."))||null}),c=rhCostOf(q);
+  const upd=()=>{const rv=w.querySelector("#rhc-rd").value;const q=Object.assign({},p,{coutM:parseFloat(w.querySelector("#rhc-cm").value.replace(",","."))||null,hSem:parseFloat(w.querySelector("#rhc-hs").value.replace(",","."))||null,rendement:rv===""?null:parseFloat(rv)}),c=rhCostOf(q);w.querySelector("#rhc-hn").textContent="par mois, hors congés, fériés et trajets"+(c.rend<100?` · rendement ${c.rend} % appliqué`:"");
     w.querySelector("#rhc-h").textContent=Math.round(c.prodM)+" h";w.querySelector("#rhc-p").textContent=c.cp==null?"—":n2(c.cp)+" €";w.querySelector("#rhc-q").textContent=c.cq==null?"—":n2(c.cq)+" €";w.querySelector("#rhc-ps").textContent=c.cp==null?"coût à saisir":`${eur(q.coutM)} ÷ ${Math.round(c.paidM)} h payées`};
-  w.querySelectorAll("#rhc-cm,#rhc-hs").forEach(x=>x.addEventListener("input",upd))}
+  w.querySelectorAll("#rhc-cm,#rhc-hs,#rhc-rd").forEach(x=>x.addEventListener("input",upd))}
 window.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-rhsave2]");if(!b||!document.getElementById("rhc-cm"))return;const p=S.rh&&S.rh.get(b.dataset.rhsave2);if(!p)return;
   const cm=parseFloat(document.getElementById("rhc-cm").value.replace(",","."));const hs=parseFloat(document.getElementById("rhc-hs").value.replace(",","."));const cpt=document.querySelector('[data-rhc="compte"]').checked;
   const nv=isNaN(cm)?null:cm;if(nv!==(p.coutM==null?null:num(p.coutM))){p.coutHist=(p.coutHist||[]).filter(x=>x.d!==curYM);if(nv!=null)p.coutHist.push({d:curYM,v:nv,src:"saisie"});p.coutEstime=false}
-  p.coutM=nv;p.hSem=isNaN(hs)?null:hs;p.compte=cpt;const c=rhCostOf(p);if(c.cp!=null)p.coutH=Math.round(c.cp*100)/100},true);
+  p.coutM=nv;p.hSem=isNaN(hs)?null:hs;p.compte=cpt;{const rv=document.getElementById("rhc-rd").value;p.rendement=rv===""?null:parseFloat(rv)}const c=rhCostOf(p);if(c.cp!=null)p.coutH=Math.round(c.cp*100)/100},true);
 
 /* Formations : à cocher par collaborateur + vue « Qui fait quoi » (18/11) */
 const FO_ORD=["Sécurité","Conduite d'engins","Métier","Encadrement"],FO_S=["envisagée","à planifier","inscrit","faite"],FO_SL={"envisagée":"Envisagée","à planifier":"À planifier","inscrit":"Inscrit","faite":"Faite"};
