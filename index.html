@@ -826,6 +826,107 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 /*@@chsync*/
 
 /*@@/chsync*/
+/*@@dos*/
+.dos{display:flex;flex-direction:column;gap:18px;margin-top:6px}
+.dos-r2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+.dos-r2.b{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+@media (max-width:1100px){.dos-r2,.dos-r2.b{grid-template-columns:1fr}}
+.dos-c{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;min-width:0}
+.dos-h{display:flex;align-items:center;gap:10px;margin:0 0 14px;flex-wrap:wrap}
+.dos-h h2{margin:0;font-size:17px;font-weight:700}
+.dos-h small{margin-left:auto;font-size:12px;color:var(--muted)}
+.dos-ic{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.dos-ic.b{background:rgba(10,124,201,.12);color:#0A6DB5}.dos-ic.g{background:rgba(28,124,69,.12);color:#1C6B3A}.dos-ic.p{background:rgba(91,63,181,.12);color:#5B3FB5}.dos-ic.o{background:rgba(224,138,18,.14);color:#8A4B00}
+.dos-dates{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.dos-date{display:flex;flex-direction:column;gap:6px;flex:1;min-width:150px}
+.dos-date span,.dos-lb{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:0}
+.dos-date input{height:54px;border:1.5px solid var(--line);border-radius:12px;padding:0 12px;font:700 18px inherit;font-family:inherit;color:var(--ink);background:var(--surface)}
+.dos-date input:focus{outline:2px solid #0A7CC9;outline-offset:1px}
+.dos-qb{display:flex;flex-direction:column;gap:6px}
+.dos-wk{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
+.dos-wk span{flex:1;min-width:52px;height:42px;border-radius:9px;background:#1F6FC4;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.dos-wk span.ok{background:#1C7C45}.dos-wk span.cur{background:#0C3A5B}.dos-wk span.more{background:var(--line);color:var(--ink)}
+.dos-wk small{line-height:0}
+.dos-n{margin:4px 0 14px;font-size:12.5px;color:var(--muted)}
+.dos-team{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dos-mate{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13px inherit;font-family:inherit;cursor:pointer}
+.dos-mate.on{background:rgba(10,124,201,.1);border-color:#0A7CC9;color:#0A5A99;font-weight:600}
+.dos-mate.busy{color:var(--muted);border-style:dashed}
+.dos-ft{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.dos-sp{flex:1}
+.dos-sy{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.dos-sy.ok{color:#1C6B3A}.dos-sy.wa{color:#9A5A00}
+.dos-big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.dos-big b{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums}
+.dos-big span{font-size:19px;font-weight:700}
+.dos-big small{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.dos-big .ok{color:#1C6B3A}.dos-big .mid{color:#9A5A00}.dos-big .ko{color:#B42318}
+.dos-gauge{position:relative;height:10px;border-radius:99px;background:var(--line);margin:8px 0 10px}
+.dos-gauge i{display:block;height:10px;border-radius:99px;background:#1C7C45}.dos-gauge i.mid{background:#D08A16}.dos-gauge i.ko{background:#D7372F}
+.dos-gauge b{position:absolute;top:-4px;width:2px;height:18px;background:var(--ink)}
+.dos-m{display:grid;grid-template-columns:1fr auto;gap:2px 14px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.dos-m b{font-size:15px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.dos-m small{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.dos-m.tot{border-top:2px solid var(--ink)}.dos-m.tot span{font-weight:700}
+.dos-m .ok{color:#1C6B3A}.dos-m .mid{color:#9A5A00}.dos-m .ko{color:#B42318}
+.dos-seg{display:inline-flex;background:var(--line);border-radius:11px;padding:3px;gap:2px;margin-left:12px;flex-wrap:wrap}
+.dos-seg button{border:0;background:transparent;height:34px;padding:0 13px;border-radius:9px;font:500 13px inherit;font-family:inherit;color:var(--ink);cursor:pointer}
+.dos-seg button.on{background:var(--surface);font-weight:700;box-shadow:0 1px 3px rgba(12,58,91,.15)}
+.dos-pg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px}
+@media (max-width:1100px){.dos-pg{grid-template-columns:1fr}}
+.dos-gr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dos-th{position:relative;height:96px;border-radius:10px;border:2px solid transparent;background:#D3DDE6 center/cover no-repeat;cursor:pointer;padding:0;display:flex;align-items:flex-end}
+.dos-th span{margin:5px;background:rgba(255,255,255,.9);color:#22394C;border-radius:6px;padding:2px 6px;font-size:11px;font-weight:600;max-width:calc(100% - 10px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dos-th.sel{border-color:#0A7CC9;box-shadow:0 0 0 2px rgba(10,124,201,.25)}
+.dos-dl{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto}
+.dos-doc{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;font:500 13px inherit;font-family:inherit;color:var(--ink)}
+.dos-doc.sel{border-color:#0A7CC9;background:rgba(10,124,201,.06)}
+.dos-doc i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#5B6B79;border-radius:4px;padding:3px 5px;min-width:30px;text-align:center}
+.dos-doc i.pdf{background:#C9372C}.dos-doc i.img{background:#1F6FC4}
+.dos-doc span{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.dos-doc small{font-size:11.5px;color:var(--muted)}
+.dos-pv{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
+.dos-pv>img{width:100%;height:340px;object-fit:contain;background:#1b2a36}
+.dos-pv>iframe{width:100%;height:420px;border:0;background:#fff}
+.dos-pv0{height:300px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--muted);font-size:13.5px;background:rgba(127,140,153,.08)}
+.dos-pv figcaption{display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:13px;flex-wrap:wrap}
+.dos-pv figcaption>span{flex:1;min-width:0}
+.dos-av{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.dos-av>b{font-size:24px;font-weight:700}
+.dos-av>i{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.dos-av>i>b{display:block;height:10px;background:#0A7CC9}
+.dos-av small{font-size:12.5px;color:var(--muted)}
+.dos-days{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.dos-days span{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:38px;font-size:11.5px;font-weight:600;color:var(--muted)}
+.dos-days i{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;background:var(--line)}
+.dos-days .ok i{background:#1C7C45;color:#fff}.dos-days .cur i{background:#0A7CC9;color:#fff}.dos-days .miss i{background:rgba(215,55,47,.15);color:#B42318}
+.dos-ev{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.dos-ev time{font-size:12px;font-weight:600;color:var(--muted)}
+.dos-ev b{font-size:13.5px}.dos-ev b.ko{color:#B42318}
+.dos-ev p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+.dos-mini{display:flex;gap:6px;margin-top:6px}.dos-mini span{width:56px;height:42px;border-radius:7px;background:#D3DDE6 center/cover no-repeat}
+.dos-drop{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;border:2px dashed #9CC3E6;border-radius:12px;background:rgba(10,124,201,.05);color:#0A5A99;font-weight:600;font-size:13.5px;cursor:pointer;padding:8px 14px;text-align:center}
+.dos-drop.over{background:rgba(10,124,201,.12);border-color:#0A7CC9}
+.dos-drop small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.dos-new{border:1px solid #0A7CC9;border-radius:12px;padding:12px 14px;background:rgba(10,124,201,.04)}
+.dos-nf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.dos-nf label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.dos-nf input,.dos-nf select{height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:500 13.5px inherit;font-family:inherit;color:var(--ink);background:var(--surface)}
+.dos-new .dos-ft{margin-top:10px;padding-top:0;border:0}
+.dos-ach{display:grid;grid-template-columns:minmax(0,1fr) 96px 132px;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.dos-ach b{font-size:13.5px}.dos-ach small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.dos-ach .mt{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.dos-ach.off{opacity:.55}.dos-ach.tot{border-top:2px solid var(--ink)}
+.dos-st{height:32px;border:1px solid var(--line);border-radius:999px;padding:0 10px;font:600 12px inherit;font-family:inherit;color:var(--ink);background:var(--surface)}
+.dos-c .dos-ach:first-of-type{margin-top:8px}
+.dos-fs{position:fixed;inset:0;z-index:500;background:rgba(9,18,26,.92);display:flex;flex-direction:column}
+.dos-fsb{display:flex;align-items:center;gap:8px;padding:12px 16px;color:#fff}.dos-fsb b{flex:1}
+.dos-fsc{flex:1;display:flex;align-items:center;justify-content:center;padding:0 16px 16px;min-height:0}
+.dos-fsc img{max-width:100%;max-height:100%;object-fit:contain}
+.dos-fsc iframe{width:min(1100px,100%);height:100%;border:0;background:#fff;border-radius:8px}
+.dos-fsc .dos-pv0{color:#dfe7ee;background:transparent}
+
+/*@@/dos*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -9129,6 +9230,191 @@ const _renderCH=render;render=function(){const r=_renderCH.apply(this,arguments)
 Object.defineProperty(render,"force",{get(){return _renderCH.force},set(v){_renderCH.force=v}});
 
 /*@@/chsync*/
+/*@@dos*/
+/* ===== Dossier chantier sur une seule page (maquette « 3 · Dossier chantier », 18/11/2026) =====
+   Intervention (dates + équipe → application équipes) · Marge tout déduit · Photos et documents sans passer par OneDrive · Suivi · Achats fournisseurs */
+CHX_T.splice(0,CHX_T.length,["ens","Dossier"],["temps","Heures"],["cmd","Commandes"],["trav","Travaux"],["fin","Finances"]);
+S.dos=S.dos||{};S.dosE=S.dosE||{};S.dosSel=S.dosSel||{};S.dosPrev=S.dosPrev||{};S.dosNew=S.dosNew||{};
+const DOS_ST=["À commander","Demande de prix","Devis reçu","Commandé","Livré"];
+const DOS_F=["Chausson","Altema","Gabriel","Samse","Point.P","Cojer","BigMat","Loxam","Kiloutou","Asturienne","Larivière","Wienerberger","Monier","Edilians","Velux","Gedimat","Prolians","Würth","Tout Faire"];
+const dosJ=s=>s?P(s).toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit"}).replace(".",""):"—";
+const dosIco={cal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  mg:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>',
+  ph:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>',
+  sv:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h4l3 7 4-14 3 7h4"/></svg>',
+  ach:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h2l2.5 11h11L21 7H6.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>',
+  up:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>',
+  ok:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>'};
+function dosFin(c){return c&&c.dateDebut?addWD(c.dateDebut,Math.max(1,Math.round(num(c.joursEstimes))||1)):""}
+const dosNext=x=>addWD(addDays(x,1),1);
+function dosEdit(id,d){if(!S.dosE[id]||!S.dosE[id].dirty){const c=d.chantier||{};S.dosE[id]={deb:c.dateDebut||"",fin:dosFin(c),eq:String(c.equipe||"").split(",").map(x=>x.trim().split(/\s+/)[0]).filter(Boolean),dirty:false}}return S.dosE[id]}
+function dosTeam(){try{if(typeof rhLoad==="function")rhLoad()}catch(_){}const L=[],seen=new Set();(S.rh||new Map()).forEach(p=>{if(!p||p.cat==="bureau"||p.actif===false)return;const pr=String(p.nom||"").trim().split(/\s+/)[0];if(pr&&!seen.has(pr.toLowerCase())){seen.add(pr.toLowerCase());L.push({pr,cat:p.cat})}});
+  if(!S.dosMb){S.dosMb=[];sbSql("select prenom, role from public.membres where actif and role in ('chef','ouvrier','apprenti') order by prenom").then(R=>{S.dosMb=R||[];if(S.view==="affaires"&&S.proj&&!S.drawer)render()}).catch(()=>{})}
+  (S.dosMb||[]).forEach(m=>{const pr=String(m.prenom||"").trim();if(pr&&!seen.has(pr.toLowerCase())){seen.add(pr.toLowerCase());L.push({pr,cat:m.role})}});
+  const o={chef:0,ouvrier:1,apprenti:2};return L.sort((a,b)=>(o[a.cat]??3)-(o[b.cat]??3)||a.pr.localeCompare(b.pr))}
+function dosBusy(id,pr,deb,fin){if(!deb)return null;const f=fin||deb,n=pr.toLowerCase();
+  for(const [k,o] of S.docs){if(k===id||!o||!o.chantier)continue;const c=o.chantier;if(c.statut==="Terminé"||!c.dateDebut)continue;
+    if(c.dateDebut<=f&&dosFin(c)>=deb&&String(c.equipe||"").toLowerCase().split(/[,\s]+/).includes(n))return String((o.rdv&&o.rdv.client)||"autre chantier").split(" (")[0]}return null}
+const dosHd=(ic,cls,t,sub,extra)=>`<div class="dos-h"><span class="dos-ic ${cls}">${dosIco[ic]}</span><h2>${t}</h2>${extra||""}${sub?`<small>${sub}</small>`:""}</div>`;
+
+/* 1. Intervention */
+function dosInter(id,d,M){const E=dosEdit(id,d),c=d.chantier||{},T=dosTeam(),done=new Set((M.days||[]).map(D=>D.jour));
+  const wk=[];if(E.deb){let x=E.deb,g=0;const f=E.fin||E.deb;while(x<=f&&g++<80){if(isWork(x))wk.push(x);x=addDays(x,1)}}
+  const jours=wk.length;const st=E.dirty?`<span class="dos-sy wa">Modifications à enregistrer</span>`:c.envoiApp?`<span class="dos-sy ok">${dosIco.ok} Application équipes à jour · ${fd(c.envoiApp.slice(0,10))} ${new Date(c.envoiApp).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>`:`<span class="dos-sy">Dates reprises de l'application et du planning</span>`;
+  const chips=T.map(t=>{const on=E.eq.some(x=>x.toLowerCase()===t.pr.toLowerCase()),b=on?null:dosBusy(id,t.pr,E.deb,E.fin);
+    return`<button type="button" class="dos-mate${on?" on":b?" busy":""}" data-dost="${esc(t.pr)}" aria-pressed="${on}"${b?` title="Déjà sur ${esc(b)} sur ces dates"`:""}>${on?dosIco.ok+" ":""}${esc(t.pr)}${b?` · ${esc(b)}`:""}</button>`}).join("")||'<p class="dvx-h2">Ajoutez les collaborateurs dans Équipe.</p>';
+  E.eq.forEach(pr=>{if(!T.some(t=>t.pr.toLowerCase()===pr.toLowerCase()))T.push({pr,cat:"?"})});
+  return`<section class="dos-c" aria-label="Intervention">${dosHd("cal","b","Intervention","modifiable ici, envoyée à l'application équipes")}
+   <div class="dos-dates"><label class="dos-date"><span>Début</span><input type="date" data-dosd="deb" value="${esc(E.deb)}"></label><label class="dos-date"><span>Fin</span><input type="date" data-dosd="fin" value="${esc(E.fin)}"${E.deb?` min="${esc(E.deb)}"`:""}></label>
+    <div class="dos-qb"><button type="button" class="btn sm2" data-dosa="shift"${E.deb?"":" disabled"}>Décaler +1 jour</button><button type="button" class="btn sm2" data-dosa="prolong"${E.deb?"":" disabled"}>Prolonger +1 jour</button></div></div>
+   ${wk.length?`<div class="dos-wk">${wk.slice(0,10).map(x=>`<span class="${done.has(x)?"ok":x===TODAY?"cur":""}">${esc(dosJ(x))}${done.has(x)?`<small>${dosIco.ok}</small>`:""}</span>`).join("")}${wk.length>10?`<span class="more">+${wk.length-10} j</span>`:""}</div><p class="dos-n">${jours} jour${jours>1?"s":""} ouvré${jours>1?"s":""}${M.hPrev!=null?` · ${nf(M.hPrev,0)} h prévues au devis`:""}</p>`:`<p class="dvx-h2">Choisissez la date de début pour planifier ce chantier.</p>`}
+   <p class="dos-lb">Équipe</p><div class="dos-team">${chips}</div>
+   <div class="dos-ft">${st}<span class="dos-sp"></span><button type="button" class="btn pri" data-dosa="save"${E.deb?"":" disabled"}>Enregistrer et prévenir l'équipe</button></div></section>`}
+
+/* 2. Marge tout déduit */
+function dosMarge(M){const mn=typeof MARGE_MIN==="function"?num(MARGE_MIN()):0.25,mp=M.mpProj,pv=M.mpPrev;const n=(M.CM||[]).filter(x=>x.retenu!==false&&(typeof x.reel==="number"||pwN(x.prevu)>0)).length;
+  const cls=mp==null?"":mp<mn?"ko":pv!=null&&mp<pv-0.03?"mid":"ok";const w=v=>Math.max(0,Math.min(100,Math.round((v||0)*100)));
+  const row=(l,v,s,b)=>`<div class="dos-m${b?" tot":""}"><span>${l}</span><b${b?` class="${cls}"`:""}>${v}</b>${s?`<small>${s}</small>`:""}</div>`;
+  return`<section class="dos-c" aria-label="Marge du chantier">${dosHd("mg","g","Marge du chantier","tout déduit, mise à jour en continu")}
+   <div class="dos-big"><b class="${cls}">${M.margeProj==null?"—":eur(M.margeProj)}</b><span class="${cls}">${mp==null?"":pwPc(mp)}</span>${pv!=null?`<small>prévue ${pwPc(pv)}</small>`:""}</div>
+   <div class="dos-gauge"><i class="${cls}" style="width:${w(mp)}%"></i>${pv!=null?`<b style="left:${w(pv)}%" title="Marge prévue"></b>`:""}</div>
+   ${row("Devis signé",eur(M.ht)+" HT")}
+   ${row("− Achats fournisseurs",M.matProj!=null?"− "+eur(M.matProj):"à saisir",n?`${n} commande${n>1?"s":""} ou devis fournisseur${n>1?"s":""} ci-dessous`:(M.matSrc||"prévu au devis"))}
+   ${row("− Main-d'œuvre","− "+eur(M.moProj),`${nf(M.hR,0)} h saisies dans l'application (${eur(M.moR)})${M.hProj>M.hR?` + ${nf(M.hProj-M.hR,0)} h restantes projetées`:""}${M.miss?" · taux apprenti à renseigner":""}`)}
+   ${M.st?row("− Sous-traitance, location","− "+eur(M.st)):""}
+   ${row("= Marge",M.margeProj==null?"—":eur(M.margeProj)+(mp==null?"":" · "+pwPc(mp)),"",true)}</section>`}
+
+/* 3. Photos et documents */
+async function dosLoad(id,d,force){const o=S.dos[id];if(!force&&o&&(o.busy||Date.now()-o.t<8*60e3))return;const X=S.dos[id]=Object.assign({},o||{},{busy:true,t:Date.now()});
+  try{const m=await odMcp();if(!m)throw Object.assign(new Error("ms"),{code:"unavailable"});const call=async a=>(await m.callTool("Microsoft 365","onedrive_list",a)).payload;
+    let vis=[],vdocs=[];const od=d.od&&/visite/i.test(d.od.webUrl||"")?d.od:null,vArg=od?{driveId:od.driveId||OD_DRIVE,itemId:od.id}:d.dossierOneDrive?{url:d.dossierOneDrive}:null;
+    if(vArg){try{const V=await call(vArg);const pf=V.items.filter(x=>x.folder&&/photo/i.test(x.name));for(const f of pf){const Q=await call({driveId:V.driveId,itemId:f.id});vis=vis.concat(Q.items.filter(x=>!x.folder&&/^image\//.test(x.mime||"")).map(x=>Object.assign(x,{driveId:V.driveId})))}
+      vdocs=V.items.filter(x=>!x.folder).map(x=>Object.assign(x,{driveId:V.driveId,src:"Visite"}))}catch(e){X.visErr=true}}
+    let docs=[];const dc=d.dossierChantier;X.dc=null;
+    if(dc&&dc.itemId){const R=await call({driveId:OD_DRIVE,itemId:dc.itemId});X.dc={driveId:R.driveId,itemId:R.itemId,items:R.items};docs=R.items.filter(x=>!x.folder).map(x=>Object.assign(x,{driveId:R.driveId,src:"Dossier"}));
+      for(const f of R.items.filter(x=>x.folder&&/^[ABDEF]\s*-/i.test(x.name)&&x.n)){try{const Q=await call({driveId:R.driveId,itemId:f.id});docs=docs.concat(Q.items.filter(x=>!x.folder).map(x=>Object.assign(x,{driveId:R.driveId,src:f.name.replace(/\s*\(.*$/,"")})))}catch(_){}}}
+    X.vis=vis.sort((a,b)=>String(a.name).localeCompare(String(b.name)));X.docs=vdocs.concat(docs).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));X.err=null}
+  catch(e){X.err=(e&&e.code)||"err"}X.busy=false;if(S.view==="affaires"&&S.proj===id&&!S.drawer)render()}
+function dosItems(id,tab){const X=S.dos[id]||{};if(tab==="vis")return(X.vis||[]).map(x=>({name:x.name.replace(/\.[a-z0-9]+$/i,"").replace(/[_-]+/g," "),img:x.big||x.thumb||x.dl,th:x.thumb||x.big||x.dl,date:x.date,web:x.webUrl}));
+  if(tab==="ch")return((S.chxPh[id]||{}).L||[]).filter(p=>p.url).map(p=>({name:[p.phase,p.le?fd(String(p.le).slice(0,10)):""].filter(Boolean).join(" · ")||"Photo",img:p.url,th:p.url,date:p.le}));
+  return(X.docs||[]).map(x=>({name:x.name,doc:true,ext:(x.name.match(/\.([a-z0-9]+)$/i)||[,""])[1].toUpperCase(),mime:x.mime,id:x.id,driveId:x.driveId,img:/^image\//.test(x.mime||"")?(x.big||x.dl):null,th:x.thumb,src:x.src,date:x.date,web:x.webUrl}))}
+async function dosPrevLoad(it){if(!it||!it.doc||it.img||S.dosPrev[it.id])return;S.dosPrev[it.id]={busy:true};
+  try{const m=await odMcp();const r=await m.callTool("Microsoft 365","onedrive_preview",{driveId:it.driveId,itemId:it.id});S.dosPrev[it.id]={url:r.payload&&r.payload.url}}catch(e){S.dosPrev[it.id]={err:true}}
+  if(S.view==="affaires"&&S.proj&&!S.drawer)render()}
+function dosView(it,big){if(!it)return`<div class="dos-pv0">Sélectionnez une photo ou un document.</div>`;if(it.img)return`<img src="${esc(it.img)}" alt="${esc(it.name)}">`;
+  const p=S.dosPrev[it.id];if(!p||p.busy){setTimeout(()=>dosPrevLoad(it),0);return`<div class="dos-pv0">Chargement de l'aperçu…</div>`}
+  if(p.err||!p.url)return`<div class="dos-pv0">Aperçu indisponible pour ce fichier.${it.web?` <a href="${esc(it.web)}" target="_blank" rel="noopener">L'ouvrir</a>`:""}</div>`;
+  return`<iframe src="${esc(p.url)}" title="${esc(it.name)}"${big?' class="big"':""}></iframe>`}
+function dosDocs(id,d){const X=S.dos[id]||{},tab=S.dosTab||"vis",ph=S.chxPh[id]||{};
+  const nV=(X.vis||[]).length,nC=((ph.L||[]).filter(p=>p.url)).length,nD=(X.docs||[]).length;const L=dosItems(id,tab),k=id+":"+tab,sel=Math.min(S.dosSel[k]||0,Math.max(0,L.length-1)),it=L[sel];
+  const tabs=[["vis","Visite technique",nV],["ch","Chantier",nC],["doc","Documents",nD]].map(([t,l,n])=>`<button type="button" data-dostab="${t}" class="${t===tab?"on":""}">${l}${(t==="ch"||!X.busy)?` · ${n}`:""}</button>`).join("");
+  let left;
+  if(X.err&&tab!=="ch")left=`<p class="dvx-h2">${X.err==="consent"||X.err==="unavailable"?"Connectez Microsoft 365 (bouton en bas à gauche) pour afficher les photos de visite et les documents.":"OneDrive ne répond pas pour le moment."} <button type="button" class="dvx-l" data-dosa="reload">Réessayer</button></p>`;
+  else if(!L.length)left=`<p class="dvx-h2">${(tab==="ch"?ph.busy:X.busy)?"Chargement…":tab==="vis"?(d.dossierOneDrive||d.od?"Aucune photo dans « Photos visite » du dossier de visite.":"Pas de dossier de visite relié à ce chantier."):tab==="ch"?"Les photos prises dans l'application équipes apparaissent ici.":d.dossierChantier?"Aucun document dans le dossier chantier.":"Le dossier chantier n'existe pas encore."}</p>`;
+  else if(tab==="doc")left=`<div class="dos-dl">${L.map((x,i)=>`<button type="button" class="dos-doc${i===sel?" sel":""}" data-dosph="${i}"><i class="${/PDF/.test(x.ext)?"pdf":x.img?"img":""}">${esc(x.ext||"DOC")}</i><span>${esc(x.name)}<small>${esc(x.src||"")}${x.date?" · "+fd(String(x.date).slice(0,10)):""}</small></span></button>`).join("")}</div>`;
+  else left=`<div class="dos-gr">${L.slice(0,S.dosAll?200:16).map((x,i)=>`<button type="button" class="dos-th${i===sel?" sel":""}" data-dosph="${i}" style="background-image:url('${esc(x.th)}')" aria-label="${esc(x.name)}"><span>${esc(x.name)}</span></button>`).join("")}</div>${L.length>16&&!S.dosAll?`<button type="button" class="dvx-l" data-dosa="all">Voir les ${L.length}</button>`:""}`;
+  return`<section class="dos-c" aria-label="Photos et documents">${dosHd("ph","p","Photos et documents","s'ouvrent ici, sans passer par OneDrive",`<div class="dos-seg" role="group" aria-label="Filtre">${tabs}</div>`)}
+   <div class="dos-pg"><div>${left}</div><figure class="dos-pv">${dosView(it)}<figcaption><span><b>${esc(it?it.name:"")}</b>${it&&it.date?" · "+fd(String(it.date).slice(0,10)):""}</span>${L.length>1?`<button type="button" class="btn sm2" data-dosa="prev" aria-label="Précédent">‹</button><button type="button" class="btn sm2" data-dosa="next" aria-label="Suivant">›</button>`:""}${it?`<button type="button" class="btn sm2" data-dosa="fs">Plein écran</button>`:""}</figcaption></figure></div></section>`}
+
+/* 4. Suivi */
+function dosSuivi(d,M){const c=d.chantier||{},t=M.trav||{},pc=Math.round((t.pct||0)*100);const done=new Set((M.days||[]).map(D=>D.jour));
+  const wk=[];if(c.dateDebut){let x=c.dateDebut,g=0;const f=dosFin(c);while(x<=f&&g++<60){if(isWork(x))wk.push(x);x=addDays(x,1)}}
+  let F=[];try{F=chxFeed(d,M).slice(0,5)}catch(_){}const cut=x=>{x=String(x||"");return x.length>170?x.slice(0,168)+"…":x};
+  return`<section class="dos-c" aria-label="Suivi du chantier">${dosHd("sv","o","Suivi du chantier","repris de l'application équipes")}
+   <div class="dos-av"><b>${pc} %</b><i><b style="width:${pc}%"></b></i><small>${t.src==="app"&&t.n?`${t.f} tâche${t.f>1?"s":""} sur ${t.n}`:"avancement"}</small></div>
+   ${wk.length?`<div class="dos-days">${wk.slice(0,10).map(x=>`<span class="${done.has(x)?"ok":x===TODAY?"cur":x<TODAY?"miss":""}"><i>${done.has(x)?dosIco.ok:x===TODAY?"•":""}</i>${esc(dosJ(x).split(" ")[0])}</span>`).join("")}</div>`:""}
+   ${F.length?F.map(e=>`<div class="dos-ev"><time>${esc(dosJ(e.dt))}</time><div><b class="${e.k==="imp"?"ko":""}">${esc(e.t)}</b>${e.s?`<p>${esc(cut(e.s))}</p>`:""}${e.ph&&e.ph.length?`<div class="dos-mini">${e.ph.slice(0,5).filter(p=>p.url).map(p=>`<span style="background-image:url('${esc(p.url)}')"></span>`).join("")}</div>`:""}</div></div>`).join(""):`<p class="dvx-h2">Le fil se remplit avec les journées, photos et imprévus saisis par l'équipe.</p>`}</section>`}
+
+/* 5. Achats fournisseurs */
+function dosAchats(id,d,M){const CM=Array.isArray(d.commandes)?d.commandes:[],N=S.dosNew[id];let tot=0;
+  const rows=CM.map((x,i)=>{const m=typeof x.reel==="number"?x.reel:pwN(x.prevu);if(x.retenu!==false)tot+=m||0;const fl=x.fichier;
+    return`<div class="dos-ach${x.retenu===false?" off":""}"><div><b>${esc(x.f||"Fournisseur")}${x.ref?` · ${esc(x.ref)}`:""}</b><small>${esc([x.date?fd(x.date):"",x.items&&x.items.length?x.items.length+" ligne"+(x.items.length>1?"s":""):"",x.retenu===false?"non retenu":""].filter(Boolean).join(" · "))}${fl?` · <button type="button" class="dvx-l" data-dosfile="${esc(fl.id||"")}" data-url="${esc(fl.url||"")}">${esc(fl.nom||"document")}</button>`:""}</small></div>
+     <span class="mt">${m?eur(m):"—"}</span><select class="dos-st" data-dosst="${i}" aria-label="Statut">${DOS_ST.concat(DOS_ST.includes(x.statut||"À commander")?[]:[x.statut]).map(s=>`<option${(x.statut||"À commander")===s?" selected":""}>${esc(s)}</option>`).join("")}</select></div>`}).join("");
+  const form=N?`<div class="dos-new"><p class="dos-lb">${esc(N.nom)}${N.lu?" · lu automatiquement, vérifiez":""}</p>
+    <div class="dos-nf"><label>Fournisseur<input data-dosn="f" list="dos-fl" value="${esc(N.f||"")}"></label><label>Type<select data-dosn="type"><option value="dp"${N.type==="dp"?" selected":""}>Demande de prix / devis</option><option value="bc"${N.type==="bc"?" selected":""}>Bon de commande</option><option value="fa"${N.type==="fa"?" selected":""}>Facture fournisseur</option></select></label>
+    <label>Objet<input data-dosn="objet" value="${esc(N.objet||"")}" placeholder="Tuiles, bois, zinc…"></label><label>Montant HT<input data-dosn="montant" inputmode="decimal" value="${N.montant!=null?esc(String(N.montant).replace(".",",")):""}"></label></div>
+    <datalist id="dos-fl">${DOS_F.map(f=>`<option value="${esc(f)}">`).join("")}</datalist>
+    <div class="dos-ft"><span class="dos-sp"></span><button type="button" class="btn sm2" data-dosnew="cancel">Annuler</button><button type="button" class="btn pri sm2" data-dosnew="add"${N.busy?" disabled":""}>${N.busy?"Envoi…":"Ajouter au chantier"}</button></div></div>`
+    :`<label class="dos-drop" data-dosdrop>${dosIco.up}<span>Déposer une demande de prix ou un bon de commande <small>PDF ou photo · rangé dans « D - Fournisseurs »</small></span><input type="file" accept=".pdf,image/*" data-dosup hidden></label>`;
+  return`<section class="dos-c" aria-label="Achats fournisseurs">${dosHd("ach","b","Achats fournisseurs","comptés dans la marge")}${form}
+   ${rows||'<p class="dvx-h2">Aucun achat enregistré pour ce chantier.</p>'}${CM.length?`<div class="dos-ach tot"><b>Total compté</b><span class="mt">${eur(tot)}</span><span></span></div>`:""}</section>`}
+
+/* Page */
+function dosPage(d,M){const id=d.id;chxPhLoad(id);dosLoad(id,d);
+  return`<div class="dos">${M&&M.W&&M.W.ok===false?"":""}<div class="dos-r2">${dosInter(id,d,M)}${dosMarge(M)}</div>${dosDocs(id,d)}<div class="dos-r2 b">${dosSuivi(d,M)}${dosAchats(id,d,M)}</div></div>`}
+chxEns=function(d,M){try{return dosPage(d,M)}catch(e){console.warn(e);return`<p class="dvx-h2">Affichage du dossier impossible : ${esc(e.message||e)}</p>`}};
+
+/* Plein écran */
+function dosFs(){const id=S.proj,tab=S.dosTab||"vis",L=dosItems(id,tab),i=Math.min(S.dosSel[id+":"+tab]||0,L.length-1),it=L[i];if(!it)return;document.querySelectorAll(".dos-fs").forEach(x=>x.remove());
+  document.body.insertAdjacentHTML("beforeend",`<div class="dos-fs" role="dialog" aria-label="${esc(it.name)}"><div class="dos-fsb"><b>${esc(it.name)}</b>${it.web?`<a class="btn sm2" href="${esc(it.web)}" target="_blank" rel="noopener">Ouvrir dans OneDrive</a>`:""}<button type="button" class="btn sm2" data-dosfs="prev" aria-label="Précédent">‹</button><button type="button" class="btn sm2" data-dosfs="next" aria-label="Suivant">›</button><button type="button" class="btn sm2" data-dosfs="close">Fermer</button></div><div class="dos-fsc">${dosView(it,true)}</div></div>`)}
+function dosStep(n){const id=S.proj,tab=S.dosTab||"vis",L=dosItems(id,tab),k=id+":"+tab;if(!L.length)return;S.dosSel[k]=((S.dosSel[k]||0)+n+L.length)%L.length}
+
+/* Enregistrer les dates et l'équipe → Pilotage + application équipes */
+async function dosSave(id,btn){const d0=S.docs.get(id),E=S.dosE[id];if(!d0||!E||!E.deb)return;
+  const o=clone(d0);o.chantier=o.chantier||{};const c=o.chantier,fin=E.fin&&E.fin>=E.deb?E.fin:E.deb,j=chsWD(E.deb,fin)||1,now=new Date().toISOString();
+  c.dateDebut=E.deb;c.joursEstimes=j;c.equipe=E.eq.join(", ");if(!c.statut||c.statut==="À planifier")c.statut="Planifié";
+  c.appSync=Object.assign({},c.appSync||{},{d:E.deb,f:fin,e:E.eq.length?[...E.eq].sort((a,b)=>a.localeCompare(b,"fr")).join(", "):null,le:now});c.envoiApp=now;o.updatedAt=now;
+  if(btn){btn.disabled=true;btn.textContent="Envoi…"}if(!(await saveDoc(id,o))){render();return}E.dirty=false;
+  let msg="Enregistré dans le Pilotage.";
+  try{const r1=await appSync(id,true);if(!r1||!r1.ok)throw 0;
+    const R=await sbSql(`select public.pilotage_planifier(${sqlS(id)}, array[${E.eq.map(sqlS).join(",")}]::text[], true) as r`);const r=R&&R[0]&&R[0].r;
+    msg=`Dates et équipe envoyées à l'application${r&&r.equipe?` · ${r.equipe} gars prévenu${r.equipe>1?"s":""}`:""}.${r&&r.inconnus&&r.inconnus.length?` Pas de compte dans l'application : ${r.inconnus.join(", ")}.`:""}`}
+  catch(_){msg="Enregistré dans le Pilotage, mais l'application équipes n'a pas pu être mise à jour : réessayez."}
+  toast(msg);render()}
+
+/* Achats : lecture du document déposé */
+function dosAmt(s){s=String(s).trim().replace(/[\s  ]/g,"");if(/,\d{2}$/.test(s))return parseFloat(s.replace(/\./g,"").replace(",","."));if(/^\d+\.\d{2}$/.test(s))return parseFloat(s);return parseFloat(s.replace(/[.,]/g,""))}
+async function dosPdfText(buf){if(!window.pdfjsLib){await new Promise((ok,ko)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}
+  const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;let t="";for(let i=1;i<=Math.min(pdf.numPages,4);i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();t+=tc.items.map(x=>x.str).join(" ")+"\n"}return t}
+function dosGuess(text,name){const T=(text||"")+" "+(name||"");const f=DOS_F.find(x=>new RegExp(x.replace(".","\\.?").replace("è","[eè]").replace("ü","[uü]"),"i").test(T))||"";
+  const type=/bon\s+de\s+commande|confirmation\s+de\s+commande|accus[ée]\s+de\s+r[ée]ception/i.test(T)?"bc":/\bfacture\b/i.test(T)&&!/\bdevis\b/i.test(T)?"fa":"dp";
+  const re=/(?:total|montant|net)\s*(?:net\s*)?(?:h\.?\s*t\.?|hors\s+taxes?)[^\d\-]{0,40}(\d{1,3}(?:[\s  .]\d{3})+(?:,\d{2})?|\d+(?:[.,]\d{2})?)/gi;const C=[];let m;
+  while((m=re.exec(T))){const v=dosAmt(m[1]);if(isFinite(v)&&v>0)C.push(v)}
+  return{f,type,montant:C.length?Math.max(...C):null}}
+async function dosFile(id,file){if(!file)return;S.dosNew[id]={file,nom:file.name,f:"",type:"dp",objet:"",montant:null,lu:false};render();
+  try{if(/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)){const t=await dosPdfText(await file.arrayBuffer());Object.assign(S.dosNew[id],dosGuess(t,file.name),{lu:true})}else Object.assign(S.dosNew[id],dosGuess("",file.name))}catch(_){}
+  if(S.dosNew[id])render()}
+function dosB64(file){return new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]||"");r.onerror=ko;r.readAsDataURL(file)})}
+async function dosAdd(id){const N=S.dosNew[id],d0=S.docs.get(id);if(!N||!d0)return;const mt=N.montant==null||N.montant===""?null:dosAmt(N.montant);
+  if(!String(N.f||"").trim()){toast("Indiquez le fournisseur.");return}N.busy=true;render();
+  let fichier=null;const X=S.dos[id]||{},dc=d0.dossierChantier;
+  try{if(dc&&dc.itemId){const m=await odMcp();let parent=dc.itemId,drive=OD_DRIVE;const it=X.dc&&X.dc.items||[];const Df=it.find(x=>x.folder&&/^D\s*-/i.test(x.name));if(Df)parent=Df.id;if(X.dc)drive=X.dc.driveId;
+      const r=await m.callTool("Microsoft 365","sharepoint_upload_file",{driveId:drive,parentItemId:parent,filename:N.nom,contentBase64:await dosB64(N.file),conflictBehavior:"rename"});const p=r.payload||{};fichier={nom:p.name||N.nom,id:p.id||p.itemId,url:p.webUrl,driveId:drive}}}
+  catch(e){toast("Document non rangé dans OneDrive ("+(e.message||"erreur")+"), l'achat est quand même enregistré.")}
+  const o=clone(d0);o.commandes=Array.isArray(o.commandes)?o.commandes:[];
+  o.commandes.push({f:String(N.f).trim(),ref:String(N.objet||"").trim(),date:TODAY,prevu:N.type==="fa"?null:mt,reel:N.type==="fa"?mt:null,statut:N.type==="bc"?"Commandé":N.type==="fa"?"Livré":"Devis reçu",fichier,ajouteLe:new Date().toISOString()});
+  o.updatedAt=new Date().toISOString();delete S.dosNew[id];if(await saveDoc(id,o)){toast(`Achat ${o.commandes[o.commandes.length-1].f} ajouté${mt?" : "+eur(mt)+" HT":""}.`);dosLoad(id,o,true)}else render()}
+
+/* Événements */
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+  const fs=t.closest("[data-dosfs]");if(fs){const a=fs.dataset.dosfs;if(a==="close"){document.querySelectorAll(".dos-fs").forEach(x=>x.remove());return}dosStep(a==="next"?1:-1);dosFs();render();return}
+  if(S.view!=="affaires"||!S.proj)return;const id=S.proj,d=S.docs.get(id);if(!d)return;
+  const tb=t.closest("[data-dostab]");if(tb){S.dosTab=tb.dataset.dostab;S.dosAll=false;render();return}
+  const ph=t.closest("[data-dosph]");if(ph){S.dosSel[id+":"+(S.dosTab||"vis")]=+ph.dataset.dosph;render();return}
+  const mt=t.closest("[data-dost]");if(mt){const E=dosEdit(id,d),pr=mt.dataset.dost,i=E.eq.findIndex(x=>x.toLowerCase()===pr.toLowerCase());if(i>=0)E.eq.splice(i,1);else E.eq.push(pr);E.dirty=true;render();return}
+  const fl=t.closest("[data-dosfile]");if(fl){const L=dosItems(id,"doc"),i=L.findIndex(x=>x.id&&x.id===fl.dataset.dosfile);if(i>=0){S.dosTab="doc";S.dosSel[id+":doc"]=i;render();setTimeout(()=>{const s=document.querySelector('[aria-label="Photos et documents"]');if(s)s.scrollIntoView({behavior:"smooth",block:"start"})},50)}else if(fl.dataset.url)window.open(fl.dataset.url,"_blank","noopener");return}
+  const nw=t.closest("[data-dosnew]");if(nw){if(nw.dataset.dosnew==="cancel"){delete S.dosNew[id];render()}else dosAdd(id);return}
+  const b=t.closest("[data-dosa]");if(!b)return;const a=b.dataset.dosa,E=dosEdit(id,d);
+  if(a==="shift"&&E.deb){E.deb=dosNext(E.deb);E.fin=dosNext(E.fin||E.deb);if(E.fin<E.deb)E.fin=E.deb;E.dirty=true;render()}
+  else if(a==="prolong"&&E.deb){E.fin=dosNext(E.fin||E.deb);E.dirty=true;render()}
+  else if(a==="save")dosSave(id,b);
+  else if(a==="reload"){dosLoad(id,d,true)}
+  else if(a==="all"){S.dosAll=true;render()}
+  else if(a==="prev"||a==="next"){dosStep(a==="next"?1:-1);render()}
+  else if(a==="fs")dosFs()});
+document.addEventListener("change",e=>{const t=e.target;if(S.view!=="affaires"||!S.proj||!t.dataset)return;const id=S.proj,d=S.docs.get(id);if(!d)return;
+  if(t.dataset.dosd){const E=dosEdit(id,d),k=t.dataset.dosd,old=E.deb;E[k]=t.value;if(k==="deb"&&E.deb){const j=old&&E.fin?Math.max(1,chsWD(old,E.fin)||1):1;E.fin=addWD(E.deb,j)}if(E.fin&&E.deb&&E.fin<E.deb)E.fin=E.deb;E.dirty=true;render();return}
+  if(t.dataset.dosst!==undefined){const o=clone(d),i=+t.dataset.dosst;if(!o.commandes||!o.commandes[i])return;o.commandes[i].statut=t.value;if(t.value==="Livré"&&!o.commandes[i].livraison)o.commandes[i].livraison=TODAY;o.updatedAt=new Date().toISOString();saveDoc(id,o);return}
+  if(t.dataset.dosup!==undefined&&t.files&&t.files[0])dosFile(id,t.files[0]);
+  if(t.dataset.dosn&&S.dosNew[id])S.dosNew[id][t.dataset.dosn]=t.value});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset&&t.dataset.dosn&&S.proj&&S.dosNew[S.proj])S.dosNew[S.proj][t.dataset.dosn]=t.value});
+document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest("[data-dosdrop]");if(z){e.preventDefault();z.classList.add("over")}});
+document.addEventListener("dragleave",e=>{const z=e.target.closest&&e.target.closest("[data-dosdrop]");if(z)z.classList.remove("over")});
+document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest("[data-dosdrop]");if(!z||!S.proj)return;e.preventDefault();const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)dosFile(S.proj,f)});
+document.addEventListener("keydown",e=>{if(!document.querySelector(".dos-fs"))return;if(e.key==="Escape")document.querySelectorAll(".dos-fs").forEach(x=>x.remove());else if(e.key==="ArrowRight"||e.key==="ArrowLeft"){dosStep(e.key==="ArrowRight"?1:-1);dosFs();render()}});
+
+/*@@/dos*/
 boot();
 })();
 </script>

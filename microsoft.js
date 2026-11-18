@@ -115,6 +115,29 @@
       if (off + lim < items.length && page.length) page[page.length - 1].nextOffset = off + lim;
       return { payload: page, content: [{ type: "text", text: JSON.stringify(page) }] };
     },
+    /* Pilotage › dossier chantier : contenu d'un dossier OneDrive (par lien ou par id), avec miniatures et lien de téléchargement */
+    onedrive_list: async function (a) {
+      var drive = a.driveId, item = a.itemId;
+      if (!item && a.url) {
+        var u = String(a.url).replace(/ /g, "%20");
+        var b64 = btoa(unescape(encodeURIComponent(u))).replace(/=+$/, "").replace(/\//g, "_").replace(/\+/g, "-");
+        var it = await g("/shares/u!" + b64 + "/driveItem?$select=id,parentReference");
+        item = it.id; drive = it.parentReference && it.parentReference.driveId;
+      }
+      if (!drive || !item) throw err("bad_request", "Dossier OneDrive introuvable");
+      var L = await all("/drives/" + drive + "/items/" + item + "/children?$top=200&$expand=thumbnails");
+      var items = L.map(function (x) {
+        var th = x.thumbnails && x.thumbnails[0];
+        return { id: x.id, name: x.name, folder: !!x.folder, n: x.folder ? x.folder.childCount : null, mime: x.file && x.file.mimeType, size: x.size,
+          webUrl: x.webUrl, dl: x["@microsoft.graph.downloadUrl"] || null, thumb: th && th.medium && th.medium.url || null, big: th && th.large && th.large.url || null,
+          date: x.lastModifiedDateTime };
+      });
+      return { payload: { driveId: drive, itemId: item, items: items }, content: [{ type: "text", text: JSON.stringify(items.length) }] };
+    },
+    onedrive_preview: async function (a) {
+      var j = await g("/drives/" + a.driveId + "/items/" + a.itemId + "/preview", { method: "POST", json: {} });
+      return { payload: { url: j && (j.getUrl || j.postUrl) }, content: [{ type: "text", text: (j && j.getUrl) || "" }] };
+    },
     sharepoint_upload_file: async function (a) {
       var t = await token(false);
       var url = G + "/drives/" + a.driveId + "/items/" + a.parentItemId + ":/" + encodeURIComponent(a.filename) + ":/content?@microsoft.graph.conflictBehavior=" + (a.conflictBehavior || "replace");
