@@ -823,6 +823,9 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .rhh-ok{margin:4px 0 0;color:#1E7B34;font-weight:600}
 
 /*@@/rhh*/
+/*@@chsync*/
+
+/*@@/chsync*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -9100,6 +9103,32 @@ const _vEquipeH=vEquipe;vEquipe=function(){const r=_vEquipeH.apply(this,argument
 const _vPresencesH=vPresences;vPresences=function(){const r=_vPresencesH.apply(this,arguments);try{rhhLoad();rhhPaint()}catch(e){console.warn(e)}return r};
 
 /*@@/rhh*/
+/*@@chsync*/
+/* ===== Planning : dates et équipe saisies dans l'application équipes → fiche chantier du Pilotage =====
+   Ne reprend une valeur de l'application que si elle a changé depuis la dernière reprise (chantier.appSync),
+   pour ne jamais écraser une modification faite ensuite dans le Pilotage. */
+function chsWD(a,b){if(!a||!b||b<a)return null;let n=0,d=a,g=0;while(d<=b&&g++<400){if(isWork(d))n++;d=addDays(d,1)}return n||null}
+async function chsRun(force){if(!S.db||S.chsBusy)return;if(!force&&S.chsT&&Date.now()-S.chsT<10*60e3)return;S.chsBusy=true;S.chsT=Date.now();
+  try{const R=await sbSql("select c.pilotage_id as p, c.date_debut::text as d, c.date_fin::text as f, c.statut as s, (select string_agg(m.prenom, ', ' order by m.prenom) from public.affectations a join public.membres m on m.id = a.membre_id where a.chantier_id = c.id) as e from public.chantiers c where c.pilotage_id is not null and c.statut <> 'termine'");
+    let n=0;const noms=[];
+    for(const r of R||[]){const o=S.docs.get(r.p);if(!o||!o.chantier)continue;const c=o.chantier,last=c.appSync||{},x=clone(o),cx=x.chantier;let ch=false;
+      const j=chsWD(r.d,r.f);
+      if(r.d&&r.d!==last.d&&r.d!==c.dateDebut){cx.dateDebut=r.d;ch=true}
+      if(j&&(r.f||null)!==(last.f||null)&&j!==num(c.joursEstimes)){cx.joursEstimes=j;ch=true}
+      if(r.e&&r.e!==last.e&&r.e!==c.equipe&&(!c.equipe||last.e!==undefined)){cx.equipe=r.e;ch=true}
+      if(r.d&&(!c.statut||c.statut==="À planifier")){cx.statut="Planifié";ch=true}
+      if(r.s==="en_cours"&&c.statut==="Planifié"&&last.s!=="en_cours"){cx.statut="En cours";ch=true}
+      const ns={d:r.d||null,f:r.f||null,e:r.e||null,s:r.s||null,le:new Date().toISOString()};
+      if(!ch&&last.d===ns.d&&last.f===ns.f&&last.e===ns.e&&last.s===ns.s)continue;
+      cx.appSync=ns;if(ch){x.updatedAt=new Date().toISOString();n++;noms.push(String((o.rdv&&o.rdv.client)||"").split(" (")[0])}
+      try{await S.db.collection("dossiers").doc(r.p).set(x);S.docs.set(r.p,x)}catch(e){console.warn(e)}}
+    if(n){toast(`Planning repris de l'application équipes : ${noms.slice(0,4).join(", ")}${n>4?` et ${n-4} autre${n-4>1?"s":""}`:""}.`);render()}}
+  catch(e){console.warn("chsRun",e)}finally{S.chsBusy=false}}
+setInterval(()=>{try{if(document.visibilityState==="visible")chsRun()}catch(_){}},60e3);
+const _renderCH=render;render=function(){const r=_renderCH.apply(this,arguments);try{if(S.mode==="live"&&!S.chsT)setTimeout(()=>chsRun(),1500);if(["chantiers","planning","affaires"].includes(S.view)&&S.chsT&&Date.now()-S.chsT>2*60e3)chsRun()}catch(_){}return r};
+Object.defineProperty(render,"force",{get(){return _renderCH.force},set(v){_renderCH.force=v}});
+
+/*@@/chsync*/
 boot();
 })();
 </script>
