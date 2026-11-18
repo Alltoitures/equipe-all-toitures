@@ -9707,7 +9707,7 @@ entChecks=function(E){const L=rhSalRows();if(!L)return _entChecks0(E);const out=
   L.filter(r=>r.compte&&r.estime&&num(r.cout)).forEach(r=>out.push(`Coût de ${r.nom} estimé : à remplacer par un bulletin réel`));return out};
 function rhCostOf(p){const E=S.ent||ENT_DEF,r=_entCalc0({params:E.params||ENT_DEF.params,salaries:[{nom:"x",apprenti:p.cat==="apprenti",hSem:p.hSem,cout:p.coutM,actif:true}],charges:[],gerant:{}}).rows[0];
   const h=num(p.hSem)||(p.cat==="apprenti"?35:40),paidM=h*52/12;return{prodM:r.prodM,cq:num(p.coutM)?r.coutH:null,cp:num(p.coutM)?num(p.coutM)/paidM:null,paidM}}
-function entSalTab(){const L=rhSalRows(),R=entCalc(S.entDraft),n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
+function entSalTab(){const L=rhSalRows().filter(r=>!(S.rh.get(r.rhId)||{}).sortie),R=entCalc(S.entDraft),n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
   const miss=L.filter(r=>r.compte&&!num(r.cout)),byId=new Map(R.rows.map(r=>[r.rhId,r]));
   return`${miss.length?`<div class="ent-warn"><b>${miss.length} coût${miss.length>1?"s":""} à saisir</b> (${miss.map(r=>esc(r.nom)).join(", ")}) : le coût d'une heure reste provisoire tant qu'${miss.length>1?"ils manquent":"il manque"}.<button type="button" class="btn" data-entfiche="${esc(miss[0].rhId)}">Compléter</button></div>`:""}
   <section class="ent-c"><div class="ent-sh"><h2>Salariés comptés dans le coût de revient</h2><small>Repris automatiquement d'Équipe › Collaborateurs</small><button type="button" class="btn" data-entnewc>+ Nouveau collaborateur</button></div>
