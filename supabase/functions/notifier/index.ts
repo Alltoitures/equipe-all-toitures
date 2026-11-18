@@ -144,6 +144,15 @@ Deno.serve(async (req) => {
       await sb.from('demandes_heures').update({ envoyees: n }).eq('id', b.id)
       return Response.json({ envoyees: n })
     }
+    // Pilotage › dossier chantier : dates modifiées → l'équipe déjà affectée est prévenue.
+    if (t === 'chantier_dates') {
+      const ids = (b.membres ?? []) as string[]
+      if (!ids.length) return Response.json({ etat: 'personne' })
+      const { data: c } = await sb.from('chantiers').select('client_nom, ville, date_debut, date_fin').eq('id', b.chantier).maybeSingle()
+      if (!c?.date_debut) return Response.json({ etat: 'sans date' })
+      const quand = c.date_fin && c.date_fin !== c.date_debut ? `du ${dateFr(c.date_debut)} au ${dateFr(c.date_fin)}` : `le ${dateFr(c.date_debut)}`
+      return Response.json({ envoyees: await envoyer(ids, { title: `Planning : ${c.client_nom}`, body: `Intervention ${quand}${c.ville ? ` · ${c.ville}` : ''}.`, url: `/chantier/${b.chantier}`, tag: `dates-${b.chantier}` }) })
+    }
     if (t === 'imprevus') {
       const { data: i } = await sb.from('imprevus').select('texte, chantier_id, membres(prenom)').eq('id', b.id).single()
       const c = await chantier(i!.chantier_id)
