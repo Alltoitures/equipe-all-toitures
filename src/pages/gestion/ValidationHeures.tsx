@@ -31,6 +31,7 @@ export default function ValidationHeures() {
   const [edition, setEdition] = useState<{ m: Membre; jour: string; j?: Journee } | null>(null)
   const [msg, setMsg] = useState('')
   const [occupe, setOccupe] = useState(false)
+  const [envoi, setEnvoi] = useState(false)
 
   const fin = ajouterJours(debut, 6)
   const jours = Array.from({ length: 6 }, (_, i) => ajouterJours(debut, i))
@@ -46,6 +47,26 @@ export default function ValidationHeures() {
     setConges((c.data ?? []) as Conge[])
   }
   useEffect(() => { charger() }, [debut])
+
+  // Bouton « Demander les heures » : une notification à chacun, avec ses jours non saisis.
+  async function demanderHeures(cibles?: string[]) {
+    setEnvoi(true); setMsg('')
+    const { data, error } = await supabase.rpc('demander_heures', { p_cibles: cibles ?? null, p_par: 'app' })
+    setEnvoi(false)
+    if (error) {
+      setMsg(/deja_envoye/.test(error.message) ? 'Une demande vient déjà de partir : réessayez dans 2 minutes.' : erreurLisible(error))
+      return
+    }
+    const r = data as { relances: { prenom: string; jours: string[]; notifiable: boolean }[]; a_jour: string[] }
+    const ok = r.relances.filter((x) => x.notifiable)
+    const sans = r.relances.filter((x) => !x.notifiable)
+    const parts = [
+      ok.length ? `Demande envoyée à ${ok.map((x) => `${x.prenom} (${x.jours.length} j)`).join(', ')}.` : 'Personne à relancer avec les notifications.',
+      sans.length ? `Sans notifications sur leur téléphone, à prévenir autrement : ${sans.map((x) => `${x.prenom} (${x.jours.length} j)`).join(', ')}.` : '',
+      r.a_jour.length ? `À jour : ${r.a_jour.join(', ')}.` : ''
+    ]
+    setMsg(parts.filter(Boolean).join(' '))
+  }
 
   const enConge = (mid: string, d: string) => conges.some((c) => c.membre_id === mid && c.du <= d && c.au >= d)
   const manquants = (mid: string) =>
@@ -99,6 +120,7 @@ export default function ValidationHeures() {
           <span className="sous">Semaine du {jourCourt(debut)} au {jourCourt(ajouterJours(debut, 5))}</span>
         </div>
         <div className="boutons">
+          <button className="btn mini" onClick={() => demanderHeures()} disabled={envoi} title="Envoie une notification à chaque collaborateur à qui il manque des heures cette semaine">Demander les heures</button>
           <button className="btn mini" onClick={() => aller({ s: ajouterJours(debut, -7) })} aria-label="Semaine précédente">‹</button>
           <button className="btn mini" onClick={() => aller({ s: ajouterJours(debut, 7) })} disabled={debut >= lundi()} aria-label="Semaine suivante">›</button>
         </div>
@@ -126,6 +148,7 @@ export default function ValidationHeures() {
             <div className="titre-ligne">
               <h2>{choisi.prenom} {choisi.nom}</h2>
               {aValider.length === 0 && siennes.length > 0 && <span className="etat-val v">Semaine validée</span>}
+              {manquants(choisi.id).length > 0 && <button className="btn mini" onClick={() => demanderHeures([choisi.id])} disabled={envoi}>Lui demander ses heures</button>}
             </div>
             <div className="recap-semaine">
               <div><strong>{hFormat(total)}</strong><small>Heures</small></div>

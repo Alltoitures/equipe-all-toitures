@@ -126,6 +126,24 @@ Deno.serve(async (req) => {
     }
 
     const t = b.type as string
+    // Bouton « Demander les heures » (Pilotage ou Gestion) : un message par collaborateur, avec ses jours manquants.
+    if (t === 'demandes_heures') {
+      if (await dejaEnvoye(`dh:${b.id}`)) return Response.json({ etat: 'déjà envoyé' })
+      const { data: dh } = await sb.from('demandes_heures').select('details').eq('id', b.id).single()
+      const liste = (dh?.details ?? []) as { membre_id: string; jours: string[] }[]
+      let n = 0
+      for (const x of liste) {
+        const j = x.jours.map(dateFr)
+        n += await envoyer([x.membre_id], {
+          title: 'Heures à saisir',
+          body: `Il vous manque ${j.length === 1 ? 'la journée du' : `${j.length} journées :`} ${j.join(', ')}. Merci de les saisir dans l'application.`,
+          url: '/heures',
+          tag: 'heures'
+        })
+      }
+      await sb.from('demandes_heures').update({ envoyees: n }).eq('id', b.id)
+      return Response.json({ envoyees: n })
+    }
     if (t === 'imprevus') {
       const { data: i } = await sb.from('imprevus').select('texte, chantier_id, membres(prenom)').eq('id', b.id).single()
       const c = await chantier(i!.chantier_id)
