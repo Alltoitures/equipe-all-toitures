@@ -1007,7 +1007,7 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .ent-ss small{font-size:12px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0}
 .ent-tg{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;margin:18px 0 6px;font-size:12.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
 .ent-tg:focus-visible{outline:2px solid var(--accent)}
-.ent-r{display:grid;grid-template-columns:minmax(170px,1fr) 96px 84px 124px 124px 92px 34px;gap:8px;align-items:center;padding:8px 6px;border-top:1px solid var(--line)}
+.ent-r{display:grid;grid-template-columns:minmax(140px,1fr) 88px 76px 92px 112px 112px 84px 34px;gap:8px;align-items:center;padding:8px 6px;border-top:1px solid var(--line)}
 .ent-r .ein{width:100%;box-sizing:border-box;min-width:0}
 .ent-r .ein.r,.ent-add .ein.r,.ent-gf .ein.r{text-align:right}
 .ent-th{border-top:0;padding:0 6px 4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
@@ -1106,6 +1106,19 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .fo-who b{display:block;color:var(--ink);font-size:14px}.fo-who small{display:block;font-size:12px;color:var(--muted)}
 .fo-who:hover b{text-decoration:underline}
 .fo-who:focus-visible{outline:2px solid var(--accent)}
+
+.ent-nat.var{background:#FFF3E0;color:#7A4100;border-color:#F2D8A7}
+.ent-gsub{display:flex;justify-content:space-between;padding:2px 12px;font-size:13px;color:var(--muted)}
+.ent-gsub b{font-weight:600;color:var(--ink-2)}
+.ent-gsub.var b{color:#7A4100}
+.ent-fv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.ent-fv>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;background:var(--surface-2);border-radius:10px;min-width:0}
+.ent-fv span{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ent-fv b{font-size:17px;font-weight:800;color:var(--ink)}
+.ent-fv small{font-size:11.5px;color:var(--muted)}
+.ent-fv .var{background:#FFF3E0}.ent-fv .var b{color:#7A4100}
+.ent-fvt{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-weight:700}
+.ent-fvt b{font-size:18px}
 
 /*@@/entg*/
 </style></head><body>
@@ -9614,6 +9627,7 @@ function entChecks(E){const out=[];(E.salaries||[]).forEach(s=>{if(s.actif!==fal
     S.rh.forEach(p=>{if(/sous-trait/i.test(p.contrat||"")||p.actif===false||p.sortie)return;const toks=norm(p.nom).split(/\s+/).filter(x=>x.length>2);if(!toks.length)return;if(!have.some(h=>toks.every(t=>h.includes(t))))miss.push(p.nom)});
     if(miss.length)out.push(`${miss.join(" et ")} ${miss.length>1?"ne sont pas comptés":"n'est pas compté"} dans les salaires`)}
   return out}
+function entFV(R){let f=R.gerM||0,v=0;R.ch.forEach(c=>{if(!c.actif)return;if(c.nat==='variable')v+=c.mens;else f+=c.mens});return{f,v}}
 function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=document.getElementById("ent-form");if(!form)return;
   if(!S.entRhT&&typeof rhLoad==="function"){S.entRhT=1;try{rhLoad()}catch(_){}let n=0;const t=setInterval(()=>{n++;if(S.rh&&S.rh.size){clearInterval(t);if(S.view==="entreprise"&&!S.entDirty&&document.getElementById("ent-form"))vEnt()}else if(n>15)clearInterval(t)},800)}
   const n2=v=>v==null||isNaN(v)?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -9645,7 +9659,7 @@ function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=docum
             <span class="ent-meta"><span>${g.ger?"rémunération":act.length+" poste"+(act.length>1?"s":"")} · ${Math.round(g.t/struct*100)} %</span><span>${hM?n2(g.t/hM):"—"} €/h</span></span>
             ${tops.map(t=>`<span class="ent-li"><span>${esc(t[0])}</span><span>${eur(t[1])}</span></span>`).join("")}${chips.join("")}</button>`}).join("")}
           <button type="button" class="ent-g ent-new" data-entnew>+ Nouveau groupe</button></div></section>
-      <aside class="ent-side">
+      <aside class="ent-side">${(()=>{const fv=entFV(R),tf=fv.f+R.mo;return`<section class="ent-c"><h2>Charges fixes et variables</h2><p class="ent-sub">Par mois, ce mois-ci</p><div class="ent-fv"><div><span>Charges fixes</span><b>${eur(fv.f)}</b><small>structure et gérant</small></div><div class="var"><span>Charges variables</span><b>${eur(fv.v)}</b><small>suivent l'activité</small></div><div><span>Salaires</span><b>${eur(R.mo)}</b><small>coût employeur</small></div></div><div class="ent-fvt"><span>Fixes + salaires</span><b>${eur(tf)}</b></div><p class="ent-sub">C'est ce que l'entreprise doit couvrir chaque mois, même sans chantier.</p></section>`})()}
         ${T.length?`<section class="ent-c"><h2>Évolution prévue</h2><p class="ent-sub">Ce qui change dans les mois à venir</p>${T.map(t=>`<div class="ent-tl"><b>${entMo(t.ym)}</b><div>${t.ev.map(esc).join("<br>")}<br><span class="${t.d<0?"dn":"up"}">${t.d<0?"−":"+"} ${eur(Math.abs(t.d))}</span> · ${t.cr==null?"—":n2(t.cr)+" €/h"}</div></div>`).join("")}</section>`:""}
         <section class="ent-c"><h2>À compléter</h2>${chk.length?chk.map(x=>`<div class="ent-chk"><span class="dot"></span><span>${esc(x)}</span></div>`).join(""):'<p class="ent-sub">Rien à signaler.</p>'}</section>
       </aside></div>`}
@@ -9653,11 +9667,12 @@ function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=docum
     const sel=(path,val,opts,al,c)=>`<select class="ein${c?" "+c:""}" data-n="${path}" aria-label="${esc(al)}">${opts.map(o=>`<option ${String(o)===String(val)?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
     const row=([c,i])=>`<div class="ent-r${c.actif?"":" off"}${S.entMore===i?" more":""}">
       ${ni(`charges.${i}.lib`,c.lib,{t:"text",al:"Poste",ph:"Libellé"})}${ni(`charges.${i}.montant`,c.montant,{al:"Montant",c:"r"})}${sel(`charges.${i}.per`,c.per||"mois",["mois","an"],"Périodicité")}
+      <select class="ein ent-nat${c.nat==="variable"?" var":""}" data-n="charges.${i}.nat" aria-label="Fixe ou variable"><option value="fixe" ${c.nat!=="variable"?"selected":""}>Fixe</option><option value="variable" ${c.nat==="variable"?"selected":""}>Variable</option></select>
       ${ni(`charges.${i}.debut`,c.debut,{t:"month",al:"Début"})}${ni(`charges.${i}.fin`,c.fin,{t:"month",al:"Fin (dernier mois payé)"})}
       <span class="ent-mo">${c.actif?eur(c.mens):`<span class="ent-tag ${c.debut&&c.debut>curYM?"up":"end"}">${c.debut&&c.debut>curYM?"dès "+entMo(c.debut):"terminée"}</span>`}</span>
       <button type="button" class="ent-mb" data-entmore="${i}" aria-expanded="${S.entMore===i}" aria-label="Options pour ${esc(c.lib||"cette charge")}">⋯</button>
       ${S.entMore===i?`<div class="ent-opt"><span>Options de « ${esc(c.lib||"cette charge")} » :</span><label>Déplacer vers ${sel(`charges.${i}.cat`,c.cat||"Autre",cats,"Groupe")}</label><button type="button" class="btn ghost danger" data-rmc="${i}">Supprimer</button></div>`:""}</div>`;
-    const th=`<div class="ent-r ent-th" aria-hidden="true"><span>Poste</span><span class="r">Montant</span><span>Périodicité</span><span>Début</span><span>Fin (dernier mois)</span><span class="r">Par mois</span><span></span></div>`;
+    const th=`<div class="ent-r ent-th" aria-hidden="true"><span>Poste</span><span class="r">Montant</span><span>Périodicité</span><span>Nature</span><span>Début</span><span>Fin (dernier mois)</span><span class="r">Par mois</span><span></span></div>`;
     const cur=g.L.filter(([c])=>c.actif).sort((a,b)=>b[0].mens-a[0].mens),fut=g.L.filter(([c])=>!c.actif&&c.debut&&c.debut>curYM),old=g.L.filter(([c])=>!c.actif&&!(c.debut&&c.debut>curYM));
     const bil=(E.bilans||[]).slice(-1)[0],bv=bil&&bil.groupes&&bil.groupes[k];
     let det;
@@ -9667,10 +9682,10 @@ function entPage(){const E=S.entDraft;if(!E)return;const R=entCalc(E),form=docum
       ${old.length?`<button type="button" class="ent-ss ent-tg" data-entold aria-expanded="${!!S.entOld}">Terminées <small>${old.length} poste${old.length>1?"s":""} · ${S.entOld?"masquer":"afficher"}</small></button>${S.entOld?old.map(row).join(""):""}`:""}
       <div class="ent-add"><input class="ein" id="ent-nl" type="text" placeholder="Nouvelle charge dans ${esc(k)} : libellé" aria-label="Libellé de la nouvelle charge"><input class="ein r" id="ent-nm" type="number" step="any" inputmode="decimal" placeholder="Montant / mois" aria-label="Montant mensuel de la nouvelle charge"><button type="button" class="btn pri" id="ent-na">Ajouter</button></div>`;
     body=`<div class="ent-chg"><nav class="ent-c ent-gl" aria-label="Groupes de charges">${G.map(x=>`<button type="button" data-entgrp="${esc(x.k)}" class="${x.k===k?"on":""}" aria-current="${x.k===k}"><span>${esc(x.k)}</span><b>${eur(x.t)}</b></button>`).join("")}
-        <div class="ent-gtot"><span>Total structure</span><b>${eur(R.struct)}</b></div>
+        <div class="ent-gtot"><span>Total structure</span><b>${eur(R.struct)}</b></div>${(()=>{const fv=entFV(R);return`<div class="ent-gsub"><span>dont fixes</span><b>${eur(fv.f)}</b></div><div class="ent-gsub var"><span>dont variables</span><b>${eur(fv.v)}</b></div>`})()}
         <div class="ent-ng"><input class="ein" id="eg-nn" type="text" placeholder="Nom du groupe" aria-label="Nom du nouveau groupe"><button type="button" class="btn" id="eg-nb">+ Nouveau groupe</button></div></nav>
       <section class="ent-c ent-det"><div class="ent-dh"><span class="ent-ic lg">${entIc(k,22)}</span><h2>${esc(k)}</h2>${g.ger?"":`<button type="button" class="btn" data-entren>Renommer</button>`}</div>
-        <div class="ent-st"><div><span>Par mois</span><b>${eur(g.t)}</b></div><div><span>Par an</span><b>${eur(g.t*12)}</b></div><div><span>Par heure de chantier</span><b>${hM?n2(g.t/hM)+" €":"—"}</b></div><div><span>Part de la structure</span><b>${Math.round(g.t/struct*100)} %</b></div>${bil?`<div><span>Bilan ${esc(bil.ex)}</span><b>${bv==null?"—":eur(bv/12)}</b></div>`:""}</div>
+        <div class="ent-st"><div><span>Par mois</span><b>${eur(g.t)}</b></div><div><span>Par an</span><b>${eur(g.t*12)}</b></div><div><span>Par heure de chantier</span><b>${hM?n2(g.t/hM)+" €":"—"}</b></div><div><span>Part de la structure</span><b>${Math.round(g.t/struct*100)} %</b></div>${(()=>{const v=g.L.reduce((a,[c])=>a+(c.actif&&c.nat==="variable"?c.mens:0),0);return v?`<div><span>Dont variables</span><b>${eur(v)}</b></div>`:""})()}${bil?`<div><span>Bilan ${esc(bil.ex)}</span><b>${bv==null?"—":eur(bv/12)}</b></div>`:""}</div>
         ${det}</section></div>`}
   else if(tab==="bil"){const B=E.bilans||[];
     const L=[["ca","Chiffre d'affaires",1],["achats","Achats de matériaux"],["st","Sous-traitance"],["mb","Marge brute",1],["ext","Charges externes"],["sal","Salaires et charges sociales"],["ger","Rémunération du gérant"],["imp","Impôts et taxes"],["amort","Amortissements"],["rex","Résultat d'exploitation",1],["rnet","Résultat net",1]];
