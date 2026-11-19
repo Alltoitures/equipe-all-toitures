@@ -57,6 +57,7 @@ export default function Chantier() {
   const [imprevu, setImprevu] = useState(false)
   const [message, setMessage] = useState('')
   const [erreur, setErreur] = useState('')
+  const [erreurFin, setErreurFin] = useState('')
   const inputs = useRef<Record<string, HTMLInputElement | null>>({})
 
   // Matériel coché au chargement du camion (propre au téléphone et au jour).
@@ -158,9 +159,21 @@ export default function Chantier() {
 
   async function terminer() {
     if (!c) return
-    if (!confirm('Confirmer que le chantier est terminé ?')) return
-    const { error } = await supabase.rpc('terminer_chantier', { c: c.id })
-    if (error) return setErreur(erreurLisible(error))
+    setErreurFin('')
+    const sansApres = !(compte.apres > 0)
+    const staff = estStaff(membre)
+    let forcer = false
+    if (sansApres && staff) {
+      if (!confirm('Aucune photo « après » sur ce chantier.\n\nTerminer quand même ? (le rapport client sera à compléter)')) return
+      forcer = true
+    } else if (!confirm('Confirmer que le chantier est terminé ?')) return
+    const { error } = await supabase.rpc('terminer_chantier', { c: c.id, forcer })
+    if (error) {
+      const txt = erreurLisible(error)
+      setErreurFin(txt)
+      alert(txt)
+      return
+    }
     setC({ ...c, statut: 'termine' })
     setMessage('Chantier marqué terminé. Le gérant est prévenu.')
   }
@@ -341,6 +354,7 @@ export default function Chantier() {
 
           <Reception chantier={c} taches={taches} />
           {estGerant(membre) && <AvisGoogle chantierId={c.id} telephone={contact?.client_telephone ?? null} />}
+          {c.statut !== 'termine' && erreurFin && <p className="erreur">{erreurFin}</p>}
           {c.statut !== 'termine' && <button className="btn go large" onClick={terminer}>Chantier terminé</button>}
           {c.statut === 'termine' && estGerant(membre) && <RealisationCarte chantierId={c.id} />}
         </>
