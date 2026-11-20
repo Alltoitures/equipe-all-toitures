@@ -1140,6 +1140,14 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .xp-alts{margin-top:14px}.xp-alts .lbl{display:block;margin-bottom:6px}.xp-alts small{color:var(--muted);font-weight:500;margin-left:4px}
 
 /*@@/xpf*/
+/*@@airq*/
+.air-q{position:relative;flex:1;min-width:180px;max-width:460px}
+.air-q input{width:100%;height:36px;border:1px solid var(--line,#D5DEE7);border-radius:10px;padding:0 12px;font:inherit;font-size:14px;background:var(--surface,#fff);color:var(--ink,#0F2233)}
+.air-ql{position:absolute;left:0;right:0;top:40px;background:var(--surface,#fff);border:1px solid var(--line,#D5DEE7);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);overflow:hidden;z-index:1001}
+.air-ql button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;background:none;font:inherit;font-size:13.5px;color:var(--ink,#0F2233);cursor:pointer}
+.air-ql button:hover,.air-ql button:focus{background:var(--hover,#EAF3FB)}
+@media(max-width:640px){.air-top{flex-wrap:wrap}.air-q{order:3;flex-basis:100%;max-width:none}}
+/*@@/airq*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -9886,6 +9894,55 @@ vOuv=function(){const r=_vOuvD.apply(this,arguments);try{if(!S.ouv||!S.ouv.size)
   const d=main.querySelector(".ouv-dups");d.addEventListener("toggle",()=>{S.ouvDupOpen=d.open});d.querySelectorAll("[data-ouvdo]").forEach(b=>b.onclick=()=>ouvOpen(b.dataset.ouvdo))}catch(e){console.error(e)}return r};
 
 /*@@/xpf*/
+/*@@airq*/
+etAir=async function(){const e=S.et.draft;const ov=document.createElement("div");ov.className="air-ov";ov.innerHTML=`<div id="air-map"></div>
+  <div class="air-p air-top"><b>Mesure sur la photo aérienne</b><div class="air-q"><input id="air-q" type="search" placeholder="Rechercher une adresse…" autocomplete="off" aria-label="Rechercher une adresse"><div id="air-ql" class="air-ql" hidden></div></div><span id="air-st">Chargement…</span><button type="button" class="btn sm" data-airclose>Fermer</button></div>
+  <div class="air-p air-side"><h3>Toiture</h3><p class="hint">Déplacez les points blancs pour suivre le bord du toit (débords compris). Cliquez sur le côté de l'<b>égout</b> (bas de pente).</p>
+   <div class="air-k"><span>Surface au sol</span><b id="air-sol">—</b></div><div class="air-k"><span>Égout</span><b id="air-eg">cliquez un côté</b></div><div class="air-k"><span>Pignon</span><b id="air-pg">—</b></div>
+   <div class="f"><label for="air-pt">Pente (%)</label><input id="air-pt" type="number" step="1" value="${esc(e.v.pt||"")}" placeholder="Ex. 45"></div>
+   <div class="air-k"><span>Surface de toiture</span><b id="air-toit">—</b></div>
+   <div class="aff-btns"><button type="button" class="btn pri" data-airok>Reporter dans l'étude</button></div><p class="hint">Photo IGN · bâtiment BD TOPO. Vérifiez toujours sur place.</p></div>`;document.body.appendChild(ov);
+  const st=t=>{const x=document.getElementById("air-st");if(x)x.textContent=t};
+  try{await etLeaflet()}catch(_){st("Carte indisponible (pas de connexion).");return}
+  const map=L.map("air-map",{zoomControl:true,maxZoom:22}).setView([45.66,4.77],18);
+  const ign=L.tileLayer("https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",{maxZoom:22,maxNativeZoom:19,attribution:"© IGN"});const gl=L.tileLayer.wms("https://imagerie.data.grandlyon.com/wms/grandlyon",{layers:"ortho_latest",format:"image/jpeg",version:"1.3.0",maxZoom:22,attribution:"© Métropole de Lyon"});(String(e.cp||"").startsWith("69")?gl:ign).addTo(map);L.control.layers({"Photo IGN (20 cm)":ign,"Photo Métropole de Lyon (5 cm)":gl},null,{position:"bottomleft",collapsed:false}).addTo(map);
+  const adr=[e.adresse,e.cp,e.ville].filter(Boolean).join(" ");let ll=null;
+  if(adr){try{const g=await fetch("https://data.geopf.fr/geocodage/search?limit=1&q="+encodeURIComponent(adr)).then(r=>r.json());const f=g.features&&g.features[0];if(f){ll=[f.geometry.coordinates[1],f.geometry.coordinates[0]];map.setView(ll,20)}}catch(_){}}
+  if(!ll){st(adr?"Adresse introuvable : tapez-la en haut ou cliquez sur le bâtiment.":"Tapez l'adresse en haut, ou déplacez la carte et cliquez sur le bâtiment.")}
+  let pts=[],poly=null,mk=[],lab=[],eg=null,lines=[];
+  const draw=()=>{if(poly)poly.remove();mk.forEach(m=>m.remove());lab.forEach(m=>m.remove());lines.forEach(m=>m.remove());mk=[];lab=[];lines=[];if(pts.length<3)return;
+    poly=L.polygon(pts,{color:"#01A9E1",weight:2,fillOpacity:.15}).addTo(map);
+    pts.forEach((p,i)=>{const q=pts[(i+1)%pts.length],d=map.distance(p,q);const ln=L.polyline([p,q],{color:i===eg?"#f5b041":"#01A9E1",weight:i===eg?6:4,opacity:.9}).addTo(map);ln.on("click",()=>{eg=i;draw()});lines.push(ln);
+      lab.push(L.marker([(p[0]+q[0])/2,(p[1]+q[1])/2],{icon:L.divIcon({className:"air-lb",html:d.toFixed(2)+" m"}),interactive:false}).addTo(map));
+      const m=L.marker(p,{draggable:true,icon:L.divIcon({className:"air-pt",iconSize:[14,14]})}).addTo(map);m.on("drag",ev=>{const a=ev.target.getLatLng();pts[i]=[a.lat,a.lng];if(poly)poly.setLatLngs(pts)});m.on("dragend",()=>draw());mk.push(m)});
+    calc()};
+  const area=()=>{const R=6378137,lat0=pts.reduce((a,p)=>a+p[0],0)/pts.length*Math.PI/180;const xy=pts.map(p=>[p[1]*Math.PI/180*R*Math.cos(lat0),p[0]*Math.PI/180*R]);let s=0;xy.forEach((p,i)=>{const q=xy[(i+1)%xy.length];s+=p[0]*q[1]-q[0]*p[1]});return Math.abs(s)/2};
+  const calc=()=>{const a=area(),p=num(document.getElementById("air-pt").value)/100,k=Math.sqrt(1+p*p);document.getElementById("air-sol").textContent=f2(a)+" m²";document.getElementById("air-toit").textContent=p?f2(a*k)+" m²":"indiquez la pente";
+    if(eg!=null){const L1=map.distance(pts[eg],pts[(eg+1)%pts.length]),n=pts.length,a1=map.distance(pts[(eg+1)%n],pts[(eg+2)%n]),a2=map.distance(pts[(eg-1+n)%n],pts[eg]);document.getElementById("air-eg").textContent=L1.toFixed(2)+" m";document.getElementById("air-pg").textContent=((a1+a2)/2).toFixed(2)+" m"}};
+  const loadBat=async c=>{st("Recherche du bâtiment…");const d=0.0004,bb=[c[0]-d,c[1]-d,c[0]+d,c[1]+d].join(",");
+    try{const j=await fetch(`https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=BDTOPO_V3:batiment&OUTPUTFORMAT=application/json&SRSNAME=EPSG:4326&BBOX=${bb},urn:ogc:def:crs:EPSG::4326&COUNT=40`).then(r=>r.json());
+      const ins=(pt,ring)=>{let x=pt[1],y=pt[0],o=false;for(let i=0,j2=ring.length-1;i<ring.length;j2=i++){const xi=ring[i][0],yi=ring[i][1],xj=ring[j2][0],yj=ring[j2][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))o=!o}return o};
+      let best=null;(j.features||[]).forEach(f=>{const g=f.geometry;const rings=g.type==="MultiPolygon"?g.coordinates.map(p=>p[0]):[g.coordinates[0]];rings.forEach(r=>{if(ins(c,r))best=r})});
+      if(!best&&j.features&&j.features[0]){const g=j.features[0].geometry;best=g.type==="MultiPolygon"?g.coordinates[0][0]:g.coordinates[0]}
+      if(best){pts=best.slice(0,-1).map(p=>[p[1],p[0]]);eg=null;draw();map.fitBounds(L.polygon(pts).getBounds(),{padding:[60,60]});st("Bâtiment trouvé : ajustez les points, puis cliquez le côté égout.")}else st("Aucun bâtiment ici : cliquez sur le toit.")}catch(_){st("Données bâtiment indisponibles.")}};
+  map.on("click",ev=>loadBat([ev.latlng.lat,ev.latlng.lng]));if(ll)loadBat(ll);
+  {const qi=document.getElementById("air-q"),ql=document.getElementById("air-ql");let tm=null,res=[];if(adr)qi.value=adr;
+    const pick=ft=>{if(!ft)return;const c=[ft.geometry.coordinates[1],ft.geometry.coordinates[0]],p=ft.properties||{};qi.value=p.label||"";ql.hidden=true;map.setView(c,20);loadBat(c);
+      if(!e.adresse&&!e.ville&&p.type!=="municipality"){e.adresse=p.name||"";e.cp=p.postcode||"";e.ville=p.city||"";S.et.dirty=true;toast("Adresse reprise dans l'étude : "+(p.label||""))}};
+    const show=()=>{ql.innerHTML=res.map((ft,k)=>`<button type="button" data-airq="${k}">${esc(ft.properties.label)}</button>`).join("");ql.hidden=!res.length};
+    qi.addEventListener("input",()=>{clearTimeout(tm);const q=qi.value.trim();if(q.length<3){res=[];show();return}
+      tm=setTimeout(async()=>{try{const g=await fetch("https://data.geopf.fr/geocodage/search?autocomplete=1&limit=6&q="+encodeURIComponent(q)).then(r=>r.json());res=g.features||[];show()}catch(_){res=[];show();st("Recherche d'adresse indisponible.")}},300)});
+    qi.addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();pick(res[0])}else if(ev.key==="Escape"){ql.hidden=true}});
+    ql.addEventListener("click",ev=>{const b=ev.target.closest("[data-airq]");if(b)pick(res[+b.dataset.airq])});
+    ["mousedown","dblclick","wheel","touchstart"].forEach(t=>{qi.addEventListener(t,ev=>ev.stopPropagation());ql.addEventListener(t,ev=>ev.stopPropagation())});
+    if(!ll)setTimeout(()=>qi.focus(),50)}
+  ov.addEventListener("input",ev=>{if(ev.target.id==="air-pt"&&pts.length>2)calc()});
+  ov.addEventListener("click",ev=>{if(ev.target.closest("[data-airclose]")){map.remove();ov.remove();return}
+    if(ev.target.closest("[data-airok]")){if(eg==null||pts.length<3){toast("Cliquez d'abord sur le côté égout du toit.");return}const n=pts.length,Le=map.distance(pts[eg],pts[(eg+1)%n]),Wo=(map.distance(pts[(eg+1)%n],pts[(eg+2)%n])+map.distance(pts[(eg-1+n)%n],pts[eg]))/2,p=num(document.getElementById("air-pt").value),k=Math.sqrt(1+(p/100)*(p/100));
+      e.mode="toit";e.v.Le=+Le.toFixed(2);if(p)e.v.pt=p;e.v.R=+((e.forme==="ap"||e.forme==="1t"||e.forme==="1tri"?Wo:Wo/2)*k).toFixed(2);if(e.forme==="4p")e.v.Lc=+Wo.toFixed(2);
+      e.air={sol:+area().toFixed(2),Le:e.v.Le,pignon:+Wo.toFixed(2),le:TODAY};S.et.dirty=true;map.remove();ov.remove();render.force=true;render();render.force=false;toast("Mesures reportées : égout "+f2(Le)+" m, rampant "+f2(e.v.R)+" m. Vérifiez puis enregistrez.")}})};
+
+/*@@/airq*/
 boot();
 })();
 </script>
