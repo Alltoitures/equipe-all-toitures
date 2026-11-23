@@ -1171,7 +1171,7 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .fa4t tfoot b{color:var(--ink)}
 .fa4dj{display:block;font-size:12px;color:var(--muted)}
 .fa3late .fa4dj{color:#C62828}
-.fa4env{font-size:13px;color:#1E7B34;white-space:nowrap}
+.fa4env{all:unset;cursor:pointer;font-size:13px;color:#1E7B34;white-space:nowrap}.fa4env:hover{text-decoration:underline dotted}
 .fa4ne{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:#C62828;white-space:nowrap;text-decoration:underline dotted}
 .fa3p.bl{background:rgba(12,110,168,.1);color:#0C6EA8}
 .fa4dot{all:unset;cursor:pointer;width:32px;height:32px;border-radius:8px;text-align:center;line-height:30px;font-size:18px;color:var(--muted)}
@@ -1236,6 +1236,8 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 button.fa4dx{all:unset;display:block;margin-top:4px;width:max-content;cursor:pointer;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;background:#FFF1E0;color:#8A4B00}
 button.fa4dx:hover{background:#FFE2BF}
 .fa4dx.ok{background:#E3F3E7;color:#1C6B3A}
+button.fa4dx.ok{background:#E3F3E7;color:#1C6B3A}button.fa4dx.ok:hover{background:#CFEBD7}
+.fa4mn .fa4mk{display:flex;gap:6px;align-items:center;padding:6px 8px;border-top:1px solid var(--line,#E1E8EF);margin-top:4px}.fa4mn .fa4mk input{height:32px;border:1px solid var(--line,#D5DEE7);border-radius:8px;padding:0 6px;font:inherit;font-size:13px}.fa4mn .fa4mk button{all:unset;cursor:pointer;background:#0A7CC9;color:#fff;font-weight:700;font-size:13px;padding:7px 10px;border-radius:8px}.fa4mn small{display:block;padding:6px 12px 2px;font-size:12px;color:var(--muted,#5A6B79)}
 
 /*@@/fa4*/
 /*@@dvi*/
@@ -10121,7 +10123,7 @@ faList2=function(){const q=bibNorm(S.faQ).trim(),tb=FA4_CH.some(x=>x[0]===S.faFl
     <td class="${sc==="ko"?"fa3late":""}">${f.num&&!av?fa4Dm(faDue(f)):"—"}${dj!=null?`<small class="fa4dj">${dj>=0?"dans "+dj+" j":"retard "+(-dj)+" j"}</small>`:""}</td>
     <td class="r"><b>${av?"− ":""}${eur2(Math.abs(k.ttc))}</b></td>
     <td class="r fa3rd">${rest==null?"—":rest>0.5?`<b>${eur2(rest)}</b>`:"—"}</td>
-    <td>${!f.num||av?"—":f.envoyeeLe?`<span class="fa4env">✓ le ${fa4Dm(String(f.envoyeeLe).slice(0,10))}</span>`:rest>0.5?`<button type="button" class="fa4ne" data-fasend="${esc(id)}">Pas envoyée</button>`:"—"}${f.num?(f.dextLe?`<span class="fa4dx ok" title="Transmise à Dext le ${fa4Dm(f.dextLe)}">Dext ✓ ${fa4Dm(f.dextLe)}</span>`:`<button type="button" class="fa4dx" data-fa4a="dext" data-id="${esc(id)}" title="Préparer l'envoi de cette facture à Dext">Dext ✗ envoyer</button>`):""}</td>
+    <td>${!f.num||av?"—":f.envoyeeLe?`<button type="button" class="fa4env" data-fa4mk="cli" data-id="${esc(id)}">✓ le ${fa4Dm(String(f.envoyeeLe).slice(0,10))}</button>`:`<button type="button" class="fa4ne" data-fa4mk="cli" data-id="${esc(id)}">Pas envoyée</button>`}${f.num?(f.dextLe?`<button type="button" class="fa4dx ok" data-fa4mk="dext" data-id="${esc(id)}" title="Transmise à Dext le ${fa4Dm(f.dextLe)}">Dext ✓ ${fa4Dm(f.dextLe)}</button>`:`<button type="button" class="fa4dx" data-fa4mk="dext" data-id="${esc(id)}" title="Pas encore sur Dext">Dext ✗</button>`):""}</td>
     <td><span class="fa3p ${sc}">${st}</span></td>
     <td class="r"><button type="button" class="fa4dot" data-fa4m="${esc(id)}" aria-label="Actions ${esc(f.num||"brouillon")}">⋯</button></td></tr>`}).join("");
   return`<div class="fa3kp fa4kp">${kp("Facturé ce mois",eur2(facM),`${nF} facture${nF>1?"s":""} · TTC, avoirs déduits`,"","toutes")}
@@ -10375,9 +10377,25 @@ function confirm2(v){toast("L'adresse doit se terminer par @dext.cc.");return fa
   const b=document.createElement("button");b.type="button";b.dataset.fa4a="dext";b.dataset.id=id;b.textContent=f.dextLe?"Renvoyer à Dext (déjà le "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7)+")":"Envoyer à Dext";
   const ref=m.querySelector("[data-fa4a='dup']");m.insertBefore(b,ref||null)}}
 {const _e=dvEdit;dvEdit=function(){_e.apply(this,arguments);try{const f=S.dvDraft;if(!isFa()||!f||!f.num||!S.dv||S.dv==="new")return;const bar=document.querySelector(".dv-bar");if(!bar||bar.querySelector(".dx-ed"))return;
-  const x=document.createElement(f.dextLe?"span":"button");x.className="dx-ed "+(f.dextLe?"ok":"no");
-  if(f.dextLe){x.textContent="Dext ✓ "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7);x.title="Facture transmise à Dext"}else{x.type="button";x.textContent="Dext ✗ envoyer";x.title="Pas encore transmise à Dext";x.dataset.fa4a="dext";x.dataset.id=S.dv}
+  const x=document.createElement("button");x.className="dx-ed "+(f.dextLe?"ok":"no");
+  x.type="button";x.dataset.fa4mk="dext";x.dataset.id=S.dv;if(f.dextLe){x.textContent="Dext ✓ "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7);x.title="Facture transmise à Dext"}else{x.textContent="Dext ✗";x.title="Pas encore transmise à Dext"}
   bar.appendChild(x)}catch(e){console.warn(e)}}}
+/* marquer envoyée au client / transmise à Dext à la main */
+function fa4Mk(btn,id,k){fa4MenuClose();const f=S.fac.get(id);if(!f||!f.num)return;const r=btn.getBoundingClientRect(),cli=k==="cli",done=cli?f.envoyeeLe:f.dextLe;
+  const m=document.createElement("div");m.className="fa4mn";m.setAttribute("role","menu");m.dataset.for="mk"+id;
+  m.innerHTML=(done?`<small>${cli?"Envoyée au client":"Transmise à Dext"} le ${String(done).slice(8,10)}/${String(done).slice(5,7)}</small>`:"")+
+   (cli?`<button type="button" data-fa4a="send" data-id="${esc(id)}">${done?"Renvoyer au client (brouillon Outlook)":"Préparer le mail au client"}</button>`:`<button type="button" data-fa4a="dext" data-id="${esc(id)}">${done?"Renvoyer à Dext (brouillon Outlook)":"Préparer l'envoi à Dext"}</button>`)+
+   (done?`<button type="button" data-fa4mkun="${k}" data-id="${esc(id)}">Marquer comme ${cli?"non envoyée":"pas sur Dext"}</button>`:
+   `<div class="fa4mk"><label for="fa4mk-d" style="font-size:13px;white-space:nowrap">${cli?"Déjà envoyée le":"Déjà sur Dext le"}</label><input id="fa4mk-d" type="date" value="${TODAY}"><button type="button" data-fa4mkok="${k}" data-id="${esc(id)}">Marquer</button></div>`);
+  document.body.appendChild(m);const w=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+4)+"px";m.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.innerWidth-w-8))+"px"}
+document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
+  const b=t.closest("[data-fa4mk]");if(b){e.stopPropagation();e.preventDefault();fa4Mk(b,b.dataset.id,b.dataset.fa4mk);return}
+  const ok=t.closest("[data-fa4mkok]");if(ok){e.stopPropagation();e.preventDefault();const id=ok.dataset.id,k=ok.dataset.fa4mkok,d=(document.getElementById("fa4mk-d")||{}).value||TODAY;fa4MenuClose();
+    if(await faSetF(id,k==="cli"?{envoyeeLe:d}:{dextLe:d})){render.force=true;render();render.force=false;toast(k==="cli"?"Marquée comme envoyée au client":"Marquée comme transmise à Dext")}return}
+  const un=t.closest("[data-fa4mkun]");if(un){e.stopPropagation();e.preventDefault();const id=un.dataset.id,k=un.dataset.fa4mkun;fa4MenuClose();const f0=S.fac.get(id);if(!f0)return;
+    const f=clone(f0);delete f[k==="cli"?"envoyeeLe":"dextLe"];f.updatedAt=new Date().toISOString();if(S.db){try{await S.db.collection("factures").doc(id).set(JSON.parse(JSON.stringify(f)))}catch(_){toast("Enregistrement impossible, réessayez.");return}}
+    S.fac.set(id,f);if(S.dv===id&&S.dvDraft&&!S.dvDirty)S.dvDraft=clone(f);render.force=true;render();render.force=false;toast("Statut retiré");return}
+  if(t.closest(".fa4mn"))e.stopPropagation()},true);
 
 /*@@/dext*/
 boot();
