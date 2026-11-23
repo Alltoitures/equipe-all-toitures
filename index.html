@@ -1238,6 +1238,12 @@ button.fa4dx:hover{background:#FFE2BF}
 .fa4dx.ok{background:#E3F3E7;color:#1C6B3A}
 button.fa4dx.ok{background:#E3F3E7;color:#1C6B3A}button.fa4dx.ok:hover{background:#CFEBD7}
 .fa4mn .fa4mk{display:flex;gap:6px;align-items:center;padding:6px 8px;border-top:1px solid var(--line,#E1E8EF);margin-top:4px}.fa4mn .fa4mk input{height:32px;border:1px solid var(--line,#D5DEE7);border-radius:8px;padding:0 6px;font:inherit;font-size:13px}.fa4mn .fa4mk button{all:unset;cursor:pointer;background:#0A7CC9;color:#fff;font-weight:700;font-size:13px;padding:7px 10px;border-radius:8px}.fa4mn small{display:block;padding:6px 12px 2px;font-size:12px;color:var(--muted,#5A6B79)}
+.fa4st2{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:12.5px;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap}
+.fa4st2.sm{display:flex;width:max-content;margin-top:5px;font-size:11.5px;padding:2px 9px}
+.fa4st2 i{font-style:normal;font-size:10px;opacity:.7}
+.fa4st2.wait{background:#FCE4EC;color:#A3214F}.fa4st2.wait:hover{background:#F8CFDD}
+.fa4st2.ok{background:#E3F3E7;color:#1C6B3A}.fa4st2.ok:hover{background:#CFEBD7}
+.fa4mn .fa4o{display:flex;align-items:center;gap:8px}.fa4mn .fa4o b{width:10px;height:10px;border-radius:99px;flex:none}.fa4mn .fa4o .ck{margin-left:auto;color:#0A7CC9;font-weight:800}
 
 /*@@/fa4*/
 /*@@dvi*/
@@ -10124,7 +10130,7 @@ faList2=function(){const q=bibNorm(S.faQ).trim(),tb=FA4_CH.some(x=>x[0]===S.faFl
     <td class="${sc==="ko"?"fa3late":""}">${f.num&&!av?fa4Dm(faDue(f)):"—"}${dj!=null?`<small class="fa4dj">${dj>=0?"dans "+dj+" j":"retard "+(-dj)+" j"}</small>`:""}</td>
     <td class="r"><b>${av?"− ":""}${eur2(Math.abs(k.ttc))}</b></td>
     <td class="r fa3rd">${rest==null?"—":rest>0.5?`<b>${eur2(rest)}</b>`:"—"}</td>
-    <td>${!f.num||av?"—":f.envoyeeLe?`<button type="button" class="fa4env" data-fa4mk="cli" data-id="${esc(id)}">✓ le ${fa4Dm(String(f.envoyeeLe).slice(0,10))}</button>`:`<button type="button" class="fa4ne" data-fa4mk="cli" data-id="${esc(id)}">Pas envoyée</button>`}${f.num?(f.dextLe?`<button type="button" class="fa4dx ok" data-fa4mk="dext" data-id="${esc(id)}" title="Transmise à Dext le ${fa4Dm(f.dextLe)}">Dext ✓ ${fa4Dm(f.dextLe)}</button>`:`<button type="button" class="fa4dx" data-fa4mk="dext" data-id="${esc(id)}" title="Pas encore sur Dext">Dext ✗</button>`):""}</td>
+    <td>${!f.num||av?"—":`<button type="button" class="fa4st2 ${f.envoyeeLe?"ok":"wait"}" data-fa4mk="cli" data-id="${esc(id)}" aria-haspopup="menu" title="${f.envoyeeLe?"Envoyée au client le "+fa4Dm(String(f.envoyeeLe).slice(0,10)):"Pas encore envoyée au client"}">${f.envoyeeLe?"Envoyée":"En attente"} <i aria-hidden="true">▾</i></button>`}${f.num?`<button type="button" class="fa4st2 sm ${f.dextLe?"ok":"wait"}" data-fa4mk="dext" data-id="${esc(id)}" aria-haspopup="menu" title="${f.dextLe?"Transmise à Dext le "+fa4Dm(f.dextLe):"Pas encore sur Dext"}">Dext : ${f.dextLe?"envoyée":"en attente"} <i aria-hidden="true">▾</i></button>`:""}</td>
     <td><span class="fa3p ${sc}">${st}</span></td>
     <td class="r"><button type="button" class="fa4dot" data-fa4m="${esc(id)}" aria-label="Actions ${esc(f.num||"brouillon")}">⋯</button></td></tr>`}).join("");
   return`<div class="fa3kp fa4kp">${kp("Facturé ce mois",eur2(facM),`${nF} facture${nF>1?"s":""} · TTC, avoirs déduits`,"","toutes")}
@@ -10377,19 +10383,22 @@ function confirm2(v){toast("L'adresse doit se terminer par @dext.cc.");return fa
 {const _m=fa4Menu;fa4Menu=function(btn,id){_m(btn,id);const f=S.fac.get(id),m=document.querySelector(".fa4mn");if(!m||!f||!f.num)return;
   const b=document.createElement("button");b.type="button";b.dataset.fa4a="dext";b.dataset.id=id;b.textContent=f.dextLe?"Renvoyer à Dext (déjà le "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7)+")":"Envoyer à Dext";
   const ref=m.querySelector("[data-fa4a='dup']");m.insertBefore(b,ref||null)}}
-{const _e=dvEdit;dvEdit=function(){_e.apply(this,arguments);try{const f=S.dvDraft;if(!isFa()||!f||!f.num||!S.dv||S.dv==="new")return;const bar=document.querySelector(".dv-bar");if(!bar||bar.querySelector(".dx-ed"))return;
-  const x=document.createElement("button");x.className="dx-ed "+(f.dextLe?"ok":"no");
-  x.type="button";x.dataset.fa4mk="dext";x.dataset.id=S.dv;if(f.dextLe){x.textContent="Dext ✓ "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7);x.title="Facture transmise à Dext"}else{x.textContent="Dext ✗";x.title="Pas encore transmise à Dext"}
+{const _e=dvEdit;dvEdit=function(){_e.apply(this,arguments);try{const f=S.dvDraft;if(!isFa()||!f||!f.num||!S.dv||S.dv==="new")return;const bar=document.querySelector(".dv-bar");if(!bar||bar.querySelector(".dx-ed2"))return;
+  const x=document.createElement("button");
+  x.type="button";x.dataset.fa4mk="dext";x.dataset.id=S.dv;x.className="fa4st2 dx-ed2 "+(f.dextLe?"ok":"wait");x.style.marginLeft="6px";x.innerHTML=(f.dextLe?"Dext : envoyée":"Dext : en attente")+' <i aria-hidden="true">▾</i>';
   bar.appendChild(x)}catch(e){console.warn(e)}}}
 /* marquer envoyée au client / transmise à Dext à la main */
-function fa4Mk(btn,id,k){fa4MenuClose();const f=S.fac.get(id);if(!f||!f.num)return;const r=btn.getBoundingClientRect(),cli=k==="cli",done=cli?f.envoyeeLe:f.dextLe;
-  const m=document.createElement("div");m.className="fa4mn";m.setAttribute("role","menu");m.dataset.for="mk"+id;
-  const drf=cli?`<button type="button" class="fa4mk-o" data-fa4a="send" data-id="${esc(id)}">${done?"Renvoyer au client":"Ou préparer le mail au client"} <em>(brouillon Outlook)</em></button>`:`<button type="button" class="fa4mk-o" data-fa4a="dext" data-id="${esc(id)}">${done?"Renvoyer à Dext":"Ou préparer l'envoi à Dext"} <em>(brouillon Outlook)</em></button>`;
-  m.innerHTML=done?`<small>${cli?"Envoyée au client":"Transmise à Dext"} le ${String(done).slice(8,10)}/${String(done).slice(5,7)}</small><button type="button" data-fa4mkun="${k}" data-id="${esc(id)}">Marquer comme ${cli?"non envoyée":"pas sur Dext"}</button>${drf}`
-   :`<div class="fa4mk" style="border-top:0;margin-top:0"><label for="fa4mk-d" style="font-size:13px;white-space:nowrap;font-weight:700">${cli?"Envoyée le":"Sur Dext le"}</label><input id="fa4mk-d" type="date" value="${TODAY}"><button type="button" data-fa4mkok="${k}" data-id="${esc(id)}">✓ Marquer</button></div>${drf}`;
-  document.body.appendChild(m);const w=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+4)+"px";m.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.innerWidth-w-8))+"px"}
+function fa4Mk(btn,id,k){fa4MenuClose();const f=S.fac.get(id);if(!f||!f.num)return;const r=btn.getBoundingClientRect(),cli=k==="cli",done=!!(cli?f.envoyeeLe:f.dextLe);
+  const m=document.createElement("div");m.className="fa4mn";m.setAttribute("role","menu");m.dataset.for="mk"+id;m.style.minWidth="190px";
+  const o=(v,l,col,on)=>`<button type="button" role="menuitemradio" aria-checked="${on}" class="fa4o" data-fa4set="${k}" data-v="${v}" data-id="${esc(id)}"><b style="background:${col}"></b>${l}${on?'<span class="ck">✓</span>':""}</button>`;
+  m.innerHTML=o("0",cli?"En attente":"Dext : en attente","#E05A8A",!done)+o("1",cli?"Envoyée":"Dext : envoyée","#2E9E5B",done)+(done?`<small>le ${String(cli?f.envoyeeLe:f.dextLe).slice(8,10)}/${String(cli?f.envoyeeLe:f.dextLe).slice(5,7)}</small>`:"");
+  document.body.appendChild(m);const w=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+4)+"px";m.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.innerWidth-w-8))+"px";const f1=m.querySelector('[aria-checked="false"]');if(f1)f1.focus()}
+async function fa4SetSt(id,k,on){const f0=S.fac.get(id);if(!f0)return;const key=k==="cli"?"envoyeeLe":"dextLe";if(!!f0[key]===on)return;const f=clone(f0);if(on)f[key]=TODAY;else delete f[key];f.updatedAt=new Date().toISOString();
+  if(S.db){try{await S.db.collection("factures").doc(id).set(JSON.parse(JSON.stringify(f)))}catch(_){toast("Enregistrement impossible, réessayez.");return}}
+  S.fac.set(id,f);if(S.dv===id&&S.dvDraft&&!S.dvDirty)S.dvDraft=clone(f);render.force=true;render();render.force=false}
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
   const b=t.closest("[data-fa4mk]");if(b){e.stopPropagation();e.preventDefault();fa4Mk(b,b.dataset.id,b.dataset.fa4mk);return}
+  const st=t.closest("[data-fa4set]");if(st){e.stopPropagation();e.preventDefault();fa4MenuClose();await fa4SetSt(st.dataset.id,st.dataset.fa4set,st.dataset.v==="1");return}
   const ok=t.closest("[data-fa4mkok]");if(ok){e.stopPropagation();e.preventDefault();const id=ok.dataset.id,k=ok.dataset.fa4mkok,d=(document.getElementById("fa4mk-d")||{}).value||TODAY;fa4MenuClose();
     if(await faSetF(id,k==="cli"?{envoyeeLe:d}:{dextLe:d})){render.force=true;render();render.force=false;toast(k==="cli"?"Marquée comme envoyée au client":"Marquée comme transmise à Dext")}return}
   const un=t.closest("[data-fa4mkun]");if(un){e.stopPropagation();e.preventDefault();const id=un.dataset.id,k=un.dataset.fa4mkun;fa4MenuClose();const f0=S.fac.get(id);if(!f0)return;
