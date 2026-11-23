@@ -1283,6 +1283,7 @@ button.fa4dx.ok{background:#E3F3E7;color:#1C6B3A}button.fa4dx.ok:hover{backgroun
 .dx-ed{display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;margin-left:6px;border:0;font-family:inherit}
 .dx-ed.ok{background:#E3F3E7;color:#1C6B3A}
 button.dx-ed.no{background:#FFF1E0;color:#8A4B00;cursor:pointer}button.dx-ed.no:hover{background:#FFE2BF}
+.fa4mn .fa4mk-o{font-size:12.5px!important;color:var(--muted,#5A6B79)!important;border-top:1px solid var(--line,#E1E8EF)!important;border-radius:0 0 8px 8px!important;margin-top:4px}.fa4mn .fa4mk-o em{font-style:normal;opacity:.8}
 
 /*@@/dext*/
 </style></head><body>
@@ -10383,10 +10384,9 @@ function confirm2(v){toast("L'adresse doit se terminer par @dext.cc.");return fa
 /* marquer envoyée au client / transmise à Dext à la main */
 function fa4Mk(btn,id,k){fa4MenuClose();const f=S.fac.get(id);if(!f||!f.num)return;const r=btn.getBoundingClientRect(),cli=k==="cli",done=cli?f.envoyeeLe:f.dextLe;
   const m=document.createElement("div");m.className="fa4mn";m.setAttribute("role","menu");m.dataset.for="mk"+id;
-  m.innerHTML=(done?`<small>${cli?"Envoyée au client":"Transmise à Dext"} le ${String(done).slice(8,10)}/${String(done).slice(5,7)}</small>`:"")+
-   (cli?`<button type="button" data-fa4a="send" data-id="${esc(id)}">${done?"Renvoyer au client (brouillon Outlook)":"Préparer le mail au client"}</button>`:`<button type="button" data-fa4a="dext" data-id="${esc(id)}">${done?"Renvoyer à Dext (brouillon Outlook)":"Préparer l'envoi à Dext"}</button>`)+
-   (done?`<button type="button" data-fa4mkun="${k}" data-id="${esc(id)}">Marquer comme ${cli?"non envoyée":"pas sur Dext"}</button>`:
-   `<div class="fa4mk"><label for="fa4mk-d" style="font-size:13px;white-space:nowrap">${cli?"Déjà envoyée le":"Déjà sur Dext le"}</label><input id="fa4mk-d" type="date" value="${TODAY}"><button type="button" data-fa4mkok="${k}" data-id="${esc(id)}">Marquer</button></div>`);
+  const drf=cli?`<button type="button" class="fa4mk-o" data-fa4a="send" data-id="${esc(id)}">${done?"Renvoyer au client":"Ou préparer le mail au client"} <em>(brouillon Outlook)</em></button>`:`<button type="button" class="fa4mk-o" data-fa4a="dext" data-id="${esc(id)}">${done?"Renvoyer à Dext":"Ou préparer l'envoi à Dext"} <em>(brouillon Outlook)</em></button>`;
+  m.innerHTML=done?`<small>${cli?"Envoyée au client":"Transmise à Dext"} le ${String(done).slice(8,10)}/${String(done).slice(5,7)}</small><button type="button" data-fa4mkun="${k}" data-id="${esc(id)}">Marquer comme ${cli?"non envoyée":"pas sur Dext"}</button>${drf}`
+   :`<div class="fa4mk" style="border-top:0;margin-top:0"><label for="fa4mk-d" style="font-size:13px;white-space:nowrap;font-weight:700">${cli?"Envoyée le":"Sur Dext le"}</label><input id="fa4mk-d" type="date" value="${TODAY}"><button type="button" data-fa4mkok="${k}" data-id="${esc(id)}">✓ Marquer</button></div>${drf}`;
   document.body.appendChild(m);const w=m.offsetWidth;m.style.top=(r.bottom+window.scrollY+4)+"px";m.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.innerWidth-w-8))+"px"}
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
   const b=t.closest("[data-fa4mk]");if(b){e.stopPropagation();e.preventDefault();fa4Mk(b,b.dataset.id,b.dataset.fa4mk);return}
