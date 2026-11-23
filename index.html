@@ -1232,6 +1232,10 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 .fa4adjw .fa4cmp table{font-size:13px}
 .fa4cmpt{display:block;margin-bottom:6px;font-size:14px}.fa4cr{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0}.fa4cr b{white-space:nowrap}.fa4cr.ec b{color:#0C6EA8}.fa4cr small{font-weight:400;color:var(--muted)}
 @media (max-width:700px){.fa3ac{flex-wrap:wrap}.fa3ac .btn{flex:1 1 auto}.fa4tabs [role=tab]{padding:8px 10px}}
+.fa4dx{display:block;margin-top:4px;width:max-content;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap}
+button.fa4dx{all:unset;display:block;margin-top:4px;width:max-content;cursor:pointer;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;white-space:nowrap;background:#FFF1E0;color:#8A4B00}
+button.fa4dx:hover{background:#FFE2BF}
+.fa4dx.ok{background:#E3F3E7;color:#1C6B3A}
 
 /*@@/fa4*/
 /*@@dvi*/
@@ -1274,6 +1278,9 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 /*@@/dvi*/
 /*@@dext*/
 .dx-b.on{color:#1C6B3A;border-color:#9FD3AE;background:#F0FAF3}
+.dx-ed{display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;margin-left:6px;border:0;font-family:inherit}
+.dx-ed.ok{background:#E3F3E7;color:#1C6B3A}
+button.dx-ed.no{background:#FFF1E0;color:#8A4B00;cursor:pointer}button.dx-ed.no:hover{background:#FFE2BF}
 
 /*@@/dext*/
 </style></head><body>
@@ -10074,7 +10081,7 @@ etAir=async function(){const e=S.et.draft;const ov=document.createElement("div")
 /*@@fa4*/
 /* ===== Factures v4 — maquette validée (liste, paiements, finale) ===== */
 const fa4Tab=()=>{const t=S.faTab;return["afaire","suivi","treso","paie"].includes(t)?t:"liste"};
-const FA4_CH=[["toutes","Toutes"],["encaisser","À encaisser"],["retard","En retard"],["nonenv","Pas encore envoyées"],["payees","Payées"],["acomptes","Acomptes"],["brouillons","Brouillons"]];
+const FA4_CH=[["toutes","Toutes"],["encaisser","À encaisser"],["retard","En retard"],["nonenv","Pas encore envoyées"],["payees","Payées"],["acomptes","Acomptes"],["brouillons","Brouillons"],["nodext","Pas sur Dext"]];
 const fa4Open=f=>!!f.num&&f.type!=="avoir"&&f.statut!=="Payée"&&faReste(f)>0.5;
 const fa4Soon=f=>fa4Open(f)&&!faLate(f)&&faDue(f)<=addDays(TODAY,10);
 const fa4Dm=s=>s?s.slice(8,10)+"/"+s.slice(5,7):"—";
@@ -10094,7 +10101,7 @@ faHead=function(){const t=fa4Tab(),n=[...S.fac.values()].filter(f=>f.num).length
   <div class="fa4tabs" role="tablist">${tab("liste","Factures")}${tab("afaire","À facturer",raf)}${tab("paie","Paiements",op)}${tab("treso","Trésorerie")}<span class="sp"></span><button type="button" class="linkbtn" data-fatab="suivi">Suivi hors Pilotage</button></div>`};
 function fa4InPer(f){const p=S.fa4Per||"ex";if(!f.num||p==="all")return true;if(p==="m")return String(f.date||"").slice(0,7)===TODAY.slice(0,7);return inEx(f.date,curEx)}
 faList2=function(){const q=bibNorm(S.faQ).trim(),tb=FA4_CH.some(x=>x[0]===S.faFlt)?S.faFlt:"toutes";const all=[...S.fac.entries()],ym=TODAY.slice(0,7);
-  const F={toutes:f=>true,encaisser:fa4Open,retard:f=>fa4Open(f)&&faLate(f),nonenv:f=>fa4Open(f)&&!f.envoyeeLe,payees:f=>f.num&&f.type!=="avoir"&&!fa4Open(f),acomptes:f=>f.type==="acompte",brouillons:f=>!f.num};
+  const F={toutes:f=>true,encaisser:fa4Open,retard:f=>fa4Open(f)&&faLate(f),nonenv:f=>fa4Open(f)&&!f.envoyeeLe,payees:f=>f.num&&f.type!=="avoir"&&!fa4Open(f),acomptes:f=>f.type==="acompte",brouillons:f=>!f.num,nodext:f=>!!f.num&&!f.dextLe};
   let facM=0,nF=0,encM=0,nP=0;all.forEach(([,f])=>{if(f.num&&String(f.date||"").slice(0,7)===ym){const v=dvCalc(f).ttc;facM+=f.type==="avoir"?-Math.abs(v):v;nF++}(f.paiements||[]).forEach(p=>{if(String(p.date||"").slice(0,7)===ym){encM+=num(p.montant);nP++}})});
   const open=all.filter(([,f])=>fa4Open(f)),late=open.filter(([,f])=>faLate(f)),soon=open.filter(([,f])=>fa4Soon(f));const sR=L=>L.reduce((a,[,f])=>a+faReste(f),0);
   const nm=L=>L.map(([,f])=>fa4Nom(f)).slice(0,2).join(", ")+(L.length>2?"…":"");
@@ -10114,7 +10121,7 @@ faList2=function(){const q=bibNorm(S.faQ).trim(),tb=FA4_CH.some(x=>x[0]===S.faFl
     <td class="${sc==="ko"?"fa3late":""}">${f.num&&!av?fa4Dm(faDue(f)):"—"}${dj!=null?`<small class="fa4dj">${dj>=0?"dans "+dj+" j":"retard "+(-dj)+" j"}</small>`:""}</td>
     <td class="r"><b>${av?"− ":""}${eur2(Math.abs(k.ttc))}</b></td>
     <td class="r fa3rd">${rest==null?"—":rest>0.5?`<b>${eur2(rest)}</b>`:"—"}</td>
-    <td>${!f.num||av?"—":f.envoyeeLe?`<span class="fa4env">✓ le ${fa4Dm(String(f.envoyeeLe).slice(0,10))}</span>`:rest>0.5?`<button type="button" class="fa4ne" data-fasend="${esc(id)}">Pas envoyée</button>`:"—"}</td>
+    <td>${!f.num||av?"—":f.envoyeeLe?`<span class="fa4env">✓ le ${fa4Dm(String(f.envoyeeLe).slice(0,10))}</span>`:rest>0.5?`<button type="button" class="fa4ne" data-fasend="${esc(id)}">Pas envoyée</button>`:"—"}${f.num?(f.dextLe?`<span class="fa4dx ok" title="Transmise à Dext le ${fa4Dm(f.dextLe)}">Dext ✓ ${fa4Dm(f.dextLe)}</span>`:`<button type="button" class="fa4dx" data-fa4a="dext" data-id="${esc(id)}" title="Préparer l'envoi de cette facture à Dext">Dext ✗ envoyer</button>`):""}</td>
     <td><span class="fa3p ${sc}">${st}</span></td>
     <td class="r"><button type="button" class="fa4dot" data-fa4m="${esc(id)}" aria-label="Actions ${esc(f.num||"brouillon")}">⋯</button></td></tr>`}).join("");
   return`<div class="fa3kp fa4kp">${kp("Facturé ce mois",eur2(facM),`${nF} facture${nF>1?"s":""} · TTC, avoirs déduits`,"","toutes")}
@@ -10367,6 +10374,10 @@ function confirm2(v){toast("L'adresse doit se terminer par @dext.cc.");return fa
 {const _m=fa4Menu;fa4Menu=function(btn,id){_m(btn,id);const f=S.fac.get(id),m=document.querySelector(".fa4mn");if(!m||!f||!f.num)return;
   const b=document.createElement("button");b.type="button";b.dataset.fa4a="dext";b.dataset.id=id;b.textContent=f.dextLe?"Renvoyer à Dext (déjà le "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7)+")":"Envoyer à Dext";
   const ref=m.querySelector("[data-fa4a='dup']");m.insertBefore(b,ref||null)}}
+{const _e=dvEdit;dvEdit=function(){_e.apply(this,arguments);try{const f=S.dvDraft;if(!isFa()||!f||!f.num||!S.dv||S.dv==="new")return;const bar=document.querySelector(".dv-bar");if(!bar||bar.querySelector(".dx-ed"))return;
+  const x=document.createElement(f.dextLe?"span":"button");x.className="dx-ed "+(f.dextLe?"ok":"no");
+  if(f.dextLe){x.textContent="Dext ✓ "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7);x.title="Facture transmise à Dext"}else{x.type="button";x.textContent="Dext ✗ envoyer";x.title="Pas encore transmise à Dext";x.dataset.fa4a="dext";x.dataset.id=S.dv}
+  bar.appendChild(x)}catch(e){console.warn(e)}}}
 
 /*@@/dext*/
 boot();
