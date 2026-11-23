@@ -1272,6 +1272,10 @@ table:has(tr[data-dvo]) thead tr>:last-child{background:inherit}
 @media (max-width:760px){.dvi-pop{left:8px!important;width:auto!important;right:8px}.dvi-r{grid-template-columns:minmax(0,1fr) 80px}.dvi-r>.dvi-tg,.dvi-r>.dvi-u,.dvi-r>.dvi-q{display:none}.dvi-ft span{display:none}}
 
 /*@@/dvi*/
+/*@@dext*/
+.dx-b.on{color:#1C6B3A;border-color:#9FD3AE;background:#F0FAF3}
+
+/*@@/dext*/
 </style></head><body>
 <title>Pilotage ALL TOITURES</title>
 <meta name="description" content="Rendez-vous, chantiers, facturation et tableau de bord annuel d'ALL TOITURES">
@@ -10326,6 +10330,45 @@ window.addEventListener("scroll",()=>{if(document.getElementById("dvi-pop"))dviP
 window.addEventListener("resize",()=>{if(document.getElementById("dvi-pop"))dviPlace()});
 
 /*@@/dvi*/
+/*@@dext*/
+/* ===== Dext : copie des factures de vente ===== */
+const dextAddr=()=>{const a=String(S.cfg&&S.cfg.dextVentes||"").trim();return faMailOk(a)?a:""};
+{const _ol=olDraft;olDraft=async function(to,subject,html,bcc){const B=bcc||S.__olBcc;if(!B||!B.length)return _ol(to,subject,html);
+  const m=await odMcp();if(!m)throw{msg:"Outlook n'est pas accessible depuis cette page."};let res;
+  try{res=await m.callTool("Microsoft 365","outlook_create_draft",Object.assign({subject,body:html,bodyType:"html",bcc:B},to?{to:[to]}:{}))}catch(e){const c=String(e&&(e.code||e.message)||"");throw{msg:/not_granted|denied|consent/i.test(c)?"Autorisez l'accès à Outlook (Microsoft 365) pour préparer le brouillon.":"Brouillon Outlook impossible : "+(e&&e.message||"réessayez")}}
+  const t=odTxt(res);return typeof t==="object"&&t?t.webLink||t.weblink||null:null}}
+{const _fs=faSend;faSend=async function(id){const d=dextAddr();const f0=S.fac.get(id),was=f0&&f0.envoyeeLe;S.__olBcc=d?[d]:null;let r;
+  try{r=await _fs.apply(this,arguments)}finally{S.__olBcc=null}
+  const f=S.fac.get(id);if(d&&f&&f.envoyeeLe&&(f.envoyeeLe!==was||!f.dextLe)){await faSetF(id,{dextLe:TODAY});toast("Brouillon prêt : copie cachée à Dext. Joignez le PDF, puis envoyez.")}return r}}
+async function dextOnly(id){const f=S.fac.get(id),d=dextAddr();if(!f||!f.num)return;if(!d){dextOpen();return}
+  const subj=`${f.type==="avoir"?"Avoir":"Facture"} ${f.num} – ${(f.client&&f.client.nom)||""}`.slice(0,250);
+  const html=`<p>#note ${hx(f.type==="avoir"?"Avoir":"Facture")} ${hx(f.num)} du ${dvFr(f.date)} · ${hx((f.client&&f.client.nom)||"")} · ${eur2(dvCalc(f).ttc)} TTC #note</p>`;
+  toast("Préparation du brouillon pour Dext…");try{await olDraft(d,subj,html,null)}catch(e){toast(e.msg);return}
+  await faSetF(id,{dextLe:TODAY});render.force=true;render();render.force=false;toast(`Brouillon pour Dext prêt dans Outlook : joignez le PDF de ${f.num}, puis envoyez.`)}
+function dextOpen(){const cur=String(S.cfg&&S.cfg.dextVentes||"");S.drawer={kind:"dext"};
+  const all=[...S.fac.values()].filter(f=>f.num),done=all.filter(f=>f.dextLe).length;
+  DR.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dh"><div><div class="k">Comptabilité</div><h2 id="dtitle">Factures de vente vers Dext</h2></div><button type="button" class="btn ghost x" data-close aria-label="Fermer">✕</button></div>
+  <div class="db"><p>Chaque facture que vous envoyez au client part aussi en <b>copie cachée</b> à Dext, avec le PDF que vous joignez. Le cabinet la retrouve dans l'espace Ventes, sans ressaisie.</p>
+  <div class="f"><label for="dx-a">Adresse Dext pour les ventes</label><input id="dx-a" type="email" inputmode="email" placeholder="votrenom+sales@dext.cc" value="${esc(cur)}"></div>
+  <p class="hint">Dans Dext : bouton « Ajouter des documents » (ou Profil › Mes informations), adresse <b>Ventes</b> qui se termine par <b>+sales@dext.cc</b>. L'adresse sans « +sales » envoie dans les achats.</p>
+  <p class="hint">${done} facture${done>1?"s":""} sur ${all.length} déjà transmise${done>1?"s":""}. Pour une facture déjà envoyée au client : menu ⋯ › « Envoyer à Dext ».</p></div>
+  <div class="df">${cur?`<button type="button" class="btn" data-dxoff>Désactiver</button>`:""}<span class="sp"></span><button type="button" class="btn" data-close>Annuler</button><button type="button" class="btn go" data-dxsave>Enregistrer</button></div></aside>`;
+  setTimeout(()=>{const i=document.getElementById("dx-a");if(i)i.focus()},50)}
+document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
+  if(t.closest("[data-dxopen]")){dextOpen();return}
+  if(t.closest("[data-dxsave]")){const v=(document.getElementById("dx-a")||{}).value.trim();if(!faMailOk(v)){toast("Adresse e-mail invalide.");return}
+    if(!/@(multiple\.)?dext\.cc$/i.test(v)&&!confirm2(v))return;if(/@(multiple\.)?dext\.cc$/i.test(v)&&!/\+sales@/i.test(v))toast("Attention : sans « +sales », les factures arriveront dans les achats.");
+    const nc=clone(S.cfg);nc.dextVentes=v;closeDrawer();await saveCfg(nc);return}
+  if(t.closest("[data-dxoff]")){const nc=clone(S.cfg);delete nc.dextVentes;closeDrawer();await saveCfg(nc);return}
+  const a=t.closest("[data-fa4a='dext']");if(a){e.stopPropagation();e.preventDefault();fa4MenuClose();dextOnly(a.dataset.id);return}},true);
+function confirm2(v){toast("L'adresse doit se terminer par @dext.cc.");return false}
+{const _h=faHead;faHead=function(){const h=_h.apply(this,arguments),d=dextAddr();
+  return h.replace('<button type="button" class="btn" data-fadext>',`<button type="button" class="btn dx-b${d?" on":""}" data-dxopen title="${d?"Copie automatique des factures vers Dext":"Configurer l'envoi des factures vers Dext"}">${d?"✓ Dext":"Dext"}</button><button type="button" class="btn" data-fadext>`)}}
+{const _m=fa4Menu;fa4Menu=function(btn,id){_m(btn,id);const f=S.fac.get(id),m=document.querySelector(".fa4mn");if(!m||!f||!f.num)return;
+  const b=document.createElement("button");b.type="button";b.dataset.fa4a="dext";b.dataset.id=id;b.textContent=f.dextLe?"Renvoyer à Dext (déjà le "+f.dextLe.slice(8,10)+"/"+f.dextLe.slice(5,7)+")":"Envoyer à Dext";
+  const ref=m.querySelector("[data-fa4a='dup']");m.insertBefore(b,ref||null)}}
+
+/*@@/dext*/
 boot();
 })();
 </script>
