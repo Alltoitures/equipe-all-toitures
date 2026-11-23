@@ -10349,15 +10349,15 @@ function dextOpen(){const cur=String(S.cfg&&S.cfg.dextVentes||"");S.drawer={kind
   const all=[...S.fac.values()].filter(f=>f.num),done=all.filter(f=>f.dextLe).length;
   DR.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dh"><div><div class="k">Comptabilité</div><h2 id="dtitle">Factures de vente vers Dext</h2></div><button type="button" class="btn ghost x" data-close aria-label="Fermer">✕</button></div>
   <div class="db"><p>Chaque facture que vous envoyez au client part aussi en <b>copie cachée</b> à Dext, avec le PDF que vous joignez. Le cabinet la retrouve dans l'espace Ventes, sans ressaisie.</p>
-  <div class="f"><label for="dx-a">Adresse Dext pour les ventes</label><input id="dx-a" type="email" inputmode="email" placeholder="votrenom+sales@dext.cc" value="${esc(cur)}"></div>
-  <p class="hint">Dans Dext : bouton « Ajouter des documents » (ou Profil › Mes informations), adresse <b>Ventes</b> qui se termine par <b>+sales@dext.cc</b>. L'adresse sans « +sales » envoie dans les achats.</p>
+  <div class="f"><label for="dx-a">Adresse Dext pour les ventes</label><input id="dx-a" type="email" inputmode="email" placeholder="votrenom+ventes@dext.cc" value="${esc(cur)}"></div>
+  <p class="hint">Dans Dext : bouton « Ajouter des documents » (ou Profil › Mes informations), adresse <b>Ventes</b> qui se termine par <b>+ventes@dext.cc</b>. L'adresse sans « +ventes » envoie dans les achats.</p>
   <p class="hint">${done} facture${done>1?"s":""} sur ${all.length} déjà transmise${done>1?"s":""}. Pour une facture déjà envoyée au client : menu ⋯ › « Envoyer à Dext ».</p></div>
   <div class="df">${cur?`<button type="button" class="btn" data-dxoff>Désactiver</button>`:""}<span class="sp"></span><button type="button" class="btn" data-close>Annuler</button><button type="button" class="btn go" data-dxsave>Enregistrer</button></div></aside>`;
   setTimeout(()=>{const i=document.getElementById("dx-a");if(i)i.focus()},50)}
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
   if(t.closest("[data-dxopen]")){dextOpen();return}
   if(t.closest("[data-dxsave]")){const v=(document.getElementById("dx-a")||{}).value.trim();if(!faMailOk(v)){toast("Adresse e-mail invalide.");return}
-    if(!/@(multiple\.)?dext\.cc$/i.test(v)&&!confirm2(v))return;if(/@(multiple\.)?dext\.cc$/i.test(v)&&!/\+sales@/i.test(v))toast("Attention : sans « +sales », les factures arriveront dans les achats.");
+    if(!/@(multiple\.)?dext\.cc$/i.test(v)&&!confirm2(v))return;if(/@(multiple\.)?dext\.cc$/i.test(v)&&!/\+(sales|ventes)@/i.test(v))toast("Attention : sans « +ventes », les factures arriveront dans les achats.");
     const nc=clone(S.cfg);nc.dextVentes=v;closeDrawer();await saveCfg(nc);return}
   if(t.closest("[data-dxoff]")){const nc=clone(S.cfg);delete nc.dextVentes;closeDrawer();await saveCfg(nc);return}
   const a=t.closest("[data-fa4a='dext']");if(a){e.stopPropagation();e.preventDefault();fa4MenuClose();dextOnly(a.dataset.id);return}},true);
